@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#8B898A</color>
+
+
+    <color name="dy_seekbar_bg">#6B696A</color>
+    <color name="dy_seekbar_progress_color">#FFFFFF</color>
+    <color name="second_progress_color">#FFFFFF</color>
+</resources>
