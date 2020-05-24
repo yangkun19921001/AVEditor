@@ -58,7 +58,7 @@ static void Android_JNI_setDataSource(JNIEnv *env, jobject instance, jstring url
 }
 
 static void Android_JNI_start(JNIEnv *env, jobject instance) {
-    if (IPlayerProxy::getInstance()->open(IPlayerProxy::getInstance()->getDataSource(), true))
+    if (IPlayerProxy::getInstance()->open(IPlayerProxy::getInstance()->getDataSource(), false))
         IPlayerProxy::getInstance()->start();
 
 }
