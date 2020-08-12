@@ -5,15 +5,15 @@
 
 #include <jni.h>
 #include <android/native_window.h>
-#include "demux/KAVDemux.h"
-#include "decode/KAVDecode.h"
-#include "video/KAV_GL_VideoPlayer.h"
-#include "audio/KAV_SL_AudioPlayer.h"
-#include "resample/KAVResample.h"
+#include "demux/AVDemux.h"
+#include "decode/AVDecode.h"
+#include "video/AV_GL_VideoPlayer.h"
+#include "audio/AV_SL_AudioPlayer.h"
+#include "resample/AVResample.h"
 #include "play/IPlayerProxy.h"
 #include <android/native_window_jni.h>
 
-#define JNI_PLAY_JAVA_PATH "com/devyk/avedit/KAVPlayView"
+#define JNI_PLAY_JAVA_PATH "com/devyk/aveditor/widget/AVPlayView"
 #define NELEM(x) ((int) (sizeof(x) / sizeof((x)[0])))
 
 
@@ -23,7 +23,7 @@ static void Android_JNI_initView(JNIEnv *env, jobject instance, jobject surface)
 /*    IDemux *demux = new KAVDemux();
     IDecode *adecode = new KAVDecode();
     IDecode *vdecode = new KAVDecode();
-    IVideoPlayer *videoPlayer = new KAV_GL_VideoPlayer();
+    IVideoPlayer *videoPlayer = new AV_GL_VideoPlayer();
     IAudioPlayer *audioPlayer = new KAV_SL_AudioPlayer();
     IResample *resample = new KAVResample();
     int ret = demux->open(

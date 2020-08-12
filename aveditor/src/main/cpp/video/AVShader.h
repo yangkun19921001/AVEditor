@@ -2,8 +2,8 @@
 // Created by 阳坤 on 2020-05-23.
 //
 
-#ifndef IKAVEDIT_AVSHADER_H
-#define IKAVEDIT_AVSHADER_H
+#ifndef IAVEDIT_AVSHADER_H
+#define IAVEDIT_AVSHADER_H
 
 
 #include <mutex>
@@ -37,4 +37,4 @@ public:
 };
 
 
-#endif //IKAVEDIT_AVSHADER_H
+#endif //IAVEDIT_AVSHADER_H

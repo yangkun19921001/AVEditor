@@ -2,14 +2,15 @@
 // Created by 阳坤 on 2020-05-23.
 //
 
-#ifndef IKAVEDIT_IPLAYER_H
-#define IKAVEDIT_IPLAYER_H
+#ifndef IAVEDIT_IPLAYER_H
+#define IAVEDIT_IPLAYER_H
 
 #include "demux/IDemux.h"
 #include "decode/IDecode.h"
 #include "audio/IAudioPlayer.h"
 #include "video/IVideoPlayer.h"
 #include "resample/IResample.h"
+#include <stdint.h>
 
 
 class IPlayer : public IThread {
@@ -100,4 +101,4 @@ public:
 };
 
 
-#endif //IKAVEDIT_IPLAYER_H
+#endif //IAVEDIT_IPLAYER_H

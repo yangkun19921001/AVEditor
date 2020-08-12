@@ -2,11 +2,11 @@
 // Created by 阳坤 on 2020-05-22.
 //
 
-#ifndef IKAVEDIT_IVIDEOPLAYER_H
-#define IKAVEDIT_IVIDEOPLAYER_H
+#ifndef IAVEDIT_IVIDEOPLAYER_H
+#define IAVEDIT_IVIDEOPLAYER_H
 
 
-#include "../../base/IObserver.h"
+#include "base/IObserver.h"
 
 /**
  * 抽象视频播放
@@ -38,4 +38,4 @@ public:
 };
 
 
-#endif //IKAVEDIT_IVIDEOPLAYER_H
+#endif //IAVEDIT_IVIDEOPLAYER_H

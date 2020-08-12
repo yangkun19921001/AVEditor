@@ -2,11 +2,11 @@
 // Created by 阳坤 on 2020-05-22.
 //
 
-#ifndef IKAVEDIT_IRESAMPLE_H
-#define IKAVEDIT_IRESAMPLE_H
+#ifndef IAVEDIT_IRESAMPLE_H
+#define IAVEDIT_IRESAMPLE_H
 
 
-#include "../../base/IObserver.h"
+#include "base/IObserver.h"
 
 /**
  * 抽象音频重采样
@@ -52,4 +52,4 @@ public:
 };
 
 
-#endif //IKAVEDIT_IRESAMPLE_H
+#endif //IAVEDIT_IRESAMPLE_H

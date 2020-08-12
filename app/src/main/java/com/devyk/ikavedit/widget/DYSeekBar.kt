@@ -45,6 +45,11 @@ class DYSeekBar : SeekBar {
     private var mThumbPaint: Paint? = null
 
     /**
+     * 文字画笔
+     */
+    private var mTextPaint: Paint? = null
+
+    /**
      * 默认
      */
     private val TRACKTOUCH_NONE = -1
@@ -67,33 +72,68 @@ class DYSeekBar : SeekBar {
     private val mHandler = Handler()
     private val mRunnable = Runnable { setTrackTouch(TRACKTOUCH_NONE) }
 
+    private var mBackgroundColor = Color.WHITE
+    private var mProgressColor = Color.RED
+    private var mTextColor = Color.WHITE
+    private var mTextSize = 12f
+
+    var isShowCircle = false
+
+
     constructor(context: Context) : super(context) {
-        init(context)
+        init(context, null)
     }
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
-        init(context)
+        init(context, attrs)
     }
 
     /**
      * 初始化
      */
     @SuppressLint("ResourceAsColor")
-    private fun init(context: Context) {
+    private fun init(context: Context, attrs: AttributeSet?) {
+
+
+        val ta = context.obtainStyledAttributes(attrs, R.styleable.DYSeekBar)
+        try {
+            mBackgroundColor =
+                ta.getColor(R.styleable.DYSeekBar_dy_bg_color, resources.getColor(R.color.alpha_90_black))
+
+            mProgressColor =
+                ta.getColor(
+                    R.styleable.DYSeekBar_dy_progress_color,
+                    resources.getColor(R.color.recordbutton_down_color)
+                )
+
+            mTextSize =
+                ta.getDimension(R.styleable.DYSeekBar_dy_text_size, (12f * resources.displayMetrics.scaledDensity))
+
+            mTextColor =
+                ta.getColor(R.styleable.DYSeekBar_dy_text_color, Color.WHITE)
+
+             isShowCircle = ta.getBoolean(R.styleable.DYSeekBar_dy_show_circle, false)
+            updateIsDrawCircle(isShowCircle)
+
+        } finally {
+            ta.recycle()
+        }
+
+
 
         setBackgroundColor(Color.TRANSPARENT)
         //
         mBackgroundPaint = Paint()
         mBackgroundPaint!!.isDither = true
         mBackgroundPaint!!.isAntiAlias = true
-        mBackgroundPaint!!.setColor(resources.getColor(R.color.dy_seekbar_bg))
+        mBackgroundPaint!!.setColor(mBackgroundColor)
 //        mBackgroundPaint!!.color = Color.parseColor("#FF8B898A")
 
         //
         mProgressPaint = Paint()
         mProgressPaint!!.isDither = true
         mProgressPaint!!.isAntiAlias = true
-        mProgressPaint!!.setColor(resources.getColor(R.color.dy_seekbar_progress_color))
+        mProgressPaint!!.setColor(mProgressColor)
 //        mProgressPaint!!.color = Color.parseColor("#0288d1")
 
         //
@@ -108,6 +148,11 @@ class DYSeekBar : SeekBar {
         mThumbPaint!!.isDither = true
         mThumbPaint!!.isAntiAlias = true
         mThumbPaint!!.setColor(resources.getColor(R.color.dy_seekbar_progress_color))
+
+        mTextPaint = Paint()
+        mTextPaint!!.isAntiAlias = true
+        mTextPaint!!.textSize = mTextSize.toFloat()
+        mTextPaint!!.setColor(mTextColor)
 
         //
         thumb = BitmapDrawable()
@@ -134,7 +179,7 @@ class DYSeekBar : SeekBar {
 
             override fun onStopTrackingTouch(seekBar: SeekBar) {
                 isTrackingTouch = false
-                setDrawThumbStatus(STATUS.NO_DRAW)
+                updateIsDrawCircle(isShowCircle)
                 if (mTrackTouch == TRACKTOUCH_START) {
                     if (mOnChangeListener != null) {
                         mOnChangeListener!!.onTrackingTouchFinish(this@DYSeekBar)
@@ -145,14 +190,22 @@ class DYSeekBar : SeekBar {
         })
     }
 
+    private fun updateIsDrawCircle(isShowCircle: Boolean) {
+        if (isShowCircle) {
+            draw_thumb_status = STATUS.DRAW
+        } else
+            draw_thumb_status = STATUS.NO_DRAW
+    }
+
+
     @Synchronized
     override fun onDraw(canvas: Canvas) {
-        var rSize = height / 4
+        var rSize = height / 6
         if (isTrackingTouch) {
-            rSize = height / 3
+            rSize = height / 6
         }
-        val height = height / 4 / 3
-        var leftPadding = rSize
+        val height = height / 4 / 3 / 4
+        var leftPadding = rSize / 2
 
         if (progress > 0) {
             leftPadding = 0
@@ -163,7 +216,6 @@ class DYSeekBar : SeekBar {
             (getHeight() / 2 + height).toFloat()
         )
         canvas.drawRoundRect(backgroundRect, rSize.toFloat(), rSize.toFloat(), mBackgroundPaint!!)
-
 
         if (max != 0) {
             val secondRight = (secondaryProgress.toFloat() / max * width).toInt()
@@ -192,6 +244,13 @@ class DYSeekBar : SeekBar {
                 cx = Math.max(cx, rSize)
             }
             val cy = getHeight() / 2
+
+            canvas.drawText(
+                progress.toString(),
+                cx.toFloat() - mTextPaint!!.measureText(progress.toString()) / 2,
+                cy.toFloat() - rSize.toFloat() - 5,
+                mTextPaint!!
+            )
 
             canvas.drawCircle(cx.toFloat(), cy.toFloat(), rSize.toFloat(), mThumbPaint!!)
         }

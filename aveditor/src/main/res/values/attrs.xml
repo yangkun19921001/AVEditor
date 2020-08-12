@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="AVCameraView">
+        <!--预览的宽高-->
+        <attr name="preview_width" format="integer"/>
+        <attr name="preview_height" format="integer"/>
+        <!--是否使用后置摄像头-->
+        <attr name="back" format="boolean"/>
+        <!--帧率 20 帧就够了-->
+        <attr name="fps" format="integer"/>
+        <!--语音采样率 默认 44100-->
+        <attr name="sampleRate" format="integer"/>
+        <!--视频传输最大码率-->
+        <attr name="videoMaxRate" format="integer"/>
+        <!--视频传输最低码率-->
+        <attr name="videoMinRate" format="integer"/>
+    </declare-styleable>
+</resources>

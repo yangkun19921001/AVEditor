@@ -3,6 +3,7 @@
 //
 
 
+#include <cstring>
 #include "AVData.h"
 
 bool AVData::alloc(int size, const char *data) {

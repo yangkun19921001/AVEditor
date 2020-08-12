@@ -2,8 +2,8 @@
 // Created by 阳坤 on 2020-05-23.
 //
 
-#ifndef IKAVEDIT_KAVTEXTURE_H
-#define IKAVEDIT_KAVTEXTURE_H
+#ifndef IAVEDIT_AVTEXTURE_H
+#define IAVEDIT_AVTEXTURE_H
 
 
 enum AVTextureType {
@@ -44,4 +44,4 @@ public:
 };
 
 
-#endif //IKAVEDIT_KAVTEXTURE_H
+#endif //IAVEDIT_AVTEXTURE_H

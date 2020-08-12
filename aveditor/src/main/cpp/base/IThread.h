@@ -2,8 +2,8 @@
 // Created by 阳坤 on 2020-05-21.
 //
 
-#ifndef IKAVEDIT_ITHREAD_H
-#define IKAVEDIT_ITHREAD_H
+#ifndef IAVEDIT_ITHREAD_H
+#define IAVEDIT_ITHREAD_H
 
 #include <thread>
 #include <vector>
@@ -85,4 +85,4 @@ private:
 };
 
 
-#endif //IKAVEDIT_ITHREAD_H
+#endif //IAVEDIT_ITHREAD_H

@@ -3,11 +3,11 @@
 //
 
 #include "IPlayerProxy.h"
-#include "builder/KAVPlayerBuilder.h"
+
 
 IPlayerProxy::IPlayerProxy() {
     //构建一个 播放组和模块，统一交于播放代理来处理
-    this->pPlayer = KAVPlayerBuilder::getInstance()->builderPlayer();
+    this->pPlayer = AVPlayerBuilder::getInstance()->builderPlayer();
 }
 
 

@@ -2,8 +2,8 @@
 // Created by 阳坤 on 2020-05-21.
 //
 
-#ifndef IKAVEDIT_AVPARAMETER_H
-#define IKAVEDIT_AVPARAMETER_H
+#ifndef IAVEDIT_AVPARAMETER_H
+#define IAVEDIT_AVPARAMETER_H
 
 #include <libavutil/rational.h>
 
@@ -45,4 +45,4 @@ public:
 };
 
 
-#endif //IKAVEDIT_AVPARAMETER_H
+#endif //IAVEDIT_AVPARAMETER_H

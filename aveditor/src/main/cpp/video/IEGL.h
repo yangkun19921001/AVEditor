@@ -2,8 +2,8 @@
 // Created by 阳坤 on 2020-05-23.
 //
 
-#ifndef IKAVEDIT_IEGL_H
-#define IKAVEDIT_IEGL_H
+#ifndef IAVEDIT_IEGL_H
+#define IAVEDIT_IEGL_H
 
 
 class IEGL {
@@ -22,4 +22,4 @@ protected:
 };
 
 
-#endif //IKAVEDIT_IEGL_H
+#endif //IAVEDIT_IEGL_H

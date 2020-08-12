@@ -55,29 +55,29 @@ dependencies {
 
     //androidx
     implementation rootProject.ext.dependencies["appcompat"]
-
+    implementation rootProject.ext.dependencies["constraintlayout"]
+    //design
+    implementation rootProject.ext.dependencies["design"]
+    //TAB FlycoTabLayout
+    implementation rootProject.ext.dependencies["FlycoTabLayout"]
     //rx
     implementation rootProject.ext.dependencies["rxjava2"]
     implementation rootProject.ext.dependencies["rxandroid2"]
     implementation rootProject.ext.dependencies["rxpermissions2"]
-
-
     //kotlin
     implementation rootProject.ext.dependencies["core-ktx"]
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
-
-    //音视频编辑 SDK lib
-    implementation project(path: ':avedit')
-
-
     //bugly
     implementation rootProject.ext.dependencies["crashreport"]
     implementation rootProject.ext.dependencies["nativecrashreport"]
-
     //devyk
     implementation rootProject.ext.dependencies["devyk_native_crash_report"]
+    //adapter
+    implementation rootProject.ext.dependencies["adapter"]
 
 
+    //音视频编辑 SDK
+    implementation project(path: ':aveditor')
 }
 

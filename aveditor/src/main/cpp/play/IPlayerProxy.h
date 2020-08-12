@@ -2,11 +2,12 @@
 // Created by 阳坤 on 2020-05-23.
 //
 
-#ifndef IKAVEDIT_IPLAYERPROXY_H
-#define IKAVEDIT_IPLAYERPROXY_H
+#ifndef IAVEDIT_IPLAYERPROXY_H
+#define IAVEDIT_IPLAYERPROXY_H
 
 #include <mutex>
 #include "IPlayer.h"
+#include "../builder/AVPlayerBuilder.h"
 
 class IPlayerProxy {
 
@@ -105,4 +106,4 @@ public:
 };
 
 
-#endif //IKAVEDIT_IPLAYERPROXY_H
+#endif //IAVEDIT_IPLAYERPROXY_H

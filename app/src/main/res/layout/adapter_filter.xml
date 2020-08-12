@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen_16dp"
+                android:layout_marginBottom="@dimen/dimen_16dp">
+
+    <FrameLayout
+            android:id="@+id/thumbnail_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+        <View
+                android:visibility="gone"
+                android:id="@+id/select_view"
+                android:layout_width="@dimen/dimen_50dp"
+                android:layout_height="@dimen/dimen_50dp"
+                android:background="@drawable/bg_filter_select"
+        />
+
+        <com.devyk.ikavedit.widget.CircleImageView
+                android:id="@+id/filter_thumbnail"
+                android:layout_width="@dimen/dimen_40dp"
+                android:layout_height="@dimen/dimen_40dp"
+                android:layout_gravity="center"/>
+    </FrameLayout>
+
+    <TextView
+            android:ellipsize="end"
+            android:id="@+id/filter_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/thumbnail_layout"
+            android:layout_centerHorizontal="true"
+            android:textSize="@dimen/dimen_12sp"
+            android:maxLength="8"
+            android:textColor="@android:color/white"/>
+</RelativeLayout>

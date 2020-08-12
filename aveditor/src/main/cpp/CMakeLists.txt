@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.4.1)
 
 
 #设置输出的 so 目录
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/jniLibs/${ANDROID_ABI})
+#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/jniLibs/${ANDROID_ABI})
 
 #-------------------------------------------------定义路径变量----------------------------------------------
 #JNI 路径
@@ -45,8 +45,8 @@ FILE(GLOB BASE_ALL_H ${BASE_PATH}/*.)
 FILE(GLOB BASE_DATA_ALL_CPP ${BASE_PATH}/data/*.cpp)
 FILE(GLOB BASE_DATA_ALL_H ${BASE_PATH}/data/*.h)
 #播放模块
-FILE(GLOB JNI_PATH_ALL_CPP ${JNI_PATH}/paly/*.cpp)
-FILE(GLOB JNI_PATH_ALL_H ${JNI_PATH}/paly//*.h)
+FILE(GLOB JNI_PATH_ALL_CPP ${JNI_PATH}/play/*.cpp)
+FILE(GLOB JNI_PATH_ALL_H ${JNI_PATH}/play//*.h)
 
 
 #-------------------------------------------------加载头文件----------------------------------------------
@@ -54,13 +54,13 @@ FILE(GLOB JNI_PATH_ALL_H ${JNI_PATH}/paly//*.h)
 include_directories(${FFMPEG_INCLUDE_PATH}/include)
 include_directories(${XLOG_PATH}/include)
 include_directories(${CMAKE_SOURCE_DIR})
-#[[include_directories(${DEMUX_ALL_H})
+include_directories(${DEMUX_ALL_H})
 include_directories(${DECODE_ALL_H})
 include_directories(${RESAMPLE_ALL_H})
 include_directories(${AUDIO_ALL_H})
 include_directories(${VIDEO_ALL_H})
 include_directories(${BASE_ALL_H})
-include_directories(${BASE_DATA_ALL_H})]]
+include_directories(${BASE_DATA_ALL_H})
 
 #-------------------------------------------------加载库文件----------------------------------------------
 

@@ -2,8 +2,8 @@
 // Created by 阳坤 on 2020-05-21.
 //
 
-#ifndef IKAVEDIT_IDEMUX_H
-#define IKAVEDIT_IDEMUX_H
+#ifndef IAVEDIT_IDEMUX_H
+#define IAVEDIT_IDEMUX_H
 
 
 #include "../../base/IObserver.h"
@@ -80,4 +80,4 @@ protected:
 };
 
 
-#endif //IKAVEDIT_IDEMUX_H
+#endif //IAVEDIT_IDEMUX_H

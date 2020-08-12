@@ -1,26 +1,53 @@
-## KAVEdit
+#KAVEdit
 
-这是一款短视频编辑 SDK。目标是仿抖音 APP 音视频处理功能!
-
-**计划:**
-
-**v1.0.1**
-
-> 正在研发中...
-
-- 基于 FFmpeg 、OpenGL/SL 自研万能音视频播放器（已完成）。
-- 音频视频录制合成 mp4（计划中...）。
-- 音频，视频剪辑合成（计划中...）。
+这是一款短视频编辑 SDK。仿抖音 APP 音视频处理功能!
 
 
 
-## log
+## 使用方式
 
-### v1.0.1
+**1、添加远程依赖**
+
+```groovy
+
+```
+
+**2、**
+
+
+
+##版本:
+
+###v1.0.1
+
+- 基于 FFmpeg 、OpenGL/SL 自研万能音视频播放器（已完成)
+- 音频视频录制合成 mp4（已完成)
+- 滤镜 (已完成)
+- 美颜
+- 贴纸
+- 水印 (已完成)
+- 软硬编解码
+- 导入 **MP3** 格式 , 为录制的音频源
+- 导入 **MP3** 格式 , 为视频的背景音，将录制的音频和导入的音频混音
+- 分段录制
+- 音频，视频剪辑合成
+
+### 效果
 
 ![](https://devyk.oss-cn-qingdao.aliyuncs.com/blog/20200524193715.gif)
 
 ![](https://devyk.oss-cn-qingdao.aliyuncs.com/blog/20200524194013.gif)
+
+
+
+#感谢
+
+- [FFmpeg](https://ffmpeg.org/)
+- [google/grafika](https://github.com/google/grafika)
+- [android-gpuimage](https://github.com/cats-oss/android-gpuimage)
+- [magic-camera](https://github.com/wuhaoyu1990/MagicCamera)
+
+
 
 
 

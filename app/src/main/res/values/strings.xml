@@ -1,3 +1,20 @@
 <resources>
-    <string name="app_name">IKAVEdit</string>
+    <string name="app_name">AVEditor</string>
+
+    <string name="OPEN_PERMISSIONS">权限是否已经开启</string>
+    <string name="GET_PERMISSION_ERROR">权限获取成功!</string>
+
+
+    <string name="home">首页</string>
+    <string name="location">海淀</string>
+    <string name="message">消息</string>
+    <string name="me">我</string>
+    <string name="reversal">翻转</string>
+    <string name="camera_flash">灯光</string>
+    <string name="camera_filter">滤镜</string>
+    <string name="camera_beauty">美化</string>
+    <string name="camera_count_down">倒数</string>
+    <string name="camera_tools">道具</string>
+    <string name="camera_phone_album">相册</string>
+    <string name="select_music">选择音乐</string>
 </resources>

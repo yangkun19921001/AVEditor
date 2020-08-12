@@ -1,11 +1,54 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
     </style>
+
+
+    <declare-styleable name="ProgressView">
+        <attr name="pv_radius" format="dimension|reference"/>
+        <attr name="pv_bg_color" format="color|reference"/>
+        <attr name="pv_content_color" format="color|reference"/>
+        <attr name="pv_divider_color" format="color|reference"/>
+        <attr name="pv_divider_width" format="dimension|reference"/>
+    </declare-styleable>
+
+    <style name="MyDialog" parent="AlertDialog.AppCompat">
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowAnimationStyle">@style/dialog_animation</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+
+    <style name="dialog_animation" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/dialog_enter</item>
+        <item name="android:windowExitAnimation">@anim/dialog_exit</item>
+    </style>
+
+
+    <declare-styleable name="CircleImageView">
+        <attr name="civ_border_width" format="dimension"/>
+        <attr name="civ_border_color" format="color"/>
+        <attr name="civ_border_overlay" format="boolean"/>
+        <attr name="civ_circle_background_color" format="color"/>
+    </declare-styleable>
+
+
+    <declare-styleable name="DYSeekBar">
+        <attr name="dy_bg_color" format="color|reference"/>
+        <attr name="dy_progress_color" format="color|reference"/>
+        <attr name="dy_show_circle" format="boolean"/>
+        <attr name="dy_text_color" format="color|reference"/>
+        <attr name="dy_text_size" format="integer"/>
+    </declare-styleable>
 
 </resources>

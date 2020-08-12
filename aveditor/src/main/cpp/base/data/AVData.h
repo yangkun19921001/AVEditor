@@ -2,8 +2,8 @@
 // Created by 阳坤 on 2020-05-21.
 //
 
-#ifndef IKAVEDIT_AVDATA_H
-#define IKAVEDIT_AVDATA_H
+#ifndef IAVEDIT_AVDATA_H
+#define IAVEDIT_AVDATA_H
 
 extern "C" {
 #include "libavformat/avformat.h"
@@ -32,4 +32,4 @@ struct AVData {
 };
 
 
-#endif //IKAVEDIT_AVDATA_H
+#endif //IAVEDIT_AVDATA_H

@@ -2,12 +2,12 @@
 // Created by 阳坤 on 2020-05-22.
 //
 
-#ifndef IKAVEDIT_IDECODE_H
-#define IKAVEDIT_IDECODE_H
+#ifndef IAVEDIT_IDECODE_H
+#define IAVEDIT_IDECODE_H
 
 
-#include "../../base/IObserver.h"
 #include <list>
+#include "base/IObserver.h"
 
 
 #define H264_MEDIACODEC "h264_mediacodec"
@@ -26,7 +26,7 @@ protected:
     /**
      * 读取缓存
      */
-    std:: list <AVData> packs;
+    std::list <AVData> packs;
     /**
      * 互斥锁
      */
@@ -100,4 +100,4 @@ public:
 };
 
 
-#endif //IKAVEDIT_IDECODE_H
+#endif //IAVEDIT_IDECODE_H

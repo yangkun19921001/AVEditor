@@ -1,7 +1,8 @@
 package com.devyk.ikavedit
 
 import android.app.Application
-import com.devyk.avedit.LogHelper
+import com.devyk.aveditor.utils.LogHelper
+import com.devyk.ikavedit.utils.Utils
 
 /**
  * <pre>
@@ -18,5 +19,7 @@ public class App : Application() {
         super.onCreate()
         LogHelper.initLog();
         LogHelper.e(TAG, "xlog init success！");
+
+        Utils.init(this);
     }
 }

@@ -2,8 +2,8 @@
 // Created by 阳坤 on 2020-05-22.
 //
 
-#ifndef IKAVEDIT_IAUDIOPLAYER_H
-#define IKAVEDIT_IAUDIOPLAYER_H
+#ifndef IAVEDIT_IAUDIOPLAYER_H
+#define IAVEDIT_IAUDIOPLAYER_H
 
 
 #include <list>
@@ -52,4 +52,4 @@ public:
 };
 
 
-#endif //IKAVEDIT_IAUDIOPLAYER_H
+#endif //IAVEDIT_IAUDIOPLAYER_H

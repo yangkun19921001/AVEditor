@@ -2,8 +2,8 @@
 // Created by 阳坤 on 2020-05-21.
 //
 
-#ifndef IKAVEDIT_IOBSERVER_H
-#define IKAVEDIT_IOBSERVER_H
+#ifndef IAVEDIT_IOBSERVER_H
+#define IAVEDIT_IOBSERVER_H
 
 
 #include "IThread.h"
@@ -45,4 +45,4 @@ protected:
 };
 
 
-#endif //IKAVEDIT_IOBSERVER_H
+#endif //IAVEDIT_IOBSERVER_H

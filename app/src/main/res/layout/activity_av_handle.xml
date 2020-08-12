@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+        <com.devyk.aveditor.widget.AVRecordView
+                android:id="@+id/videoView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+        />
+
+
+        <com.devyk.ikavedit.widget.LineProgressView
+                android:id="@+id/line_progress_view"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dimen_6dp"
+                android:layout_marginTop="@dimen/dimen_10dp"
+                android:layout_marginLeft="@dimen/dimen_10dp"
+                android:layout_marginRight="@dimen/dimen_10dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:pv_divider_width="@dimen/dimen_1dp"
+                app:pv_content_color="@color/recordbutton_down_color"
+                app:pv_bg_color="@color/alpha_20_black"
+                app:pv_radius="@dimen/dimen_4dp"
+        />
+
+
+        <com.devyk.ikavedit.widget.AnimTextView
+                android:id="@+id/exit"
+                android:layout_marginTop="@dimen/dimen_20dp"
+                android:layout_marginLeft="@dimen/dimen_10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/dimen_10sp"
+                android:textColor="@color/button_bg_select"
+                app:layout_constraintTop_toTopOf="@+id/line_progress_view"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:drawableTop="@mipmap/exit"
+                tools:ignore="MissingConstraints"/>
+
+
+        <com.devyk.ikavedit.widget.AnimTextView
+                android:id="@+id/select_music"
+                android:layout_marginTop="@dimen/dimen_20dp"
+                android:drawableLeft="@mipmap/note"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/select_music"
+                android:textSize="@dimen/dimen_12sp"
+                android:textColor="@color/button_bg_select"
+                android:drawablePadding="@dimen/dimen_2dp"
+                app:layout_constraintTop_toTopOf="@+id/line_progress_view"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:gravity="center_vertical"
+                app:layout_constraintRight_toRightOf="parent"
+        />
+
+        <com.devyk.ikavedit.widget.AnimTextView
+                android:id="@+id/switch_camera"
+                android:layout_marginRight="@dimen/dimen_10dp"
+                android:layout_marginTop="@dimen/dimen_20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/reversal"
+                android:textSize="@dimen/dimen_10sp"
+                android:textColor="@color/button_bg_select"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/line_progress_view"
+                android:drawableTop="@mipmap/ic_camera_switch"
+                android:gravity="center"
+        />
+
+        <com.devyk.ikavedit.widget.AnimTextView
+                android:id="@+id/camera_flash"
+                android:layout_marginTop="@dimen/dimen_10dp"
+                android:layout_marginRight="@dimen/dimen_10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/camera_flash"
+                android:textSize="@dimen/dimen_10sp"
+                android:textColor="@color/button_bg_select"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/switch_camera"
+                android:drawableTop="@mipmap/ic_flash_off"
+                android:gravity="center"
+                tools:ignore="MissingConstraints"/>
+
+
+        <com.devyk.ikavedit.widget.AnimTextView
+                android:id="@+id/camera_filter"
+                android:layout_marginTop="@dimen/dimen_10dp"
+                android:layout_marginRight="@dimen/dimen_10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/camera_filter"
+                android:textSize="@dimen/dimen_10sp"
+                android:textColor="@color/button_bg_select"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/camera_flash"
+                android:drawableTop="@mipmap/ic_filter"
+                android:gravity="center"
+                tools:ignore="MissingConstraints"/>
+
+        <com.devyk.ikavedit.widget.AnimTextView
+                android:id="@+id/camera_beauty"
+                android:layout_marginTop="@dimen/dimen_10dp"
+                android:layout_marginRight="@dimen/dimen_10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/camera_beauty"
+                android:textSize="@dimen/dimen_10sp"
+                android:textColor="@color/button_bg_select"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/camera_filter"
+                android:drawableTop="@mipmap/ic_beauty"
+                android:gravity="center"
+                tools:ignore="MissingConstraints"/>
+
+        <com.devyk.ikavedit.widget.AnimTextView
+                android:id="@+id/camera_count_down"
+                android:layout_marginTop="@dimen/dimen_10dp"
+                android:layout_marginRight="@dimen/dimen_10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/camera_count_down"
+                android:textSize="@dimen/dimen_10sp"
+                android:textColor="@color/button_bg_select"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/camera_beauty"
+                android:drawableTop="@mipmap/count_down"
+                android:gravity="center"
+                tools:ignore="MissingConstraints"/>
+
+
+        <com.devyk.ikavedit.widget.CommonTabLayout
+                android:layout_marginLeft="@dimen/dimen_50dp"
+                android:layout_marginRight="@dimen/dimen_50dp"
+                android:id="@+id/douyin_button_speed_tab"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dimen_35dp"
+                android:background="@color/alpha_40_black"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_marginBottom="@dimen/dimen_8dp"
+                app:layout_constraintBottom_toTopOf="@+id/record_button"
+                app:tl_iconVisible="false"
+                app:tl_textSelectColor="@color/button_bg"
+                app:tl_indicator_style="BLOCK"
+                app:tl_indicator_corner_radius="0dp"
+                app:tl_indicator_height="@dimen/dimen_40dp"
+                app:tl_indicator_color="@color/alpha_95_white"
+                app:tl_indicator_margin_top="0dp"
+                app:tl_indicator_margin_bottom="0dp"
+                app:tl_textUnselectColor="@color/button_bg_select"
+                app:tl_textsize="@dimen/dimen_16sp" tools:ignore="MissingConstraints"/>
+
+
+        <com.devyk.ikavedit.widget.AnimTextView
+                android:id="@+id/ic_camera_tools"
+                android:layout_width="@dimen/dimen_64dp"
+                android:layout_height="@dimen/dimen_64dp"
+                android:text="@string/camera_tools"
+                android:textSize="@dimen/dimen_10sp"
+                android:textColor="@color/button_bg_select"
+                android:drawableTop="@mipmap/ic_camera_tools"
+                android:gravity="center"
+                tools:ignore="MissingConstraints"
+
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="@id/record_button"
+                app:layout_constraintBottom_toBottomOf="@id/record_button"
+                app:layout_constraintEnd_toStartOf="@+id/record_button"
+                app:layout_constraintStart_toStartOf="parent"
+        />
+
+        <com.devyk.ikavedit.widget.AnimTextView
+                android:id="@+id/ic_camera_phone_album"
+                android:layout_width="@dimen/dimen_64dp"
+                android:layout_height="@dimen/dimen_64dp"
+                android:text="@string/camera_phone_album"
+                android:textSize="@dimen/dimen_10sp"
+                android:textColor="@color/button_bg_select"
+                android:drawableTop="@mipmap/camera_phone_album"
+                android:gravity="center"
+                tools:ignore="MissingConstraints"
+
+                app:layout_constraintTop_toTopOf="@id/record_button"
+                app:layout_constraintBottom_toBottomOf="@id/record_button"
+                app:layout_constraintStart_toEndOf="@+id/record_button"
+                app:layout_constraintEnd_toEndOf="parent"
+        />
+
+
+        <com.devyk.ikavedit.widget.RecordButton
+                android:id="@+id/record_button"
+                android:layout_width="@dimen/dimen_150dp"
+                android:layout_height="@dimen/dimen_150dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                app:layout_constraintBottom_toTopOf="@+id/douyin_button_fun_tab"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_marginBottom="@dimen/dimen_10dp"/>
+
+
+        <com.devyk.ikavedit.widget.CommonTabLayout
+                android:id="@+id/douyin_button_fun_tab"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dimen_48dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:tl_iconVisible="false"
+                app:tl_indicator_corner_radius="@dimen/dimen_1dp"
+                app:tl_indicator_height="@dimen/dimen_3dp"
+                app:tl_underline_color="@color/button_bg_select"
+                app:tl_indicator_width="@dimen/dimen_3dp"
+                app:tl_textSelectColor="@color/button_bg_select"
+                app:tl_textUnselectColor="@color/button_bg_unselect"
+                app:tl_textsize="@dimen/dimen_16sp" tools:ignore="MissingConstraints"/>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

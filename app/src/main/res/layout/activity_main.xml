@@ -1,32 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".MainActivity">
+        android:background="@mipmap/douyin_bg"
+        android:orientation="vertical"
+>
 
-
-    <com.devyk.avedit.KAVPlayView
-            android:id="@+id/player_view"
+    <com.devyk.ikavedit.widget.NotScrollViewPager
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="@dimen/dimen_50dp"
+            android:layout_weight="1"
+            android:id="@+id/viewplayer"
+    />
 
 
-    <ImageView
-            android:visibility="gone"
-            android:id="@+id/btn_play"
-            android:src="@mipmap/play"
-            android:layout_centerInParent="true"
-            android:onClick="start"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+    <View android:layout_width="match_parent" android:layout_height="0.5dp"
+          android:background="@color/derline_color"
+    ></View>
 
-
-    <com.devyk.ikavedit.widget.DYSeekBar
-            android:id="@+id/dy_seekbar"
-            android:layout_alignParentBottom="true"
+    <!--https://github.com/H07000223/FlycoTabLayout/blob/master/README_CN.md-->
+    <com.devyk.ikavedit.widget.CommonTabLayout
+            android:id="@+id/douyin_button_tab"
             android:layout_width="match_parent"
-            android:layout_height="15dp"/>
+            android:layout_height="@dimen/dimen_48dp"
+            android:background="@android:color/transparent"
+            app:tl_iconVisible="false"
+            app:tl_indicator_corner_radius="@dimen/dimen_1dp"
+            app:tl_indicator_height="@dimen/dimen_2dp"
+            app:tl_underline_color="@color/button_bg_select"
+            app:tl_indicator_width="@dimen/dimen_10dp"
+            app:tl_textSelectColor="@color/button_bg_select"
+            app:tl_textUnselectColor="@color/button_bg_unselect"
+            app:tl_textsize="@dimen/dimen_16sp">
 
-</RelativeLayout>
+
+        <com.devyk.ikavedit.widget.AnimTextView
+                android:id="@+id/video_handle"
+                android:padding="@dimen/dimen_5dp"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:background="@mipmap/fdouyin_button_menu"/>
+
+        <!--<ImageView-->
+                <!--android:id="@+id/video_handle"-->
+                <!--android:padding="@dimen/dimen_5dp"-->
+                <!--android:layout_gravity="center"-->
+                <!--android:layout_width="wrap_content" android:layout_height="wrap_content"-->
+                <!--android:src="@mipmap/fdouyin_button_menu"-->
+        <!--/>-->
+    </com.devyk.ikavedit.widget.CommonTabLayout>
+
+</LinearLayout>

@@ -1,1 +1,1 @@
-include ':app', ':avedit'
+include ':app', ':aveditor'

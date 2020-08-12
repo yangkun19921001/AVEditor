@@ -2,8 +2,8 @@
 // created by 阳坤 on 2020-05-23.
 //
 
-#ifndef IKAVEDIT_IPLAYERBUILDER_H
-#define IKAVEDIT_IPLAYERBUILDER_H
+#ifndef IAVEDIT_IPLAYERBUILDER_H
+#define IAVEDIT_IPLAYERBUILDER_H
 
 
 #include "play/IPlayer.h"
@@ -61,4 +61,4 @@ protected:
 };
 
 
-#endif //IKAVEDIT_IPLAYERBUILDER_H
+#endif //IAVEDIT_IPLAYERBUILDER_H

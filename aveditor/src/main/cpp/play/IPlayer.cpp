@@ -3,7 +3,8 @@
 //
 
 #include "IPlayer.h"
-#include "builder/KAVPlayerBuilder.h"
+#include "../builder/AVPlayerBuilder.h"
+#include "../../../../../../../../../Android/NDK/android-ndk-r17c/sources/cxx-stl/llvm-libc++/include/cstdint"
 
 IPlayer *IPlayer::getInstance(unsigned char index) {
     static IPlayer p[188];
@@ -224,7 +225,7 @@ int IPlayer::start() {
 }
 
 void IPlayer::initMediaCodec(void *javaVM) {
-    KAVPlayerBuilder::initMediaCodec(javaVM);
+    AVPlayerBuilder::initMediaCodec(javaVM);
 
 }
 
