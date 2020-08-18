@@ -21,6 +21,7 @@ set(BASE_PATH ${CMAKE_SOURCE_DIR}/base)
 #找文件
 #jni cpp
 FILE(GLOB JNI_ALL_CPP ${JNI_PATH}/*.cpp)
+FILE(GLOB JNI_ALL_H ${JNI_PATH}/*.h)
 #解封装
 FILE(GLOB DEMUX_ALL_CPP ${JNI_PATH}/demux/*.cpp)
 FILE(GLOB DEMUX_ALL_H ${JNI_PATH}/demux/*.h)
@@ -46,11 +47,15 @@ FILE(GLOB BASE_DATA_ALL_CPP ${BASE_PATH}/data/*.cpp)
 FILE(GLOB BASE_DATA_ALL_H ${BASE_PATH}/data/*.h)
 #播放模块
 FILE(GLOB JNI_PATH_ALL_CPP ${JNI_PATH}/play/*.cpp)
-FILE(GLOB JNI_PATH_ALL_H ${JNI_PATH}/play//*.h)
+FILE(GLOB JNI_PATH_ALL_H ${JNI_PATH}/play/*.h)
+#回调模块
+FILE(GLOB CALLBACK_PATH_ALL_CPP ${JNI_PATH}/callback/*.cpp)
+FILE(GLOB CALLBACK_PATH_ALL_H ${JNI_PATH}/callback/*.h)
 
 
 #-------------------------------------------------加载头文件----------------------------------------------
 #加载头文件
+#include_directories(${JNI_ALL_H})
 include_directories(${FFMPEG_INCLUDE_PATH}/include)
 include_directories(${XLOG_PATH}/include)
 include_directories(${CMAKE_SOURCE_DIR})
@@ -61,6 +66,8 @@ include_directories(${AUDIO_ALL_H})
 include_directories(${VIDEO_ALL_H})
 include_directories(${BASE_ALL_H})
 include_directories(${BASE_DATA_ALL_H})
+include_directories(${CALLBACK_PATH_ALL_H})
+
 
 #-------------------------------------------------加载库文件----------------------------------------------
 
@@ -84,8 +91,9 @@ set_target_properties(marsxlog PROPERTIES IMPORTED_LOCATION ${SHARED_PATH}/libma
 
 
 
+
 add_library(
-        aveditor
+        avtools
         SHARED
         ${JNI_ALL_CPP}
         ${DEMUX_ALL_CPP}
@@ -97,43 +105,30 @@ add_library(
         ${BASE_DATA_ALL_CPP}
         ${BUILDER_ALL_CPP}
         ${JNI_PATH_ALL_CPP}
+        ${CALLBACK_PATH_ALL_CPP}
 )
-#
-#add_library(
-#        kav-edit
-#        SHARED
-#        ${JNI_ALL_CPP}
-#
-#)
+
 
 find_library(
         log-lib
-        log)
+        log
+)
 
-#音视频 player
+
+#AVTools
 target_link_libraries(
-        aveditor
-        GLESv2 EGL #[[EGL 是 nativeWindow 和 openGL ES 中间的桥梁]]
+        avtools
+        GLESv2 EGL
+        #[[EGL 是 nativeWindow 和 openGL ES 中间的桥梁]]
         OpenSLES
         android
-        #ffmpeg
         avcodec avformat avutil swscale swresample
         #log
         marsxlog
-        ${log-lib})
+        ${log-lib}
+)
 
 
-#视频编辑
-#target_link_libraries(
-#        kav-edit
-#        GLESv2 EGL #[[EGL 是 nativeWindow 和 openGL ES 中间的桥梁]]
-#        OpenSLES
-#        android
-#
-#        #ffmpeg
-#        avcodec avformat avutil swscale swresample
-#        #log
-#        marsxlog
-#        ${log-lib})
+
 
 

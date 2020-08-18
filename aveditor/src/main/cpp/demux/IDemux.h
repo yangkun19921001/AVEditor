@@ -26,6 +26,16 @@ public:
      */
     long long totalDuration = 0;
 
+    /**
+     * 是否有音频流
+     */
+    int mAudioPacketExist = true;
+
+    /**
+    * 是否有视频流
+    */
+    int mVideoPacketExist = true;
+
 public:
     /**
      * 打开资源
@@ -73,8 +83,6 @@ protected:
      * 子线程入口
      */
     virtual void main();
-
-
 
 
 };

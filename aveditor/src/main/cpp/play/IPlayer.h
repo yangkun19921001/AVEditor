@@ -10,10 +10,16 @@
 #include "audio/IAudioPlayer.h"
 #include "video/IVideoPlayer.h"
 #include "resample/IResample.h"
+#include "audio/ITransfer.h"
 #include <stdint.h>
+#include <mutex>
 
 
 class IPlayer : public IThread {
+
+private:
+
+
 public:
     //是否视频硬解码
     int isMediaCodec = false;
@@ -25,6 +31,7 @@ public:
     IDecode *vdecode = 0;
     IDecode *adecode = 0;
     IResample *resample = 0;
+    ITransfer *transfer = 0;
     IVideoPlayer *videoView = 0;
     IAudioPlayer *audioPlay = 0;
 

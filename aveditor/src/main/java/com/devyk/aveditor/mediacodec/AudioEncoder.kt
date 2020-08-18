@@ -29,6 +29,7 @@ class AudioEncoder(private val mAudioConfiguration: AudioConfiguration?) : BaseA
         mListener?.onAudioEncode(bb, bi)
     }
 
+
     fun setOnAudioEncodeListener(listener: OnAudioEncodeListener?) {
         mListener = listener
     }

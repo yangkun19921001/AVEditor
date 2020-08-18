@@ -24,60 +24,86 @@ int IPlayer::open(const char *path, int mediacodec) {
     //解码 解码可能不需要，如果是解封之后就是原始数据
     if (!vdecode || !vdecode->open(demux->getVInfo(), mediacodec)) {
         LOGE("vdecode->Open %s failed!", path);
-        //return false;
+//        return false;
     }
     if (!adecode || !adecode->open(demux->getAInfo())) {
         LOGE("adecode->Open %s failed!", path);
-        //return false;
+//        return false;
     }
+
+
 
     //重采样 有可能不需要，解码后或者解封后可能是直接能播放的数据
     //if(outPara.sample_rate <= 0)
     outPara = demux->getAInfo();
+    /**
+        * 将音频信息传递给转移模块
+        */
+    if (transfer && transfer->REGISTER_AUDIO_TRANSFER_MODEL) {
+        transfer->open(outPara);
+    }
+
     if (!resample || !resample->open(demux->getAInfo(), outPara)) {
         LOGE("resample->Open %s failed!", path);
     }
+
+
     mux.unlock();
     return 1;
 }
 
 void IPlayer::close() {
+    LOGD("IPlayer:close in");
     mux.lock();
     //2 先关闭主体线程，再清理观察者
     //同步线程
     IThread::stop();
     //解封装
-    if (demux)
+    if (demux) {
         demux->stop();
+
+    }
+
     //解码
-    if (vdecode)
+    if (vdecode) {
         vdecode->stop();
-    if (adecode)
+    }
+    if (adecode) {
         adecode->stop();
-    if (audioPlay)
+    }
+    if (audioPlay) {
         audioPlay->stop();
+    }
 
     //2 清理缓冲队列
-    if (vdecode)
+    if (vdecode) {
         vdecode->clear();
-    if (adecode)
+    }
+    if (adecode) {
         adecode->clear();
-    if (audioPlay)
+    }
+    if (audioPlay) {
         audioPlay->clear();
+    }
 
     //3 清理资源
-    if (audioPlay)
+    if (audioPlay) {
         audioPlay->close();
-    if (videoView)
+    }
+    if (videoView) {
         videoView->close();
-    if (vdecode)
+    }
+    if (vdecode) {
         vdecode->close();
-    if (adecode)
+    }
+    if (adecode) {
         adecode->close();
-    if (demux)
+    }
+    if (demux) {
         demux->close();
+    }
     mux.unlock();
-
+    LOGD("IPlayer: close out");
 
 }
 
@@ -191,10 +217,17 @@ double IPlayer::playPos() {
 
     int total = 0;
     if (demux)
-        total = demux->totalDuration;
+        total = demux->totalDuration / 1000;
     if (total > 0) {
         if (vdecode) {
-            pos = (double) vdecode->pts / (double) total + 0.01;
+//            pos = (double) vdecode->pts / (double) total + 0.01;
+            pos = ((double) vdecode->pts / 1000 / (double) total + 0.01) * 100;
+            LOGE(" 总时长：%lld ms \"解码进度：%f s", total,pos);
+            if (pos >= 100){
+                mux.unlock();
+                return 100;
+            }
+
         }
     }
     mux.unlock();
@@ -216,7 +249,12 @@ int IPlayer::start() {
 
     if (adecode)
         adecode->start();
-    if (audioPlay)
+
+    if (transfer && transfer->REGISTER_AUDIO_TRANSFER_MODEL) {
+        transfer->startTransfer();
+    }
+
+    if (audioPlay && outPara.format != -1 && outPara.channels != -1 && outPara.sample_rate != -1)
         audioPlay->startPlayer(outPara);
     IThread::start();
     mux.unlock();

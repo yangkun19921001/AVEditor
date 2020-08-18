@@ -1,14 +1,10 @@
-package com.devyk.ikavedit.utils.intent
+package com.devyk.aveditor.utils.intent
 
 import android.content.Intent
-import android.R.attr.scheme
 import android.app.Activity
-import android.content.Context
 import android.net.Uri
 import java.io.File
-import java.nio.file.Files.exists
 import java.util.*
-import androidx.core.app.ActivityCompat.startActivityForResult
 
 
 
@@ -25,7 +21,7 @@ import androidx.core.app.ActivityCompat.startActivityForResult
 object OpenFileUtil {
 
     /**声明各种类型文件的dataType */
-    private val DATA_TYPE_ALL = "*/*"//未指定明确的文件类型，不能使用精确类型的工具打开，需要用户选择
+    val DATA_TYPE_ALL = "*/*"//未指定明确的文件类型，不能使用精确类型的工具打开，需要用户选择
     private val DATA_TYPE_APK = "application/vnd.android.package-archive"
     private val DATA_TYPE_VIDEO = "video/*"
     val DATA_TYPE_AUDIO = "audio/*"

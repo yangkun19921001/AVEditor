@@ -5,7 +5,6 @@
 #include "AVPlayerBuilder.h"
 
 
-
 IDemux *AVPlayerBuilder::createDemux() {
     IDemux *demux = new AVDemux();
     return demux;
@@ -38,4 +37,8 @@ IPlayer *AVPlayerBuilder::createPlayer(unsigned char index) {
 void AVPlayerBuilder::initMediaCodec(void *vm) {
     AVDecode::initMediaCodec(vm);
 
+}
+
+ITransfer *AVPlayerBuilder::createTransfer() {
+    return new AVAudioTransfer();
 }

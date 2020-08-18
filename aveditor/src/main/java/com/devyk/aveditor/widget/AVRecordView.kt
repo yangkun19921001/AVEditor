@@ -6,10 +6,13 @@ import android.util.AttributeSet
 import com.devyk.aveditor.config.AudioConfiguration
 import com.devyk.aveditor.config.VideoConfiguration
 import com.devyk.aveditor.controller.StreamController
+import com.devyk.aveditor.entity.Speed
 import com.devyk.aveditor.stream.packer.Packer
-import com.devyk.aveditor.video.filter.IFilter
-import com.devyk.aveditor.video.filter.gpuimage.base.GPUImageFilter
+import com.devyk.aveditor.stream.packer.PackerType
+import com.devyk.aveditor.stream.packer.mp4.MP4Packer
+import com.devyk.aveditor.utils.LogHelper
 import javax.microedition.khronos.opengles.GL10
+
 
 /**
  * <pre>
@@ -20,11 +23,14 @@ import javax.microedition.khronos.opengles.GL10
  *     desc    : This is AVRecordView
  * </pre>
  */
-public class AVRecordView<T : IFilter,G : GPUImageFilter> : AVCameraView<T,G> {
+public class AVRecordView : AVCameraView {
 
 
     private var mVideoConfiguration = VideoConfiguration.createDefault()
     private var mAudioConfiguration = AudioConfiguration.createDefault()
+
+
+    private var mSpeed = Speed.VERY_FAST.value
 
     /**
      * 音视频流控制器
@@ -57,15 +63,35 @@ public class AVRecordView<T : IFilter,G : GPUImageFilter> : AVCameraView<T,G> {
     /**
      * 配置打包器
      */
-    fun setPaker(packer: Packer){
-        mStreamController?.setPacker(packer)
+    fun setPaker(packer: PackerType, outPath: String?) {
+        mStreamController?.setPacker(packer, outPath)
     }
+
+    /**
+     * 设置需要录制的音频源
+     */
+    public fun setRecordAudioSource(recordAudioSource: String?) {
+        LogHelper.e("SORT->", "setRecordAudioSource")
+        mStreamController?.setRecordAudioSource(recordAudioSource)
+
+    }
+
+    public fun setBgMusicSource(bgMusic: String) {}
 
     /**
      * 开始录制
      */
-    fun startRecord() {
+    fun startRecord(speed: Speed) {
+        LogHelper.e("SORT->", "startRecord")
         mStreamController?.start()
+    }
+
+    fun setPause() {
+        mStreamController?.pause()
+    }
+
+    fun setResume() {
+        mStreamController?.resume()
     }
 
     /**
@@ -77,7 +103,7 @@ public class AVRecordView<T : IFilter,G : GPUImageFilter> : AVCameraView<T,G> {
 
     override fun onSurfaceCreated(textureId: Int, eglContext: EGLContext) {
         super.onSurfaceCreated(textureId, eglContext)
-        mStreamController?.prepare(context,textureId,eglContext)
+        mStreamController?.prepare(context, textureId, eglContext)
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
@@ -86,15 +112,14 @@ public class AVRecordView<T : IFilter,G : GPUImageFilter> : AVCameraView<T,G> {
 
     override fun onDrawFrame(mMtx: FloatArray) {
         super.onDrawFrame(mMtx)
-
     }
+
 
     /**
      * 录制视频处理完成的纹理
      */
     override fun onRecordTextureId(showScreenTexture: Int, surfaceTexureTimestamp: Long) {
-        super.onRecordTextureId(showScreenTexture, getSurfaceTexureTimestamp())
-        mStreamController?.onRecordTexture(showScreenTexture,surfaceTexureTimestamp)
-
+        super.onRecordTextureId(showScreenTexture, surfaceTexureTimestamp)
+        mStreamController?.onRecordTexture(showScreenTexture, surfaceTexureTimestamp)
     }
 }

@@ -18,7 +18,7 @@ public interface IMuxer {
     /**
      * 初始化 复用器
      */
-    fun init(path: String, outType: Int)
+    fun init(path: String?, outType: Int)
 
     /**
      * 添加对应的流 返回流在内存中的索引

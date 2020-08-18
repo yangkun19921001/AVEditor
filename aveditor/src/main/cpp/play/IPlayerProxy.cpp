@@ -40,10 +40,12 @@ int IPlayerProxy::seekTo(double pos) {
 }
 
 void IPlayerProxy::close() {
+    LOGD("IPlayerProxy: close in");
     mux.lock();
     if (pPlayer)
         pPlayer->close();
     mux.unlock();
+    LOGD("IPlayerProxy: close in");
 }
 
 int IPlayerProxy::start() {
@@ -92,7 +94,6 @@ double IPlayerProxy::playPos() {
 void IPlayerProxy::setDataSource(const char *source) {
     this->url = new char[strlen(source) + 1];
     strcpy(this->url, source);
-
 }
 
 const char *IPlayerProxy::getDataSource() {
@@ -108,4 +109,10 @@ int64_t IPlayerProxy::getTotalDuration() {
     mux.unlock();
     return time;
 }
+
+ITransfer * IPlayerProxy::getTransferInstance() {
+    return pPlayer->transfer;
+}
+
+
 

@@ -27,7 +27,10 @@ class PlayActivity : AppCompatActivity() {
         setContentView(R.layout.activity_play)
         checkPermission();
 //        player_view.setDataSource("http://39.135.34.150:8080/000000001000/1000000001000009115/1.m3u8?channel-id=ystenlive&Contentid=1000000001000009115&livemode=1&stbId=005203FF000360100001001A34C0CD33&userToken=bd8bb70bdb2b54bd84b587dffa024f7621vv&usergroup=g21077200000&version=1.0&owaccmark=1000000001000009115&owchid=ystenlive&owsid=1106497909461209970&AuthInfo=yOLXJswzZFfV3FvB8MhHuElKGJKLbU5H0jB3qAhfSE7AORAoVDZDWbFnJ0sXJEaRJ1HPTMtmQf%2bVwcp8RojByB2Rhtn7waHVWUQ9gcJ0mHLEp3xuYtoWp3K%2bdNVn%2bMR4");
-        player_view.setDataSource("http://devyk.top/video/%E5%90%8E%E6%B5%AA.mp4");
+//        player_view.setDataSource("http://devyk.top/video/%E5%90%8E%E6%B5%AA.mp4");
+//        player_view.setDataSource("/sdcard/aveditor/123.h264");
+        player_view.setDataSource("sdcard/DCIM/Camera/test2.mp4");
+//        player_view.setDataSource("sdcard/aveditor/456.h264");
 //        player_view.setDataSource("sdcard/1080.mp4");
 //            )
         player_view.start()

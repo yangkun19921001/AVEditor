@@ -26,7 +26,7 @@ void IDecode::update(AVData data) {
 int IDecode::clear() {
     int ret = 0;
     //TODO ---- 音频模块这里会导致死锁,先暂时释放
-    if (isAudio){
+    if (isAudio) {
         packsMutex.unlock();
     }
 
@@ -59,13 +59,14 @@ void IDecode::main() {
         }
         //判断音视频同步
         if (!isAudio && synPts > 0) {
+            //TODO 这里要注意一样，更优解是
+            //1、如果视频的 pts 小于 音频的 pts 那么视频 pts 就 seek
+            //2、如果视频的 pts 大于 音频的 pts 那么需要丢帧
             if (synPts < pts) {
                 packsMutex.unlock();
-
                 sleep();
                 continue;
             }
-
         }
 
         if (packs.empty()) {

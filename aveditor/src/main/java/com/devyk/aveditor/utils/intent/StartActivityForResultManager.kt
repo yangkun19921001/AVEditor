@@ -1,11 +1,12 @@
-package com.devyk.ikavedit.utils.intent
+package com.devyk.aveditor.utils.intent
 
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.app.Fragment
+import android.app.FragmentManager
 import android.content.Intent
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentManager
-import com.tbruyelle.rxpermissions2.RxPermissions
-import com.tbruyelle.rxpermissions2.RxPermissionsFragment
+import android.os.Build
+
 
 /**
  * <pre>
@@ -26,9 +27,9 @@ public class StartActivityForResultManager {
     private var mForResultFragment: ForResultFragment? = null
 
 
-    constructor(activity: FragmentActivity) {
+    constructor(activity: Activity) {
 
-        this.mForResultFragment = this.getLazySingleton(activity.getSupportFragmentManager())
+        this.mForResultFragment = this.getLazySingleton(activity.fragmentManager)
     }
 
     constructor(fragment: Fragment) {
@@ -40,6 +41,7 @@ public class StartActivityForResultManager {
         return getForResultFragment(fragmentManager)
     }
 
+    @SuppressLint("NewApi")
     private fun getForResultFragment(fragmentManager: FragmentManager): ForResultFragment? {
         var forResultFragment: Fragment? = this.findResultFragmentFragment(fragmentManager)
         val isNewInstance = forResultFragment == null

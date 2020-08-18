@@ -46,6 +46,12 @@ protected:
     virtual IResample *createResample();
 
     /**
+    * 将解码完成的数据转移
+    * @return
+    */
+    virtual ITransfer *createTransfer();
+
+    /**
      * 创建视频播放模块
      * @return
      */

@@ -1,5 +1,6 @@
 package com.devyk.ikavedit.widget.dialog
 
+import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -54,6 +55,13 @@ abstract class BaseBottomSheetDialog : BottomSheetDialogFragment() {
         super.onCreate(savedInstanceState)
         setStyle(DialogFragment.STYLE_NORMAL, R.style.MyDialog)
         isCancelable = true
+
+    }
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        return (super.onCreateDialog(savedInstanceState) as BottomSheetDialog).apply {
+            setCanceledOnTouchOutside(true)
+        }
     }
 
     abstract fun getLayoutId(): Int

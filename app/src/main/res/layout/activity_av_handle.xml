@@ -57,7 +57,7 @@
                 android:id="@+id/select_music"
                 android:layout_marginTop="@dimen/dimen_20dp"
                 android:drawableLeft="@mipmap/note"
-                android:layout_width="wrap_content"
+                android:layout_width="@dimen/dimen_100dp"
                 android:layout_height="wrap_content"
                 android:text="@string/select_music"
                 android:textSize="@dimen/dimen_12sp"
@@ -65,7 +65,9 @@
                 android:drawablePadding="@dimen/dimen_2dp"
                 app:layout_constraintTop_toTopOf="@+id/line_progress_view"
                 app:layout_constraintLeft_toLeftOf="parent"
-                android:gravity="center_vertical"
+                android:gravity="center_vertical|center"
+                android:focusable="true"
+                android:singleLine="true"
                 app:layout_constraintRight_toRightOf="parent"
         />
 
@@ -217,6 +219,29 @@
                 android:layout_marginBottom="@dimen/dimen_10dp"/>
 
 
+        <com.devyk.ikavedit.widget.AnimImageView
+                android:id="@+id/record_done"
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/done"
+                android:layout_marginRight="@dimen/dimen_20dp"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@id/record_button"
+                app:layout_constraintBottom_toBottomOf="@id/record_button"/>
+
+        <com.devyk.ikavedit.widget.AnimImageView
+                android:id="@+id/record_delete"
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/delete"
+                android:layout_marginRight="24dp"
+                app:layout_constraintRight_toLeftOf="@id/record_done"
+                app:layout_constraintTop_toTopOf="@id/record_button"
+                app:layout_constraintBottom_toBottomOf="@id/record_button"/>
+
+
         <com.devyk.ikavedit.widget.CommonTabLayout
                 android:id="@+id/douyin_button_fun_tab"
                 android:layout_width="match_parent"
@@ -231,7 +256,8 @@
                 app:tl_indicator_width="@dimen/dimen_3dp"
                 app:tl_textSelectColor="@color/button_bg_select"
                 app:tl_textUnselectColor="@color/button_bg_unselect"
-                app:tl_textsize="@dimen/dimen_16sp" tools:ignore="MissingConstraints"/>
+                app:tl_textsize="@dimen/dimen_16sp"
+                tools:ignore="MissingConstraints"/>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

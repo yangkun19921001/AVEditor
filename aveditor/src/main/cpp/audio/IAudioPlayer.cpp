@@ -22,7 +22,6 @@ void IAudioPlayer::update(AVData data) {
 
 AVData IAudioPlayer::getData() {
     AVData d;
-
     isRuning = true;
     while (!isExit) {
         if (isPause()) {

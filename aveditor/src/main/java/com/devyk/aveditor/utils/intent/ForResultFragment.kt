@@ -1,8 +1,8 @@
-package com.devyk.ikavedit.utils.intent
+package com.devyk.aveditor.utils.intent
 
 import android.content.Intent
 import android.app.Activity.RESULT_OK
-
+import android.app.Fragment
 
 
 /**
@@ -14,7 +14,7 @@ import android.app.Activity.RESULT_OK
  *     desc    : This is ForResultFragment
  * </pre>
  */
-public class ForResultFragment : androidx.fragment.app.Fragment() {
+public class ForResultFragment : Fragment() {
 
     private var REQUEST_CODE = 0x001
     private var mListener: OnResultListener<Intent>? = null
@@ -30,16 +30,17 @@ public class ForResultFragment : androidx.fragment.app.Fragment() {
 
 
     // 打开系统的文件选择器
-    fun startActivityForResult(intent: Intent,listener: OnResultListener<Intent>) {
+    fun startActivityForResult(intent: Intent, listener: OnResultListener<Intent>) {
         this.mListener = listener
-       // specify "audio/mp3" to filter only mp3 files
-        startActivityForResult(intent,REQUEST_CODE)
+        // specify "audio/mp3" to filter only mp3 files
+        startActivityForResult(intent, REQUEST_CODE)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK && requestCode == REQUEST_CODE && data != null && data.data != null) {
-            mListener?.onResult(data) }
+            mListener?.onActivityResult(requestCode,resultCode,data)
         }
+    }
 
 }

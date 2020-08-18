@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -23,10 +24,21 @@
             android:layout_height="wrap_content"/>
 
 
+
+
     <com.devyk.ikavedit.widget.DYSeekBar
+            android:visibility="invisible"
             android:id="@+id/dy_seekbar"
-            android:layout_alignParentBottom="true"
             android:layout_width="match_parent"
-            android:layout_height="14dp"/>
+            android:max="100"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="@dimen/dimen_10dp"
+            android:layout_marginRight="@dimen/dimen_10dp"
+            app:dy_bg_color="@color/alpha_90_black"
+            app:dy_progress_color="@color/recordbutton_down_color"
+            app:dy_text_size="@dimen/dimen_12sp"
+            app:dy_text_color="@color/white"
+            app:dy_show_circle="true"
+            android:layout_height="@dimen/dimen_50dp"/>
 
 </RelativeLayout>

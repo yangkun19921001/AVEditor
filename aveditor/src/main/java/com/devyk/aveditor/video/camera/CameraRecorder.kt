@@ -67,7 +67,6 @@ public class CameraRecorder(context: Context, textureId: Int, eglContext: EGLCon
 
     public fun pause() {
         isPause = true
-
     }
 
     public fun resume() {
@@ -84,6 +83,7 @@ public class CameraRecorder(context: Context, textureId: Int, eglContext: EGLCon
         if (isStart() && !isPause)
             mHandler?.post {
                 mEGLUtils?.draw(showScreenTexture, surfaceTexureTimestamp)
+                drawEncode()
             }
     }
 

@@ -24,8 +24,8 @@ class VideoConfiguration private constructor(builder: Builder) {
     val ifi: Int
     val codeType: ICODEC
     val mime: String
-    var surface: Surface?=null
-    var spspps: ByteBuffer?=null
+    var surface: Surface? = null
+    var spspps: ByteBuffer? = null
 
     init {
         height = builder.height
@@ -91,12 +91,12 @@ class VideoConfiguration private constructor(builder: Builder) {
             return this
         }
 
-        fun setSurface(surface: Surface):Builder{
+        fun setSurface(surface: Surface): Builder {
             this.surface = surface;
             return this;
         }
 
-        fun setSpsPpsBuffer(buffer: ByteBuffer):Builder{
+        fun setSpsPpsBuffer(buffer: ByteBuffer): Builder {
             this.byteBuffer = buffer;
             return this;
         }
@@ -107,16 +107,16 @@ class VideoConfiguration private constructor(builder: Builder) {
     }
 
     companion object {
-        val DEFAULT_HEIGHT = 1280
-        val DEFAULT_WIDTH = 720
+        val DEFAULT_HEIGHT = 720
+        val DEFAULT_WIDTH = 1280
         val DEFAULT_FPS = 25
         val DEFAULT_MAX_BPS = 1800
         val DEFAULT_MIN_BPS = 400
         val DEFAULT_IFI = 2
-        val DEFAULT_MIME =  MediaFormat.MIMETYPE_VIDEO_AVC
+        val DEFAULT_MIME = MediaFormat.MIMETYPE_VIDEO_AVC
         val DEFAULT_MEDIA_CODEC = true
         val DEFAULT_CODEC_TYPE = ICODEC.ENCODE
-        val DEFAULT_SPS_PPS_BUFFER : ByteBuffer?= null
+        val DEFAULT_SPS_PPS_BUFFER: ByteBuffer? = null
         /**
          * 用于解码显示的 surface
          */

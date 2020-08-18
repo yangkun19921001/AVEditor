@@ -29,7 +29,7 @@ import com.devyk.aveditor.video.filter.helper.AVFilterType
  *     desc    : This is AVCameraView 相机处理 View
  * </pre>
  */
-public open class AVCameraView<T : IFilter, gpuImageFilter : GPUImageFilter> : GLSurfaceView,
+public open class AVCameraView : GLSurfaceView,
     AVEditorRenderer.OnRendererListener,
     SurfaceTexture.OnFrameAvailableListener {
 
@@ -37,6 +37,10 @@ public open class AVCameraView<T : IFilter, gpuImageFilter : GPUImageFilter> : G
     private var mPreviewWidth = 720
     private var mPreviewHeight = 1280
     private var mBack = true
+    private val mSpeed: Speed? = null//模式：快速/慢速/常速
+
+
+
 
     protected var mCameraOpenListener: ICameraOpenListener? = null
 
@@ -45,7 +49,7 @@ public open class AVCameraView<T : IFilter, gpuImageFilter : GPUImageFilter> : G
      */
     private var mCameraConfiguration = CameraConfiguration.createDefault()
 
-    protected lateinit var mRenderer: AVEditorRenderer<T, gpuImageFilter>
+    protected lateinit var mRenderer: AVEditorRenderer
 
 
     /**
@@ -165,12 +169,6 @@ public open class AVCameraView<T : IFilter, gpuImageFilter : GPUImageFilter> : G
     override fun onRecordTextureId(showScreenTexture: Int, surfaceTexureTimestamp: Long) {
     }
 
-    override fun getSurfaceTexureTimestamp(): Long {
-        mSurfaceTextureView?.let { surface ->
-            return surface.timestamp
-        }
-        return 0
-    }
 
     /**
      * 切换相机
@@ -195,7 +193,7 @@ public open class AVCameraView<T : IFilter, gpuImageFilter : GPUImageFilter> : G
      * 添加 GPUImage 滤镜
      */
     @Synchronized
-    fun setGPUImageFilter(filter: gpuImageFilter) {
+    fun <gpuImageFilter : GPUImageFilter> setGPUImageFilter(filter: gpuImageFilter) {
         queueEvent {
             mRenderer?.setGPUImageFilter(filter)
         }
@@ -209,9 +207,5 @@ public open class AVCameraView<T : IFilter, gpuImageFilter : GPUImageFilter> : G
         mRenderer?.addWatermark(watermark)
     }
 
-    private val mSpeed: Speed? = null//模式：快速/慢速/常速
-    private val mFrameIndex = 0//实际编码器渲染帧数
-    private var mFirstTime = 0L//第一帧渲染时间
-    private val mCurrPTS = 0L//当前正在渲染的帧的时间戳
-    private val mDrainIndex = 0//摄像头传递过来帧数
+
 }

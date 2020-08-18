@@ -63,9 +63,13 @@ public class AudioProcessor : ThreadImpl() {
         if (pause == true) {
             mRecordListener?.onPause()
         } else {
-            mLock.notifyAll()
+            // 恢复线程
+            synchronized(mLock) {
+                mLock.notifyAll()
+            }
             mRecordListener?.onResume()
         }
+
     }
 
 
@@ -102,18 +106,14 @@ public class AudioProcessor : ThreadImpl() {
         while (isRuning()) {
             val name = Thread.currentThread().name
             synchronized(mLock) {
-
                 if (isPause()) {
                     mLock.wait()
                 }
-
                 if (isMute()) {
                     Arrays.fill(data, 0)
                     mRecordListener?.onPcmData(data)
                     return@synchronized
                 }
-
-
                 if (AudioUtils.read(data.size, data) > 0) {
                     mRecordListener?.onPcmData(data)
                 }

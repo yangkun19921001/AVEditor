@@ -28,6 +28,7 @@ public class SplashActivity : BaseActivity<Int>() {
     override fun init() {
         Handler().postDelayed({
             startActivity(Intent(this@SplashActivity, MainActivity::class.java))
+//            startActivity(Intent(this@SplashActivity, PlayActivity::class.java))
             finish()
         }, mDelayMillis)
     }

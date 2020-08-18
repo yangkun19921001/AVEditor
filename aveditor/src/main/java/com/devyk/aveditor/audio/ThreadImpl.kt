@@ -46,6 +46,7 @@ public open class ThreadImpl : IThread {
     override fun setPause(pause: Boolean) {
         this.isPause = pause
         LogHelper.d(TAG, "thread pause:${pause}!")
+
     }
 
     /**

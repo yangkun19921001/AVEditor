@@ -29,9 +29,10 @@
 
         <activity android:name=".ui.activity.PlayActivity"></activity>
         <activity android:name=".ui.activity.MainActivity"></activity>
-        <activity android:name=".ui.activity.AVHandleActivity"
+        <activity android:name=".ui.activity.AVRecordActivity"
                   android:screenOrientation="portrait"
                  />
+        <activity android:name=".ui.activity.AVEditorActivity"/>
     </application>
 
     <!--android:configChanges="orientation|screenSize|keyboardHidden" android:screenOrientation="landscape"-->

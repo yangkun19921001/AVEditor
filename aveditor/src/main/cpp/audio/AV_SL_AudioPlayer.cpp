@@ -72,10 +72,12 @@ int AV_SL_AudioPlayer::startPlayer(AVParameter parameter) {
     SLDataFormat_PCM pcm = {
             SL_DATAFORMAT_PCM,
             (SLuint32) parameter.channels,//    声道数
-            (SLuint32) parameter.sample_rate * 1000,
+//            (SLuint32) parameter.sample_rate * 1000,
+            static_cast<SLuint32>(OpenSLSampleRate((SLuint32) parameter.sample_rate * 1000)),
             SL_PCMSAMPLEFORMAT_FIXED_16,
             SL_PCMSAMPLEFORMAT_FIXED_16,
-            SL_SPEAKER_FRONT_LEFT | SL_SPEAKER_FRONT_RIGHT,
+//            SL_SPEAKER_FRONT_LEFT | SL_SPEAKER_FRONT_RIGHT,
+            static_cast<SLuint32>(GetChannelMask(parameter.channels)),
             SL_BYTEORDER_LITTLEENDIAN //字节序，小端
     };
     SLDataSource ds = {&que, &pcm};
@@ -87,7 +89,7 @@ int AV_SL_AudioPlayer::startPlayer(AVParameter parameter) {
     re = (*eng)->CreateAudioPlayer(eng, &player, &ds, &audioSink, sizeof(ids) / sizeof(SLInterfaceID), ids, req);
     if (re != SL_RESULT_SUCCESS) {
         mux.unlock();
-        LOGE("CreateAudioPlayer failed!");
+        LOGE("CreateAudioPlayer failed! %d",re);
         return false;
     } else {
         LOGI("CreateAudioPlayer success!");
@@ -120,6 +122,7 @@ int AV_SL_AudioPlayer::startPlayer(AVParameter parameter) {
     LOGI("SLAudioPlay::StartPlay success!");
     return true;
 }
+
 
 void AV_SL_AudioPlayer::close() {
     IAudioPlayer::clear();
@@ -189,4 +192,65 @@ SLEngineItf AV_SL_AudioPlayer::createSL() {
     re = (*engineSL)->GetInterface(engineSL, SL_IID_ENGINE, &en);
     if (re != SL_RESULT_SUCCESS) return NULL;
     return en;
+}
+
+int AV_SL_AudioPlayer::OpenSLSampleRate(SLuint32 sampleRate) {
+    int samplesPerSec = SL_SAMPLINGRATE_44_1;
+    switch (sampleRate) {
+        case 8000:
+            samplesPerSec = SL_SAMPLINGRATE_8;
+            break;
+        case 11025:
+            samplesPerSec = SL_SAMPLINGRATE_11_025;
+            break;
+        case 12000:
+            samplesPerSec = SL_SAMPLINGRATE_12;
+            break;
+        case 16000:
+            samplesPerSec = SL_SAMPLINGRATE_16;
+            break;
+        case 22050:
+            samplesPerSec = SL_SAMPLINGRATE_22_05;
+            break;
+        case 24000:
+            samplesPerSec = SL_SAMPLINGRATE_24;
+            break;
+        case 32000:
+            samplesPerSec = SL_SAMPLINGRATE_32;
+            break;
+        case 44100:
+            samplesPerSec = SL_SAMPLINGRATE_44_1;
+            break;
+        case 48000:
+            samplesPerSec = SL_SAMPLINGRATE_48;
+            break;
+        case 64000:
+            samplesPerSec = SL_SAMPLINGRATE_64;
+            break;
+        case 88200:
+            samplesPerSec = SL_SAMPLINGRATE_88_2;
+            break;
+        case 96000:
+            samplesPerSec = SL_SAMPLINGRATE_96;
+            break;
+        case 192000:
+            samplesPerSec = SL_SAMPLINGRATE_192;
+            break;
+        default:
+            samplesPerSec = SL_SAMPLINGRATE_44_1;
+    }
+    return samplesPerSec;
+}
+
+int AV_SL_AudioPlayer::GetChannelMask(int channels) {
+    int channelMask = SL_SPEAKER_FRONT_CENTER;
+    switch (channels) {
+        case 1:
+            channelMask = SL_SPEAKER_FRONT_CENTER;
+            break;
+        case 2:
+            channelMask = SL_SPEAKER_FRONT_LEFT | SL_SPEAKER_FRONT_RIGHT;
+            break;
+    }
+    return channelMask;
 }

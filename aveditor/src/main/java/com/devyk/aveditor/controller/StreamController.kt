@@ -1,18 +1,27 @@
 package com.devyk.aveditor.controller
 
+import RtmpPacker
 import android.content.Context
 import android.media.MediaCodec
 import android.media.MediaFormat
 import android.opengl.EGLContext
+import android.provider.ContactsContract
 import com.devyk.aveditor.callback.IController
 import com.devyk.aveditor.config.AudioConfiguration
 import com.devyk.aveditor.config.VideoConfiguration
 import com.devyk.aveditor.stream.PacketType
 import com.devyk.aveditor.stream.packer.Packer
+import com.devyk.aveditor.stream.packer.PackerType
+import com.devyk.aveditor.stream.packer.mp4.MP4Packer
 import com.devyk.aveditor.stream.sender.Sender
+import com.devyk.aveditor.utils.FileUtils
 import com.devyk.aveditor.utils.LogHelper
+import java.io.File
 
 import java.nio.ByteBuffer
+import java.text.SimpleDateFormat
+import java.util.*
+import java.util.logging.SimpleFormatter
 
 /**
  * <pre>
@@ -30,10 +39,13 @@ public class StreamController : IController.OnAudioDataListener, IController.OnV
     private var TAG = javaClass.simpleName
 
 
+    private var recordAudioSource: String? = null
+
+
     /**
      * 音频数据的管理
      */
-    private var mAudioController: IController? = null
+    private var mAudioController: AudioController? = null
     /**
      * 视频数据的管理
      */
@@ -54,6 +66,7 @@ public class StreamController : IController.OnAudioDataListener, IController.OnV
      * 发送器
      */
     private var mSender: Sender? = null
+
 
     private var mContext: Context? = null
     private var mTextureId = 0
@@ -78,8 +91,27 @@ public class StreamController : IController.OnAudioDataListener, IController.OnV
     /**
      * 设置打包器
      */
-    fun setPacker(packer: Packer) {
-        this.mPacker = packer
+    fun setPacker(packer: PackerType, outPath: String? = getCurData()) {
+        this.mPacker = MP4Packer(outPath)
+        when (packer) {
+            PackerType.MP4 -> {
+                this.mPacker = MP4Packer(outPath)
+            }
+            PackerType.FLV -> {
+                this.mPacker = MP4Packer(outPath)
+            }
+            PackerType.RTMP -> {
+                this.mPacker = RtmpPacker()
+            }
+        }
+    }
+
+    private fun getCurData(fileType:String?="mp4"): String? {
+        val filePath = "${mContext?.cacheDir}${File.separator}${SimpleDateFormat("yyyy-MM-dd-HH:mm:ss").format(Date())}/.${fileType}"
+        var exists = FileUtils.createFileByDeleteOldFile(
+            "${mContext?.cacheDir}${File.separator}${SimpleDateFormat("yyyy-MM-dd-HH:mm:ss").format(Date())}/.${fileType}"
+        )
+        return if (exists) filePath else null
     }
 
     /**
@@ -104,6 +136,10 @@ public class StreamController : IController.OnAudioDataListener, IController.OnV
 
     ) {
         mContext?.let { context ->
+            if (mPacker == null) {
+                setPacker(PackerType.MP4)
+            }
+
             mAudioController = AudioController(mAudioConfiguration)
             mVideoController = VideoController(context, mTextureId, mEGLContext, mVideoConfiguration)
             mPacker?.setPacketListener(this)
@@ -114,10 +150,13 @@ public class StreamController : IController.OnAudioDataListener, IController.OnV
     }
 
     fun start() {
+        LogHelper.e("SORT->", "start")
         if (mAudioController == null || mVideoController == null)
             init()
+        mAudioController?.setRecordAudioSource(recordAudioSource)
         mAudioController?.start()
         mVideoController?.start()
+
 
     }
 
@@ -201,5 +240,12 @@ public class StreamController : IController.OnAudioDataListener, IController.OnV
         mVideoController?.onRecordTexture(showScreenTexture, surfaceTexureTimestamp)
     }
 
+    /**
+     * 设置录制音频的音频源，支持任意音频
+     */
+    fun setRecordAudioSource(recordAudioSource: String?) {
+        LogHelper.e("SORT->", "mAudioController setRecordAudioSource")
+        this.recordAudioSource = recordAudioSource
 
+    }
 }

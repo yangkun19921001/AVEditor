@@ -6,6 +6,7 @@
 #define IAVEDIT_IRESAMPLE_H
 
 
+#include <libavutil/samplefmt.h>
 #include "base/IObserver.h"
 
 /**

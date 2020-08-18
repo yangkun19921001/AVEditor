@@ -16,5 +16,12 @@
     <string name="camera_count_down">倒数</string>
     <string name="camera_tools">道具</string>
     <string name="camera_phone_album">相册</string>
-    <string name="select_music">选择音乐</string>
+    <string name="select_music">选择录制音乐</string>
+    <string name="next">下一步</string>
+    <string name="select_bg_music">选配乐</string>
+    <string name="effect">特效</string>
+    <string name="txt">文字</string>
+    <string name="sticker">贴纸</string>
+    <string name="clip">剪辑</string>
+    <string name="change_sound">变声</string>
 </resources>

@@ -50,13 +50,15 @@ public interface Packer {
     fun onVideoOutformat(outputFormat: MediaFormat?) {
         //统一获取
         //下面是获取 SPS PPS 为了
-        val spsb = outputFormat?.getByteBuffer("csd-0")
-        var sps = ByteArray(spsb!!.remaining())
-        spsb!!.get(sps, 0, sps.size)
-        val ppsb = outputFormat.getByteBuffer("csd-1")
-        var pps = ByteArray(ppsb!!.remaining())
-        ppsb!!.get(pps, 0, pps.size)
-        onVideoSpsPpsData(sps, pps, PacketType.SPS_PPS)
+//        val spsb = outputFormat?.getByteBuffer("csd-0")
+//        spsb?.let { sps ->
+//            var sps = ByteArray(spsb!!.remaining())
+//            spsb!!.get(sps, 0, sps.size)
+//            val ppsb = outputFormat.getByteBuffer("csd-1")
+//            var pps = ByteArray(ppsb!!.remaining())
+//            ppsb!!.get(pps, 0, pps.size)
+//            onVideoSpsPpsData(sps, pps, PacketType.SPS_PPS)
+//        }
     }
 
     /**

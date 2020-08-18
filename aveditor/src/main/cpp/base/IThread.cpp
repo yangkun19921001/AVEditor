@@ -44,6 +44,8 @@ int IThread::isPause() {
 }
 
 
+
+
 void IThread::threadMain() {
     LOGE("线程函数进入");
     isRuning = true;

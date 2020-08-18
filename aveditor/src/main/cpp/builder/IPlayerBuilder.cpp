@@ -29,9 +29,14 @@ IPlayer *IPlayerBuilder::builderPlayer(unsigned char index) {
     IResample *resample = createResample();
     adecode->registers(resample);
 
+    //传输层订阅解码完成的音频数据
+    ITransfer *transfer = createTransfer();
+    resample->registers(transfer);
+
     //音频播放观察重采样之后的数据
     IAudioPlayer *audioPlay = createAudioPlayer();
     resample->registers(audioPlay);
+
 
     play->demux = de;
     play->adecode = adecode;
@@ -39,5 +44,8 @@ IPlayer *IPlayerBuilder::builderPlayer(unsigned char index) {
     play->videoView = view;
     play->resample = resample;
     play->audioPlay = audioPlay;
+    play->transfer = transfer;
     return play;
 }
+
+

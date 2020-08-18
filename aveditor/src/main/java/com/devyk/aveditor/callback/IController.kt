@@ -30,6 +30,7 @@ public interface IController {
     fun setVideoBps(bps:Int){}
 
 
+
     public interface OnAudioDataListener {
         /**
          * 当 Audio 编码数据的时候
@@ -40,6 +41,7 @@ public interface IController {
          * 编码的输出格式
          */
         fun onAudioOutformat(outputFormat: MediaFormat?)
+
 
         fun onError(error:String?);
 

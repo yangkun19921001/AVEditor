@@ -30,6 +30,6 @@ object ThreadUtils {
     }
 
     fun <T> runChildThread(body: () -> T) {
-        mThreadPoolExecutor.addTask(body().hashCode().toString(), Runnable { body() })
+        mThreadPoolExecutor.addTask(body().hashCode().toString(), Runnable { body })
     }
 }

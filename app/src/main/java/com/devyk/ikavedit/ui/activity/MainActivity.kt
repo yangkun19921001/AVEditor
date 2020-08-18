@@ -16,7 +16,6 @@ import com.flyco.tablayout.listener.CustomTabEntity
 import com.flyco.tablayout.listener.OnTabSelectListener
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.ArrayList
-import android.widget.Toast
 import com.devyk.ikavedit.R
 import com.devyk.ikavedit.widget.AnimTextView
 
@@ -100,7 +99,7 @@ public class MainActivity : BaseActivity<Int>() {
 
         video_handle.addOnClickListener (500,object :AnimTextView.OnClickListener{
             override fun onClick(v: View) {
-                startActivity(Intent(applicationContext, AVHandleActivity::class.java))
+                startActivity(Intent(applicationContext, AVRecordActivity::class.java))
                 overridePendingTransition(R.anim.pp_bottom_in, R.anim.no_anim)
             }
         })
@@ -121,5 +120,10 @@ public class MainActivity : BaseActivity<Int>() {
         override fun getPageTitle(position: Int): CharSequence? {
             return mTitles[position]
         }
+    }
+
+
+    override fun onResume() {
+        super.onResume()
     }
 }

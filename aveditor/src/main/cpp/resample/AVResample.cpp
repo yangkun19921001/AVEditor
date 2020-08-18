@@ -5,6 +5,10 @@
 #include "AVResample.h"
 
 bool AVResample::open(AVParameter in, AVParameter out) {
+    if (in.channels == -1 || in.sample_rate == -1 || in.format == -1 || out.channels == -1 || out.sample_rate == -1 || out.format == -1
+    ){
+        return false;
+    }
     close();
     mux.lock();
     //音频重采样上下文初始化
@@ -62,6 +66,7 @@ AVData AVResample::resample(AVData indata) {
         out.drop();
         return AVData();
     }
+    out.isAudio = true;
     out.pts = indata.pts;
     mux.unlock();
     return out;

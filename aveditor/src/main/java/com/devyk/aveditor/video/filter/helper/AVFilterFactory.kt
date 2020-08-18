@@ -16,7 +16,7 @@ import com.devyk.aveditor.video.filter.magic.*
  *     desc    : This is AVFilterFactory
  * </pre>
  */
-public class AVFilterFactory<T : GPUImageFilter> {
+public class AVFilterFactory{
 
     companion object {
         private var filterType = AVFilterType.NONE

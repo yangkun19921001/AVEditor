@@ -15,7 +15,7 @@ import java.nio.ByteBuffer
  *     desc    : This is BaseMediaMuxer
  * </pre>
  */
-public open class BaseMediaMuxer(path: String, outType: Int) : IMuxer {
+public open class BaseMediaMuxer(path: String?, outType: Int) : IMuxer {
 
 
     protected var mMeidaMuxer: MediaMuxer? = null
@@ -28,7 +28,7 @@ public open class BaseMediaMuxer(path: String, outType: Int) : IMuxer {
         init(path, outType)
     }
 
-    final override fun init(path: String, outType: Int) {
+    final override fun init(path: String?, outType: Int) {
         checkNotNull(path)
         mMeidaMuxer = MediaMuxer(path, outType)
         isStart = false
@@ -46,6 +46,11 @@ public open class BaseMediaMuxer(path: String, outType: Int) : IMuxer {
     }
 
     public fun isStart(): Boolean? = isStart
+
+
+    public fun setStart(start:Boolean){
+        isStart = start
+    }
 
     override fun release() {
         if (!isStart()!!) return

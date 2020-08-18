@@ -52,8 +52,8 @@ public class AudioMediaCodec {
             //采样率
             format.setInteger(MediaFormat.KEY_SAMPLE_RATE, configuration.frequency)
             //缓冲区大小
-            val maxInputSize =
-                AudioUtils.getMinBufferSize(configuration.frequency, configuration.channelCount, configuration.encoding)
+            val maxInputSize = 1024 * 1024
+//                AudioUtils.getMinBufferSize(configuration.frequency, configuration.channelCount, configuration.encoding)
             //最大的缓冲区
             format.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, maxInputSize)
             //通道数量

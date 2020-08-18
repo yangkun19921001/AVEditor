@@ -12,6 +12,6 @@ import com.devyk.aveditor.muxer.BaseMediaMuxer
  *     desc    : This is MakeMP4
  * </pre>
  */
-public class MakeMP4Packer(path: String, outType: Int = MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4) :
+public class MakeMP4Packer(path: String?, outType: Int = MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4) :
     BaseMediaMuxer(path, outType) {
 }

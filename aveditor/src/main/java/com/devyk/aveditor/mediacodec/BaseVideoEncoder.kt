@@ -15,6 +15,7 @@ import com.devyk.aveditor.entity.Speed
 
 
 import java.util.concurrent.locks.ReentrantLock
+import kotlin.experimental.and
 
 /**
  * <pre>
@@ -31,16 +32,21 @@ import java.util.concurrent.locks.ReentrantLock
 public abstract class BaseVideoEncoder : IVideoCodec {
 
     private var mMediaCodec: MediaCodec? = null
-    private var mPause: Boolean = false
+    protected var mPause: Boolean = false
     private var mHandlerThread: HandlerThread? = null
     protected var mEncoderHandler: Handler? = null
     protected var mConfiguration = VideoConfiguration.createDefault()
-    private var mBufferInfo: MediaCodec.BufferInfo? = null
+    private var mBufferInfo = MediaCodec.BufferInfo()
     @Volatile
     private var isStarted: Boolean = false
     private val encodeLock = ReentrantLock()
     private lateinit var mSurface: Surface
     public val TAG = this.javaClass.simpleName
+    private val IDR = 5
+    private val SPS = 7
+    private val BYTES_HEADER = byteArrayOf(0, 0, 0, 1)
+
+    private var mNewFormat: MediaFormat? = null
 
 
     protected var mPts = 0L
@@ -48,8 +54,8 @@ public abstract class BaseVideoEncoder : IVideoCodec {
     /**
      * 播放速度
      */
-    private var mSpeed=  Speed.NORMAL.value
-    private var lastTimsUs: Long = 0
+    private var mSpeed = Speed.NORMAL.value
+    private var prevOutputPTSUs: Long = 0
 
     /**
      * 准备硬编码工作
@@ -93,15 +99,20 @@ public abstract class BaseVideoEncoder : IVideoCodec {
         mHandlerThread?.run {
             this.start()
             mEncoderHandler = Handler(getLooper())
-            mBufferInfo = MediaCodec.BufferInfo()
+//            mBufferInfo = MediaCodec.BufferInfo()
             //必须在  mMediaCodec?.start() 之前
             mSurface = mMediaCodec!!.createInputSurface()
             mMediaCodec?.start()
-            mEncoderHandler?.post(swapDataRunnable)
+
             isStarted = true
             //必须在  mMediaCodec?.start() 之后
             onSurfaceCreate(mSurface)
         }
+    }
+
+
+    public fun loopEncode() {
+        mEncoderHandler?.post(swapDataRunnable)
     }
 
     /**
@@ -115,14 +126,17 @@ public abstract class BaseVideoEncoder : IVideoCodec {
      */
     override fun stop() {
         if (!isStarted) return
+        encodeLock.lock()
         isStarted = false
         mEncoderHandler?.removeCallbacks(swapDataRunnable)
         mHandlerThread?.quit()
-        encodeLock.lock()
         //提交一个空的缓冲区
         mMediaCodec?.signalEndOfInputStream()
         releaseEncoder()
         encodeLock.unlock()
+//
+//        if (!RecordSemaphore.isStart)
+//            RecordSemaphore.mSemaphore.release(1)
     }
 
     /**
@@ -154,7 +168,7 @@ public abstract class BaseVideoEncoder : IVideoCodec {
      * 解码函数
      */
     private fun drainEncoder() {
-        val outBuffers = mMediaCodec?.getOutputBuffers()
+        var outBuffers = mMediaCodec?.getOutputBuffers()
         if (!isStarted) {
             // if not running anymore, complete stream
             mMediaCodec?.signalEndOfInputStream()
@@ -165,41 +179,160 @@ public abstract class BaseVideoEncoder : IVideoCodec {
                 val outBufferIndex = mMediaCodec?.dequeueOutputBuffer(mBufferInfo!!, 12000)
 
 
+
                 if (outBufferIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
                     onVideoOutformat(mMediaCodec?.outputFormat)
                 }
 
-                if (outBufferIndex!! >= 0) {
-                    val bb = outBuffers!![outBufferIndex]
-                    if (mPts == 0L)
-                        mPts = System.nanoTime() / 1000 /mSpeed.toLong();
+                if (outBufferIndex!! < 0) {
+                    Thread.sleep(10)
+                    encodeLock.unlock()
+                    continue
+                }
 
-                    mBufferInfo!!.presentationTimeUs = System.nanoTime() / 1000 / mSpeed.toLong() - mPts;
+                val bb = outBuffers!![outBufferIndex!!]
 
 
-                    LogHelper.e(TAG, "视频时间戳：${mBufferInfo!!.presentationTimeUs / 1000_000}")
+                if (mBufferInfo.size != 0) {
+                    if (mBufferInfo.flags == MediaCodec.BUFFER_FLAG_END_OF_STREAM && mBufferInfo.presentationTimeUs < 0) {
+                        mBufferInfo.presentationTimeUs = 0
+                    }
+                    LogHelper.e(
+                        TAG,
+                        "视频时间戳：${mBufferInfo!!.presentationTimeUs} ---> ${mBufferInfo!!.presentationTimeUs / 1000_000}"
+                    )
                     if (!mPause) {
                         onVideoEncode(bb, mBufferInfo!!)
                     }
+                    prevOutputPTSUs = mBufferInfo.presentationTimeUs
                     mMediaCodec?.releaseOutputBuffer(outBufferIndex, false)
-                } else {
-                    try {
-                        // wait 10ms
-                        Thread.sleep(10)
-                    } catch (e: InterruptedException) {
-                        e.printStackTrace()
-                    }
-
                 }
                 encodeLock.unlock()
             } else {
                 encodeLock.unlock()
                 break
             }
+
         }
     }
 
-    public fun isStart():Boolean = isStarted
+
+    /**
+     * 绘制
+     */
+    public fun drawEncode() {
+        encodeLock.lock()
+        var outBuffers = mMediaCodec?.getOutputBuffers()
+        if (!isStarted) {
+            // if not running anymore, complete stream
+            mMediaCodec?.signalEndOfInputStream()
+        }
+
+        if (mMediaCodec != null) {
+            val outBufferIndex = mMediaCodec?.dequeueOutputBuffer(mBufferInfo!!, 12000)
+
+
+
+            if (outBufferIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
+                onVideoOutformat(mMediaCodec?.outputFormat)
+            }
+
+            if (outBufferIndex!! < 0) {
+                Thread.sleep(10)
+                encodeLock.unlock()
+                return
+            }
+
+            val bb = outBuffers!![outBufferIndex!!]
+
+            // config data sps/pps
+            if ((mBufferInfo.flags and MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0) {
+                // The codec config_ data was pulled out when we got the
+                // INFO_OUTPUT_FORMAT_CHANGED status. The MediaMuxer won't
+                // accept
+                // a single big blob -- it wants separate csd-0/csd-1 chunks --
+                // so simply saving this off won't work.
+                if (mBufferInfo.size != 0) {
+                    if (!mPause) {
+                        onVideoEncode(bb, mBufferInfo!!)
+                    }
+                    mBufferInfo.size = 0
+                }
+            }
+
+            if (mBufferInfo.size != 0 && mBufferInfo.presentationTimeUs > prevOutputPTSUs) {
+                LogHelper.e(
+                    TAG,
+                    "视频时间戳：${mBufferInfo!!.presentationTimeUs} ---> ${mBufferInfo!!.presentationTimeUs / 1000_000}"
+                )
+                if (!mPause) {
+                    onVideoEncode(bb, mBufferInfo!!)
+                }
+                prevOutputPTSUs = mBufferInfo.presentationTimeUs
+                mMediaCodec?.releaseOutputBuffer(outBufferIndex, false)
+            }
+        }
+        encodeLock.unlock()
+    }
+
+
+    private fun isH264StartCode(code: Int): Boolean {
+        return code == 0x01
+    }
+
+    private fun isH264StartCodePrefix(code: Int): Boolean {
+        return code == 0x00
+    }
+
+    private fun findAnnexbStartCodecIndex(data: ByteArray, offset: Int): Int {
+        var index = offset
+        var cursor = offset
+        while (cursor < data.size) {
+            val code = data[cursor++].toInt()
+            if (isH264StartCode(code) && cursor >= 3) {
+                val firstPrefixCode = data[cursor - 3].toInt()
+                val secondPrefixCode = data[cursor - 2].toInt()
+                if (isH264StartCodePrefix(firstPrefixCode) && isH264StartCodePrefix(secondPrefixCode)) {
+                    break
+                }
+            }
+        }
+        index = cursor
+        return index
+    }
+
+    private fun splitIDRFrame(h264Data: ByteArray): ByteArray {
+        var result = h264Data
+        var offset = 0
+        do {
+            offset = findAnnexbStartCodecIndex(h264Data, offset)
+            val naluSpecIndex = offset
+            if (naluSpecIndex < h264Data.size) {
+                val naluType = (h264Data[naluSpecIndex] and 0x1F).toInt()
+                if (naluType == IDR) {
+                    val idrFrameLength = h264Data.size - naluSpecIndex + 4
+                    result = ByteArray(idrFrameLength)
+                    System.arraycopy(BYTES_HEADER, 0, result, 0, 4)
+                    System.arraycopy(h264Data, naluSpecIndex, result, 4, idrFrameLength - 4)
+                    break
+                }
+            }
+        } while (offset < h264Data.size)
+        return result
+    }
+
+
+    protected fun getPTSUs(): Long {
+        var result = System.nanoTime() / 1000L
+        // presentationTimeUs should be monotonic
+        // otherwise muxer fail to write
+        if (result < prevOutputPTSUs) {
+            result = prevOutputPTSUs - result + result
+        }
+        return result
+    }
+
+    public fun isStart(): Boolean = isStarted
 
     abstract fun onVideoOutformat(outputFormat: MediaFormat?)
 

@@ -6,9 +6,16 @@ import com.devyk.aveditor.audio.AudioProcessor
 import com.devyk.aveditor.callback.IController
 import com.devyk.aveditor.callback.OnAudioEncodeListener
 import com.devyk.aveditor.config.AudioConfiguration
+import com.devyk.aveditor.decode.FFmpegAudioDecode
+import com.devyk.aveditor.decode.IAudioDecode
+import com.devyk.aveditor.jni.IMusicDecode
 import com.devyk.aveditor.mediacodec.AudioEncoder
+import com.devyk.aveditor.utils.LogHelper
+import com.devyk.aveditor.utils.ThreadUtils
 
 import java.nio.ByteBuffer
+
+
 
 /**
  * <pre>
@@ -21,7 +28,7 @@ import java.nio.ByteBuffer
  */
 
 public class AudioController(audioConfiguration: AudioConfiguration) : IController, AudioProcessor.OnRecordListener,
-    OnAudioEncodeListener {
+    OnAudioEncodeListener, IMusicDecode.OnDecodeListener {
 
 
     /**
@@ -40,6 +47,17 @@ public class AudioController(audioConfiguration: AudioConfiguration) : IControll
     private lateinit var mAudioProcessor: AudioProcessor
 
     /**
+     * 从一个 Mp4,MP3 等文件中解码拿到 PCM 数据
+     */
+    private lateinit var mAudioDecode: IAudioDecode
+
+
+    /**
+     * 录制音频源，可以是一个本地文件，也可以是一个网络文件
+     */
+    private var mRecordAudioSource: String? = null
+
+    /**
      * 音频数据的监听
      */
     private var mAudioDataListener: IController.OnAudioDataListener? = null
@@ -49,6 +67,7 @@ public class AudioController(audioConfiguration: AudioConfiguration) : IControll
         mAudioConfiguration = audioConfiguration
         mAudioProcessor = AudioProcessor()
         mAudioEncoder = AudioEncoder(mAudioConfiguration)
+        mAudioDecode = FFmpegAudioDecode()
         mAudioProcessor.init(
             mAudioConfiguration.audioSource,
             mAudioConfiguration.frequency,
@@ -56,6 +75,7 @@ public class AudioController(audioConfiguration: AudioConfiguration) : IControll
         )
         mAudioProcessor.addRecordListener(this)
         mAudioEncoder.setOnAudioEncodeListener(this)
+        mAudioDecode.addOnDecodeListener(this)
     }
 
 
@@ -63,6 +83,12 @@ public class AudioController(audioConfiguration: AudioConfiguration) : IControll
      * 触发 开始
      */
     override fun start() {
+        LogHelper.e("SORT->","start mRecordAudioSource")
+        mRecordAudioSource?.let {
+            mAudioDecode.addRecordMusic(it)
+            mAudioDecode.start()
+            return
+        }
         mAudioProcessor.startRcording()
     }
 
@@ -70,6 +96,10 @@ public class AudioController(audioConfiguration: AudioConfiguration) : IControll
      * 触发 暂停
      */
     override fun pause() {
+        mRecordAudioSource?.let {
+            mAudioDecode.pause()
+            return
+        }
         mAudioProcessor.setPause(true)
     }
 
@@ -77,6 +107,10 @@ public class AudioController(audioConfiguration: AudioConfiguration) : IControll
      * 触发恢复
      */
     override fun resume() {
+        mRecordAudioSource?.let {
+            mAudioDecode.resume()
+            return
+        }
         mAudioProcessor.setPause(false)
     }
 
@@ -84,6 +118,10 @@ public class AudioController(audioConfiguration: AudioConfiguration) : IControll
      * 触发停止
      */
     override fun stop() {
+        mRecordAudioSource?.let {
+            mAudioDecode.stop()
+            return
+        }
         mAudioProcessor.stop()
 
     }
@@ -100,6 +138,7 @@ public class AudioController(audioConfiguration: AudioConfiguration) : IControll
      */
     override fun onStart(sampleRate: Int, channels: Int, sampleFormat: Int) {
         mAudioEncoder?.start()
+
     }
 
     /**
@@ -136,6 +175,31 @@ public class AudioController(audioConfiguration: AudioConfiguration) : IControll
      */
     override fun onAudioOutformat(outputFormat: MediaFormat?) {
         mAudioDataListener?.onAudioOutformat(outputFormat)
+    }
+
+    fun setRecordAudioSource(recordAudioSource: String?) {
+        LogHelper.e("SORT->","mRecordAudioSource setRecordAudioSource")
+        mRecordAudioSource = recordAudioSource
+
+    }
+
+
+    override fun onDecodeStart(sampleRate: Int, channels: Int, sampleFormat: Int) {
+        val build = AudioConfiguration.Builder().setChannelCount(channels).setFrequency(sampleRate).build()
+        mAudioEncoder.setAudioConfiguration(build)
+        mAudioEncoder?.start()
+    }
+
+    /**
+     * 这里是 C++ 解码传递过来的
+     */
+    override fun onDecodeData(data: ByteArray) {
+        mAudioEncoder?.enqueueCodec(data)
+
+    }
+
+    override fun onDecodeStop() {
+        mAudioEncoder?.stop()
     }
 
     override fun setAudioDataListener(audioDataListener: IController.OnAudioDataListener) {

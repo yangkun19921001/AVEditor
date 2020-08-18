@@ -1,5 +1,7 @@
 package com.devyk.aveditor
 
+import java.util.concurrent.Semaphore
+
 /**
  * <pre>
  *     author  : devyk on 2020-07-15 21:44
@@ -16,4 +18,7 @@ public object Contacts {
     var RTMP_SET_URL_ERROR = -10
     //连接服务器失败
     var RTMP_CONNECT_ERROR = -11
+
+
+
 }

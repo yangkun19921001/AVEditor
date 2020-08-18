@@ -61,13 +61,22 @@ abstract class BaseActivity<T> : AppCompatActivity() {
 
     }
 
-    abstract fun initListener()
 
-    abstract fun initData()
+    abstract fun getLayoutId(): T
+
 
     abstract fun init()
 
-    abstract fun getLayoutId(): T
+    abstract fun initData()
+
+
+    abstract fun initListener()
+
+
+
+
+
+
 
 
     protected fun setNotTitleBar() {

@@ -18,7 +18,7 @@ import java.nio.ByteBuffer
  *     desc    : This is BaseCoder
  * </pre>
  */
-abstract class BaseAudioCodec(private val mAudioConfiguration: AudioConfiguration?) : IAudioCodec {
+abstract class BaseAudioCodec(private var mAudioConfiguration: AudioConfiguration?) : IAudioCodec {
     private var mMediaCodec: MediaCodec? = null
 
 
@@ -31,13 +31,17 @@ abstract class BaseAudioCodec(private val mAudioConfiguration: AudioConfiguratio
      * 播放速度
      */
     private var mSpeed = Speed.NORMAL.value
-    private var lastTimsUs: Long = 0
+    private var prevOutputPTSUs: Long = 0
+    private var mNewFormat: MediaFormat? = null
 
     /**
      * 编码完成的函数自己不处理，交由子类处理
      */
     abstract fun onAudioData(bb: ByteBuffer, bi: MediaCodec.BufferInfo);
 
+    public fun setAudioConfiguration(audioConfiguration: AudioConfiguration) {
+        mAudioConfiguration = audioConfiguration
+    }
 
     @Synchronized
     override fun start() {
@@ -55,7 +59,7 @@ abstract class BaseAudioCodec(private val mAudioConfiguration: AudioConfiguratio
             return
         }
         val inputBuffers = mMediaCodec!!.inputBuffers
-        val outputBuffers = mMediaCodec!!.outputBuffers
+        var outputBuffers = mMediaCodec!!.outputBuffers
         val inputBufferIndex = mMediaCodec!!.dequeueInputBuffer(12000)
 
         if (inputBufferIndex >= 0) {
@@ -64,26 +68,23 @@ abstract class BaseAudioCodec(private val mAudioConfiguration: AudioConfiguratio
             inputBuffer.put(input)
             mMediaCodec!!.queueInputBuffer(inputBufferIndex, 0, input!!.size, 0, 0)
         }
-
         var outputBufferIndex = mMediaCodec!!.dequeueOutputBuffer(mBufferInfo, 12000)
         if (outputBufferIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
             onAudioOutformat(mMediaCodec?.outputFormat)
         }
 
-
-
         while (outputBufferIndex >= 0) {
-            val outputBuffer = outputBuffers[outputBufferIndex]
-
-            if (mPts == 0L)
-                mPts = System.nanoTime() / 1000 / mSpeed.toLong();
-
-            mBufferInfo!!.presentationTimeUs = System.nanoTime() / 1000 / mSpeed.toLong() - mPts;
-
-            LogHelper.e(TAG, "音频时间戳：${mBufferInfo!!.presentationTimeUs}")
-            onAudioData(outputBuffer, mBufferInfo)
-            mMediaCodec!!.releaseOutputBuffer(outputBufferIndex, false)
-            outputBufferIndex = mMediaCodec!!.dequeueOutputBuffer(mBufferInfo, 0)
+            val outputBuffer = outputBuffers?.get(outputBufferIndex)
+            outputBuffer?.let { outputBuffer ->
+                if (mBufferInfo.size != 0) {
+                    mBufferInfo.presentationTimeUs = getPTSUs()
+                    LogHelper.e(TAG, "音频时间戳：${mBufferInfo!!.presentationTimeUs / 1000_000}")
+                    onAudioData(outputBuffer, mBufferInfo)
+                    prevOutputPTSUs = mBufferInfo.presentationTimeUs
+                    mMediaCodec!!.releaseOutputBuffer(outputBufferIndex, false)
+                    outputBufferIndex = mMediaCodec!!.dequeueOutputBuffer(mBufferInfo, 0)
+                }
+            }
         }
     }
 
@@ -99,6 +100,15 @@ abstract class BaseAudioCodec(private val mAudioConfiguration: AudioConfiguratio
         }
     }
 
+    protected fun getPTSUs(): Long {
+        var result = System.nanoTime() / 1000L
+        // presentationTimeUs should be monotonic
+        // otherwise muxer fail to write
+        if (result < prevOutputPTSUs) {
+            result = prevOutputPTSUs - result + result
+        }
+        return result
+    }
 
     /**
      * 获取输出的格式

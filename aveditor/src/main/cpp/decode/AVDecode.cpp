@@ -4,6 +4,9 @@
 
 #include "AVDecode.h"
 
+
+FILE *file = 0;
+
 void AVDecode::initMediaCodec(void *vm) {
     av_jni_set_java_vm(vm, 0);
 }
@@ -70,12 +73,25 @@ int AVDecode::open(AVParameter par, int isMediaCodec) {
     this->pCodec = avcodec_alloc_context3(codec);
     //将解码器设置解码参数
     ret = avcodec_parameters_to_context(this->pCodec, parameters);
+//    ret =  avcodec_parameters_from_context(parameters, this->pCodec);
     if (ret < 0) {
         mux.unlock();
         close();
         LOGE("avcodec_parameters_to_context error! %d", ret);
         return false;
     }
+    //打印解码信息
+    LOGE("-------------------解码信息-------------------\n");
+    LOGE("width:%d \n", pCodec->width);
+    LOGE("height:%d \n", pCodec->height);
+    LOGE("rate:%d \n", pCodec->bit_rate);
+    LOGE("pix_fmt:%d \n", pCodec->pix_fmt);
+    LOGE("channels:%d \n", pCodec->channels);
+    LOGE("sample_rate:%d \n", pCodec->sample_rate);
+    LOGE("codec_id:%d \n", pCodec->codec_id);
+    LOGE("-------------------解码信息-------------------\n");
+
+
     //指定多线程解码数量
     pCodec->thread_count = 4;
     //打开解码器
@@ -85,15 +101,20 @@ int AVDecode::open(AVParameter par, int isMediaCodec) {
         av_strerror(ret, buf, sizeof(buf) - 1);
         LOGE("%s", buf);
         mux.unlock();
+        return false;
     }
     if (pCodec->codec_type == AVMEDIA_TYPE_VIDEO) {
         this->isAudio = false;
     } else {
         this->isAudio = true;
     }
+
+    //时间基
+    timebase = par.timebase;
     LOGI("avcodec_open2 open success! 是否是音频解码器: %d", this->isAudio);
+//    file = fopen("sdcard/aveditor/test2.yuv", "wb");
     mux.unlock();
-    return ret;
+    return true;
 }
 
 int AVDecode::close() {
@@ -127,6 +148,8 @@ int AVDecode::sendPacket(AVData data) {
         mux.unlock();
         return false;
     }
+
+
     int ret = avcodec_send_packet(pCodec, reinterpret_cast<const AVPacket *>(data.data));
     mux.unlock();
     return ret == 0 ? 1 : 0;
@@ -157,9 +180,18 @@ AVData AVDecode::getDecodeFrame() {
         deData.size = (pFrame->linesize[0] + pFrame->linesize[1] + pFrame->linesize[2]) * pFrame->height;
         deData.width = pFrame->width;
         deData.height = pFrame->height;
+        deData.pts = pFrame->pts;
+        pts = deData.pts;
         deData.isAudio = 0;
+//
+//        fwrite(pFrame->data[0], 1, deData.width * deData.height, file);    //Y
+//        fwrite(pFrame->data[1], 1, deData.width * deData.height / 4, file);  //U
+//        fwrite(pFrame->data[2], 1, deData.width * deData.height / 4, file);  //V
+
 //        LOGE("解码成功! AVMEDIA_TYPE_VIDEO");
     } else if (pCodec->codec_type == AVMEDIA_TYPE_AUDIO) {
+        deData.pts = pFrame->pts;
+        pts = deData.pts;
         //样本字节数 * 单通道样本数 * 通道数
         deData.size = av_get_bytes_per_sample((AVSampleFormat) pFrame->format) * pFrame->nb_samples * 2;
         deData.isAudio = 1;
@@ -170,11 +202,7 @@ AVData AVDecode::getDecodeFrame() {
         return AVData();
     }
     deData.format = pFrame->format;
-    //if(!isAudio)
-    //    XLOGE("data format is %d",frame->format);
     memcpy(deData.datas, pFrame->data, sizeof(deData.datas));
-    deData.pts = pFrame->pts;
-    pts = deData.pts;
     mux.unlock();
     return deData;
 }

@@ -25,11 +25,11 @@ public:
     /**
      * 音频通道
      */
-    int channels = 2;
+    int channels = -1;
     /**
      * 音频码率
      */
-    int sample_rate = 44100;
+    int sample_rate = -1;
     /**
      * 原始数据格式
      *
@@ -37,6 +37,7 @@ public:
      * - audio: the sample format, the value corresponds to enum AVSampleFormat.
      */
     int format = -1;
+
 
     /**
      * 时间基

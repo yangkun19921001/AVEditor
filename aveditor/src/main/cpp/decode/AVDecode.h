@@ -31,6 +31,11 @@ protected:
      */
     mutex mux;
 
+    /**
+     * 时间基
+     */
+    AVRational timebase;
+
 public:
     /**
  * 初始化硬件编码器

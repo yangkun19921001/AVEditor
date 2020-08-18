@@ -11,6 +11,7 @@ ITexture *AVTxture::create() {
     return new AVTxture();
 }
 
+
 int AVTxture::init(void *window, AVTextureType type) {
     mux.lock();
     this->iegl = AVEGL::get();
@@ -34,11 +35,17 @@ int AVTxture::init(void *window, AVTextureType type) {
         LOGE("shader init failed");
         return false;
     }
+
+
     mux.unlock();
     return true;
 }
 
 void AVTxture::draw(unsigned char *data[], int width, int height) {
+
+
+
+
     mux.lock();
     sh.getTexture(0, width, height, data[0]);  // Y
 

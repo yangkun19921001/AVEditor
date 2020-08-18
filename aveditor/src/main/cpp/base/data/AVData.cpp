@@ -20,9 +20,9 @@ bool AVData::alloc(int size, const char *data) {
 }
 
 void AVData::drop() {
-    if(!data) return;
-    if(type == AVPACKET_TYPE)
-        av_packet_free((AVPacket **)&data);
+    if (!data || !datas || width == 0 || height == 0) return;
+    if (type == AVPACKET_TYPE && (AVPacket **) &data)
+        av_packet_free((AVPacket **) &data);
     else
         delete data;
     data = 0;

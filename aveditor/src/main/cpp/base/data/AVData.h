@@ -18,7 +18,13 @@ enum XDataType {
 struct AVData {
     int type = 0;
     long long pts = 0;
+    /**
+     * 音频数据
+     */
     unsigned char *data = 0;
+    /**
+     * 视频数据
+     */
     unsigned char *datas[8] = {0};
     int size = 0;
     int isAudio = false;

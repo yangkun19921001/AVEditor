@@ -38,7 +38,8 @@
     <dimen name="dimen_14sp">14sp</dimen>
     <dimen name="dimen_16sp">16sp</dimen>
     <dimen name="dimen_18sp">18sp</dimen>
-
+    <dimen name="dimen_74dp">74dp</dimen>
+    <dimen name="dimen_15dp">15dp</dimen>
 
 
 </resources>

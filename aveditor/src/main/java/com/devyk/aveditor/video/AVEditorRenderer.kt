@@ -25,7 +25,7 @@ import javax.microedition.khronos.opengles.GL10
  *     desc    : This is AVEditorRenderer 负责视频处理相关的渲染
  * </pre>
  */
-public class AVEditorRenderer<T : IFilter, gpuImageFilter : GPUImageFilter>(context: Context?) :
+public class AVEditorRenderer(context: Context?) :
     GLSurfaceView.Renderer {
 
     /**
@@ -53,12 +53,12 @@ public class AVEditorRenderer<T : IFilter, gpuImageFilter : GPUImageFilter>(cont
     /**
      * 过滤器集合
      */
-    private var mFilters = arrayListOf<T>()
+    private var mFilters = arrayListOf<IFilter>()
 
     /**
      * 外部添加的
      */
-    private var mAddFilters = arrayListOf<T>()
+    private var mAddFilters = arrayListOf<IFilter>()
 
     /**
      * 外部添加第三方的
@@ -93,14 +93,14 @@ public class AVEditorRenderer<T : IFilter, gpuImageFilter : GPUImageFilter>(cont
 
 
         //2 初始化过滤器实例
-        mFilters.add(CameraFilter(mContext) as T)
+        mFilters.add(CameraFilter(mContext))
 
         //默认添加水印
         watermark?.let { watermark ->
             checkNotNull(watermark.bitmap)
             val watermarkFilter = WatermarkFilter(mContext)
             watermarkFilter.setWatermark(watermark)
-            mFilters.add(watermarkFilter as T)
+            mFilters.add(watermarkFilter)
         }
 
 //        mFilters.add(BeautyFilter(mContext) as T)
@@ -111,7 +111,7 @@ public class AVEditorRenderer<T : IFilter, gpuImageFilter : GPUImageFilter>(cont
 
 
         //4、最后显示
-        mFilters.add(ScreenFilter(mContext) as T)
+        mFilters.add(ScreenFilter(mContext))
         //渲染线程的EGL上下文
         val eglContext = EGL14.eglGetCurrentContext()
 
@@ -174,7 +174,7 @@ public class AVEditorRenderer<T : IFilter, gpuImageFilter : GPUImageFilter>(cont
                 var showScreenTexture = onDrawFrameFilter(mFilters.get(mDrawFilterIndex)?.onDrawFrame(mTextureId[0]))
 
                 //回调给 Camera 纹理交于处理显示矩阵
-                getSurfaceTexureTimestamp()?.let { mListener?.onRecordTextureId(showScreenTexture, it) }
+                mListener?.onRecordTextureId(showScreenTexture, System.nanoTime())
             } catch (err: Exception) {
                 LogHelper.e(TAG, err?.message)
             }
@@ -182,9 +182,7 @@ public class AVEditorRenderer<T : IFilter, gpuImageFilter : GPUImageFilter>(cont
         }
     }
 
-    public fun getSurfaceTexureTimestamp(): Long? {
-        return mListener?.getSurfaceTexureTimestamp()
-    }
+
 
     /**
      * 绘制过滤器
@@ -227,7 +225,7 @@ public class AVEditorRenderer<T : IFilter, gpuImageFilter : GPUImageFilter>(cont
      * 需要使用 FBO 需要继承 BaseFBOFilter,不需要的直接继承 BaseFilter
      */
     @Synchronized
-    fun addFilter(filter: T) {
+    fun <T : IFilter> addFilter(filter: T) {
         mAddFilters.add(filter)
     }
 
@@ -235,20 +233,20 @@ public class AVEditorRenderer<T : IFilter, gpuImageFilter : GPUImageFilter>(cont
      * 添加过滤器
      */
     @Synchronized
-    fun addFilter(filters: ArrayList<T>) {
+    fun <T : IFilter> addFilter(filters: ArrayList<T>) {
         mAddFilters.addAll(filters)
     }
 
     /**
      * 内部包含已有的滤镜
      */
-    fun setGPUImageFilter(type: AVFilterType?): gpuImageFilter? {
+    fun setGPUImageFilter(type: AVFilterType?): GPUImageFilter? {
         gpuDestory()
         mGPUImageFilter = mContext?.let { context -> AVFilterFactory.getFilters(context, type) }
         //3、初始化 GPUImageFilter
         onReadyGPUImageFilter(mGPUImageFilter)
         mGPUImageFilter?.let {
-            return mGPUImageFilter as gpuImageFilter
+            return mGPUImageFilter as GPUImageFilter
         }
 
         return null
@@ -264,7 +262,7 @@ public class AVEditorRenderer<T : IFilter, gpuImageFilter : GPUImageFilter>(cont
      * 添加 GPUImage 滤镜
      */
     @Synchronized
-    fun setGPUImageFilter(filter: gpuImageFilter) {
+    fun <gpuImageFilter : GPUImageFilter> setGPUImageFilter(filter: gpuImageFilter) {
         gpuDestory()
         mGPUImageFilter = filter
         //3、初始化 GPUImageFilter
@@ -284,7 +282,6 @@ public class AVEditorRenderer<T : IFilter, gpuImageFilter : GPUImageFilter>(cont
         fun onSurfaceChanged(gl: GL10?, width: Int, height: Int)
         fun onDrawFrame(mMtx: FloatArray)
         fun onRecordTextureId(showScreenTexture: Int, surfaceTexureTimestamp: Long)
-        fun getSurfaceTexureTimestamp(): Long
     }
 
     /**

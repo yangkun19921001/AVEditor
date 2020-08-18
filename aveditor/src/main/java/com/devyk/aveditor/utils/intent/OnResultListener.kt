@@ -1,4 +1,4 @@
-package com.devyk.ikavedit.utils.intent
+package com.devyk.aveditor.utils.intent
 
 import android.content.Intent
 
@@ -12,5 +12,5 @@ import android.content.Intent
  * </pre>
  */
 public interface OnResultListener<T:Intent> {
-    fun onResult(data: T?)
+    fun onActivityResult(requestCode: Int, resultCode: Int, data: T?)
 }

@@ -73,18 +73,19 @@ int AVDemux::open(const char *source) {
     AVParameter videoPar = getVInfo();
     if (!videoPar.para) {
         LOGE("find video info failed :%s", source);
+        mVideoPacketExist = false;
     }
     AVParameter audioPar = getAInfo();
     if (!audioPar.para) {
         LOGE("find audio info failed :%s", source);
+        mAudioPacketExist = false;
     }
     //读取媒体文件总长度 ms
-    this->totalDuration = pFormatCtx->duration / (AV_TIME_BASE / 1000);
+    this->totalDuration = pFormatCtx->duration / 1000 ;
 
     LOGE("open source success :%s", source);
     LOGE("source totalDuration :%lld", totalDuration);
     return true;
-
 }
 
 AVParameter AVDemux::getVInfo() {
@@ -104,8 +105,25 @@ AVParameter AVDemux::getVInfo() {
     video_stream_index = re;
     AVParameter para;
     para.para = pFormatCtx->streams[re]->codecpar;
-    LOGE("Video Info  格式:%d 码率", pFormatCtx->streams[re]->codecpar->format,
-         pFormatCtx->streams[re]->codecpar->bit_rate);
+
+    switch (pFormatCtx->streams[re]->codecpar->format) {
+        case AV_PIX_FMT_YUV420P:
+            LOGE("Video Info  格式:%s 码率:%d 宽:%d  高:%d", "AV_PIX_FMT_YUV420P",
+                 pFormatCtx->streams[re]->codecpar->bit_rate, pFormatCtx->streams[re]->codecpar->width,
+                 pFormatCtx->streams[re]->codecpar->height);
+            break;
+        case AV_PIX_FMT_NV21:
+            LOGE("Video Info  格式:%s 码率:%d 宽:%d  高:%d", "AV_PIX_FMT_NV21",
+                 pFormatCtx->streams[re]->codecpar->bit_rate, pFormatCtx->streams[re]->codecpar->width,
+                 pFormatCtx->streams[re]->codecpar->height);
+            break;
+        case AV_PIX_FMT_NV12:
+            LOGE("Video Info  格式:%s 码率:%d  宽:%d  高:%d", "AV_PIX_FMT_NV12",
+                 pFormatCtx->streams[re]->codecpar->bit_rate, pFormatCtx->streams[re]->codecpar->width,
+                 pFormatCtx->streams[re]->codecpar->height);
+            break;
+    }
+
     para.format = pFormatCtx->streams[re]->codecpar->format;
     para.timebase = pFormatCtx->streams[re]->time_base;
     mux.unlock();
@@ -160,17 +178,19 @@ AVData AVDemux::read() {
     }
     //这里说明 读取成功了
     AVData avData;
-    avData.data = (unsigned char *) (packet);
+
     avData.size = packet->size;
 
     if (packet->stream_index == audio_stream_index) {
         avData.isAudio = true;
-        LOGE("读取到音频数据");
+        avData.data = (unsigned char *) (packet);
+//        LOGE("读取到音频数据");
     } else if (packet->stream_index == video_stream_index) {
         avData.isAudio = false;
-        LOGE("读取到视频数据");
+        avData.data = (unsigned char *) (packet);
+//        LOGE("读取到视频数据");
     } else {//先暂时不用管其它的
-        LOGE("读取到 -- ");
+        LOGE("读取到其它数据流 -- %d ",packet->stream_index);
         mux.unlock();
         av_packet_free(&packet);
         packet = 0;

@@ -2,22 +2,19 @@
 // Created by 阳坤 on 2020-05-21.
 //
 
-
-#include <jni.h>
-#include <android/native_window.h>
-#include "demux/AVDemux.h"
-#include "decode/AVDecode.h"
-#include "video/AV_GL_VideoPlayer.h"
-#include "audio/AV_SL_AudioPlayer.h"
-#include "resample/AVResample.h"
-#include "play/IPlayerProxy.h"
 #include <android/native_window_jni.h>
+#include "jni.h"
+#include "play/IPlayerProxy.h"
 
-#define JNI_PLAY_JAVA_PATH "com/devyk/aveditor/widget/AVPlayView"
+#define NATIVE_MUSIC_ENCODE_PATH "com/devyk/aveditor/jni/AVFileDecodeEngine"
+
+#define JNI_PLAY_JAVA_PATH "com/devyk/aveditor/jni/PlayerEngine"
 #define NELEM(x) ((int) (sizeof(x) / sizeof((x)[0])))
 
 
-static void Android_JNI_initView(JNIEnv *env, jobject instance, jobject surface) {
+JavaVM *jVM = 0;
+
+static void Android_JNI_initSurface(JNIEnv *env, jobject instance, jobject surface) {
     ANativeWindow *win = ANativeWindow_fromSurface(env, surface);
     IPlayerProxy::getInstance()->initWindow(win);
 /*    IDemux *demux = new KAVDemux();
@@ -58,13 +55,26 @@ static void Android_JNI_setDataSource(JNIEnv *env, jobject instance, jstring url
 }
 
 static void Android_JNI_start(JNIEnv *env, jobject instance) {
-    if (IPlayerProxy::getInstance()->open(IPlayerProxy::getInstance()->getDataSource(), false))
+    IPlayerProxy::getInstance()->getTransferInstance()->registerModel(false);
+    if (IPlayerProxy::getInstance()->open(IPlayerProxy::getInstance()->getDataSource(), false)) {
         IPlayerProxy::getInstance()->start();
+    }
+}
 
+
+/**
+ * 解码并且播放
+ * @param env
+ * @param instance
+ */
+static void Android_JNI_decodeMusicAlsoPlay(JNIEnv *env, jobject instance) {
+    if (IPlayerProxy::getInstance()->open(IPlayerProxy::getInstance()->getDataSource(), false)) {
+        IPlayerProxy::getInstance()->start();
+    }
 }
 
 static jdouble Android_JNI_progress(JNIEnv *env, jobject instance) {
-    return IPlayerProxy::getInstance()->playPos() * 100.00;
+    return IPlayerProxy::getInstance()->playPos();
 }
 
 static void Android_JNI_setPause(JNIEnv *env, jobject instance, jboolean isPause) {
@@ -78,14 +88,48 @@ static void Android_JNI_stop(JNIEnv *env, jobject instance) {
 static int Android_JNI_seekTo(JNIEnv *env, jobject instance, jdouble seek) {
     if (IPlayerProxy::getInstance()->getTotalDuration() > 0)
         return IPlayerProxy::getInstance()->seekTo(
-                seek/(double)100);
+                seek / (double) 100);
 }
+
+
+static void Android_JNI_addRecordMusic(JNIEnv *jniEnv, jobject jobject1, jstring pathFile) {
+    const char *url = jniEnv->GetStringUTFChars(pathFile, 0);
+    JNICallback *jniCallback = new JNICallback(jVM, jniEnv, jobject1);
+    //注册 AVAudioTransfer 模块
+    IPlayerProxy::getInstance()->getTransferInstance()->registerModel(true);
+    IPlayerProxy::getInstance()->getTransferInstance()->setCallback(jniCallback);
+    IPlayerProxy::getInstance()->setDataSource(url);
+    jniEnv->ReleaseStringUTFChars(pathFile, url);
+}
+
+
+static void Android_JNI_pause(JNIEnv *jniEnv, jobject jobject1) {
+    IPlayerProxy::getInstance()->setPause(true);
+
+}
+
+static void Android_JNI_resume(JNIEnv *jniEnv, jobject jobject1) {
+    IPlayerProxy::getInstance()->setPause(false);
+
+}
+
+
+/**
+ * 解码相关函数
+ */
+static JNINativeMethod NativeMethod[] = {
+        {"addRecordMusic", "(Ljava/lang/String;)V", (void *) Android_JNI_addRecordMusic},
+        {"start",           "()V",                   (void *) Android_JNI_decodeMusicAlsoPlay},
+        {"pause",           "()V",                   (void *) Android_JNI_pause},
+        {"resume",          "()V",                   (void *) Android_JNI_resume},
+        {"stop",            "()V",                   (void *) Android_JNI_stop}
+};
 
 /**
  * 播放相关函数
  */
 static JNINativeMethod mNativePlayMethods[] = {
-        {"initView",      "(Ljava/lang/Object;)V", (void **) Android_JNI_initView},
+        {"initSurface",   "(Ljava/lang/Object;)V", (void **) Android_JNI_initSurface},
         {"setDataSource", "(Ljava/lang/String;)V", (void **) Android_JNI_setDataSource},
         {"start",         "()V",                   (void **) Android_JNI_start},
         {"setPause",      "(Z)V",                  (void **) Android_JNI_setPause},
@@ -94,24 +138,26 @@ static JNINativeMethod mNativePlayMethods[] = {
         {"seekTo",        "(D)I",                  (void **) Android_JNI_seekTo}
 };
 
-
-
-
-
-
 jint JNI_OnLoad(JavaVM *javaVM, void *pVoid) {
+    jVM = javaVM;
     JNIEnv *jniEnv;
     if (javaVM->GetEnv(reinterpret_cast<void **>(&jniEnv), JNI_VERSION_1_6) != JNI_OK)
         return JNI_ERR;
+
+    jclass javaClass = jniEnv->FindClass(NATIVE_MUSIC_ENCODE_PATH);
+    jniEnv->RegisterNatives(javaClass, NativeMethod, sizeof(NativeMethod) / sizeof(NativeMethod[0]));
+    jniEnv->DeleteLocalRef(javaClass);
 
     jclass nativeMethodClass = jniEnv->FindClass(JNI_PLAY_JAVA_PATH);
     jniEnv->RegisterNatives(nativeMethodClass, mNativePlayMethods, NELEM(mNativePlayMethods));
     jniEnv->DeleteLocalRef(nativeMethodClass);
 
 
-
     LOGE("FFMPEG CONFIG %s \n", avutil_configuration());
     LOGE("FFMPEG VERSION%s \n", av_version_info());
     IPlayerProxy::getInstance()->initMediaCodec(pVoid);
+
     return JNI_VERSION_1_6;
+
 }
+

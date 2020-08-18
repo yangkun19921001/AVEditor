@@ -48,6 +48,9 @@ public:
      */
     static SLEngineItf createSL();
 
+    int OpenSLSampleRate(SLuint32 sampleRate);
+
+    int GetChannelMask(int channels);
 };
 
 

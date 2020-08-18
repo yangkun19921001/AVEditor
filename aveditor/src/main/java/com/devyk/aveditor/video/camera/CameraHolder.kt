@@ -5,6 +5,7 @@ import android.graphics.SurfaceTexture
 import android.hardware.Camera
 import android.util.Log
 import com.devyk.aveditor.config.CameraConfiguration
+import com.devyk.aveditor.utils.LogHelper
 import com.devyk.aveditor.video.camera.exception.CameraHardwareException
 import com.devyk.aveditor.video.camera.exception.CameraNotSupportException
 
@@ -176,16 +177,18 @@ public class CameraHolder {
         }
         mCameraDevice?.let { cameraDevice ->
             cameraDevice.setPreviewCallback(null)
-
-
-            cameraDevice.parameters?.let { parameters ->
-                val cameraParameters = parameters
-                if (cameraParameters != null && cameraParameters.flashMode != null
-                    && cameraParameters.flashMode != Camera.Parameters.FLASH_MODE_OFF
-                ) {
-                    cameraParameters.flashMode = Camera.Parameters.FLASH_MODE_OFF
+            try {
+                cameraDevice.parameters?.let { parameters ->
+                    val cameraParameters = parameters
+                    if (cameraParameters != null && cameraParameters.flashMode != null
+                        && cameraParameters.flashMode != Camera.Parameters.FLASH_MODE_OFF
+                    ) {
+                        cameraParameters.flashMode = Camera.Parameters.FLASH_MODE_OFF
+                    }
+                    cameraDevice.parameters = cameraParameters
                 }
-                cameraDevice.parameters = cameraParameters
+            } catch (error: java.lang.Exception) {
+                LogHelper.e(TAG, error.message)
             }
             mCameraDevice!!.stopPreview()
             state = State.OPENED

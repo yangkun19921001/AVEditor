@@ -1,6 +1,7 @@
 package com.devyk.ikavedit
 
 import android.app.Application
+import com.devyk.aveditor.jni.JNIManager
 import com.devyk.aveditor.utils.LogHelper
 import com.devyk.ikavedit.utils.Utils
 

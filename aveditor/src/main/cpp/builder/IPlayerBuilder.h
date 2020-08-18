@@ -6,6 +6,7 @@
 #define IAVEDIT_IPLAYERBUILDER_H
 
 
+#include <audio/AVAudioTransfer.h>
 #include "play/IPlayer.h"
 
 /**
@@ -58,6 +59,11 @@ protected:
      */
     virtual IPlayer *createPlayer(unsigned char index = 0) = 0;
 
+    /**
+     * 将解码好的音频数据转移
+     * @return
+     */
+    virtual ITransfer *createTransfer() = 0;
 };
 
 

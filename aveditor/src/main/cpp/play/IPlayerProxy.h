@@ -103,6 +103,8 @@ public:
      int64_t getTotalDuration();
 
 
+    ITransfer * getTransferInstance();
+
 };
 
 

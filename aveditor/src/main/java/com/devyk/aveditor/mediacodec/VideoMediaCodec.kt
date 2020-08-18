@@ -40,6 +40,7 @@ object VideoMediaCodec {
                 Log.d(TAG, "Device in fps setting black list, so set mediacodec fps 15")
                 fps = 15
             }
+
             format.setInteger(MediaFormat.KEY_FRAME_RATE, fps)
             format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, videoConfiguration.ifi)
             format.setInteger(MediaFormat.KEY_BITRATE_MODE, MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_VBR)

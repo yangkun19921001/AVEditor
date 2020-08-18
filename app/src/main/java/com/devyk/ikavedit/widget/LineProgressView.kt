@@ -95,6 +95,8 @@ class LineProgressView : View {
         canvas.drawRect(RectF(mRadius, 0f, width.toFloat(), measuredHeight.toFloat()), mPaint!!)
     }
 
+    public fun isExist(): Boolean = mProgressList.size > 0
+
     private fun drawDivider(canvas: Canvas) {
         mPaint!!.color = mDividerColor
         var left = 0

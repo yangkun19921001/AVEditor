@@ -4,8 +4,11 @@ import android.content.Context
 import android.opengl.GLSurfaceView
 import android.util.AttributeSet
 import android.view.SurfaceHolder
+import com.devyk.aveditor.jni.IPlayer
+import com.devyk.aveditor.jni.JNIManager
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
+
 
 /**
  * <pre>
@@ -24,32 +27,38 @@ class AVPlayView : GLSurfaceView, SurfaceHolder.Callback, GLSurfaceView.Renderer
 
     private var lister: OnProgressListener? = null;
 
-    companion object {
-        init {
-            System.loadLibrary("aveditor");
-        }
-    }
+    private var mIPlayer: IPlayer? = null
+
+    private var isExit = false
+
+    private var mLock = java.lang.Object()
+
+    /**
+     * 上一次获取的进度
+     */
+    var preTime = -1
+
 
     constructor(context: Context?) : this(context, null) {
     }
 
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {
         setRenderer(this)
-//        setOnClickListener(this)
+        isExit = false
+        mIPlayer = JNIManager.getPlayEngine()
         Thread(this).start()
-
     }
 
 
     override fun surfaceCreated(holder: SurfaceHolder?) {
-        initView(holder!!.surface)
+        initSurface(holder!!.surface)
     }
 
     override fun surfaceChanged(holder: SurfaceHolder?, format: Int, w: Int, h: Int) {
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder?) {
-        isQueryPos = false;
+        isExit = true
     }
 
     override fun onDrawFrame(gl: GL10?) {
@@ -60,7 +69,6 @@ class AVPlayView : GLSurfaceView, SurfaceHolder.Callback, GLSurfaceView.Renderer
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
     }
-
 //    override fun onClick(v: View?) {
 //        isPause = !isPause
 //        setPause(isPause)
@@ -68,50 +76,57 @@ class AVPlayView : GLSurfaceView, SurfaceHolder.Callback, GLSurfaceView.Renderer
 //    }
 
     override fun run() {
-        while (isQueryPos) {
-
-            lister?.onProgressChanged((progress()).toInt());
-            if (progress() >= 100)
-                break;
+        while (true) {
+            if (isExit) {
+                return
+            }
+            var progress = progress().toInt()
+            if (progress != preTime)
+                lister?.onProgressChanged(progress)
             Thread.sleep(40)
+            preTime = progress;
         }
     }
 
     /**
      * init 初始化
      */
-    private external fun initView(surface: Any)
+    private fun initSurface(surface: Any) = mIPlayer?.initSurface(surface)
 
     /**
      * 设置播放源
      */
-    public external fun setDataSource(source: String)
+    public fun setDataSource(source: String?) = mIPlayer?.setDataSource(source)
 
     /**
      * 播放
      */
-    public external fun start()
+    public fun start() {
+        preTime - 1
+        mIPlayer?.start()
+    }
 
     /**
      * 播放
      */
-    public external fun progress(): Double
+    public fun progress(): Double = mIPlayer?.progress()!!
 
     /**
      * 暂停
      */
-    public external fun setPause(status: Boolean)
+    public fun setPause(status: Boolean) = mIPlayer?.setPause(status)
 
     /**
      * 指定跳转到某个时间点播放
      */
-    public external fun seekTo(seek: Double): Int;
+    public fun seekTo(seek: Double): Int? = mIPlayer?.seekTo(seek)
 
     /**
      * 停止
      */
-    public external fun stop()
-
+    public fun stop() {
+        mIPlayer?.stop()
+    }
 
 
     public fun addProgressListener(progress: OnProgressListener) {
