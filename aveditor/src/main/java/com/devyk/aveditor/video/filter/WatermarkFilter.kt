@@ -141,7 +141,7 @@ class WatermarkFilter(context: Context?) : BaseFBOFilter(context, R.raw.base_ver
     fun setWatermark(watermark: Watermark?) {
         this.mWatermark = watermark
         watermark?.let {
-            it.bitmap?.let {
+            it.bitmap.let {
                 mBitmap = it
             }
         }

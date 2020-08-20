@@ -21,6 +21,7 @@ protected:
 //    SoundTouch *soundTouch = NULL;
 
 
+
 public:
     AV_SL_AudioPlayer();
 

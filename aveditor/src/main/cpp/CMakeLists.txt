@@ -7,10 +7,14 @@ cmake_minimum_required(VERSION 3.4.1)
 #-------------------------------------------------定义路径变量----------------------------------------------
 #JNI 路径
 set(JNI_PATH ${CMAKE_SOURCE_DIR})
-#FFMPEG 头文件路径
+#FFMPEG 文件路径
 set(FFMPEG_INCLUDE_PATH ${CMAKE_SOURCE_DIR}/../../../../thirdparties/ffmpeg)
-# so 路径
+#librtmp 头文件路径
+set(LIBRTMP_INCLUDE_PATH ${CMAKE_SOURCE_DIR}/../../../../thirdparties/librtmp)
+# 动态库 路径
 set(SHARED_PATH ${CMAKE_SOURCE_DIR}/../jniLibs/${CMAKE_ANDROID_ARCH_ABI})
+# 静态库 路径
+set(STATIC_PATH ${CMAKE_SOURCE_DIR}/../../../../thirdparties/librtmp/libs/${CMAKE_ANDROID_ARCH_ABI})
 #xlog header 路径
 set(XLOG_PATH ${CMAKE_SOURCE_DIR}/xlog)
 #Base
@@ -74,6 +78,7 @@ FILE(GLOB SOUNDTOUCH_CPP_PATH ${CMAKE_SOURCE_DIR}/source/*.cpp)
 include_directories(${SOUNDTOUCH_PATH}/include)
 include_directories(${SOUNDTOUCH_SOURCE_H_PATH})
 include_directories(${FFMPEG_INCLUDE_PATH}/include)
+include_directories(${LIBRTMP_INCLUDE_PATH}/include)
 include_directories(${XLOG_PATH}/include)
 include_directories(${CMAKE_SOURCE_DIR})
 include_directories(${DEMUX_ALL_H})
@@ -110,6 +115,9 @@ set_target_properties(swresample PROPERTIES IMPORTED_LOCATION ${SHARED_PATH}/lib
 add_library(marsxlog SHARED IMPORTED)
 set_target_properties(marsxlog PROPERTIES IMPORTED_LOCATION ${SHARED_PATH}/libmarsxlog.so)
 
+add_library(rtmp STATIC IMPORTED)
+set_target_properties(rtmp PROPERTIES IMPORTED_LOCATION ${SHARED_PATH}/librtmp.a)
+
 
 add_library(
         avtools
@@ -141,6 +149,7 @@ find_library(
 #AVTools
 target_link_libraries(
         avtools
+        rtmp
         GLESv2 EGL
         #[[EGL 是 nativeWindow 和 openGL ES 中间的桥梁]]
         OpenSLES
