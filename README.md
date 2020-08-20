@@ -37,19 +37,19 @@
 
 ### 效果
 
-**播放器**
-
-![](https://devyk.oss-cn-qingdao.aliyuncs.com/blog/20200524193715.gif)
-
-![](https://devyk.oss-cn-qingdao.aliyuncs.com/blog/20200524194013.gif)
-
-
 **音视频录制编辑**
+
+片段加载失败[点击下载 Gif](https://devyk.oss-cn-qingdao.aliyuncs.com/blog/20200820232848.gif)
+
 ![](https://devyk.oss-cn-qingdao.aliyuncs.com/blog/20200820232848.gif)
 
 
 
+**播放器**
 
+如果播放器效果加载失败[点击下载 Gif 文件](https://devyk.oss-cn-qingdao.aliyuncs.com/blog/20200524193715.gif)
+
+![](https://devyk.oss-cn-qingdao.aliyuncs.com/blog/20200524193715.gif)
 
 ## 感谢
 
