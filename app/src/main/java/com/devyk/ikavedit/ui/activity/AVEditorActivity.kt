@@ -5,7 +5,8 @@ import android.view.View
 import com.devyk.aveditor.utils.LogHelper
 import com.devyk.ikavedit.R
 import com.devyk.ikavedit.base.BaseActivity
-import com.devyk.aveditor.entity.MediaEntine
+import com.devyk.aveditor.entity.MediaEntity
+import com.devyk.aveditor.jni.JNIManager
 import com.devyk.aveditor.utils.ThreadUtils
 import com.devyk.aveditor.widget.AVPlayView
 import com.devyk.ikavedit.callback.OnFilterItemClickListener
@@ -31,7 +32,7 @@ public class AVEditorActivity : BaseActivity<Int>(), AnimTextView.OnClickListene
     //媒体文件时长
     private var mVideoDuration = 0L
     //媒体文件
-    private var mAVFiles: ArrayList<MediaEntine>? = null
+    private var mAVFiles: ArrayList<MediaEntity>? = null
     //选择滤镜的弹窗
     private var mSelectFilterDialog: SelectFilterDialog? = null
 
@@ -49,7 +50,7 @@ public class AVEditorActivity : BaseActivity<Int>(), AnimTextView.OnClickListene
     /***
      * 拿到媒体文件集合
      */
-    fun getAVEditPaths(): ArrayList<MediaEntine>? = intent.getParcelableArrayListExtra(MEDIAS)
+    fun getAVEditPaths(): ArrayList<MediaEntity>? = intent.getParcelableArrayListExtra(MEDIAS)
 
     /**
      * 拿到媒体文件时长
@@ -73,38 +74,17 @@ public class AVEditorActivity : BaseActivity<Int>(), AnimTextView.OnClickListene
     override fun init() {
         mAVFiles = getAVEditPaths()
         mVideoDuration = getAVDuration()
-        LogHelper.e(TAG, "媒体文件:${mAVFiles} \n 媒体文件总长度:${mVideoDuration}")
-
         mAVFiles?.let { listItem ->
-            if (listItem.size == 1) {
-                play()
-//                player_view.setDataSource(listItem.get(0).path)
-//                player_view.setDataSource("http://devyk.top/video/%E5%90%8E%E6%B5%AA.mp4")
-//                player_view.setDataSource("/sdcard/aveditor/123.h264")
-//                player_view.start()
-                return
-            }
             ThreadUtils.runChildThread {
-                //                    val outPath = createRecordFilePath()
-//                    LogHelper.e(TAG, "保存的文件:${outPath}")
-//                    FileUtils.createFileByDeleteOldFile(outPath)
-//                    val currentTimeMillis = System.currentTimeMillis()
-//                    MediaMergeUtils.combineVideoSegments(mAVFiles, outPath)
-//                    LogHelper.e(TAG, "合成完成耗时：${System.currentTimeMillis() - currentTimeMillis}")
-                play()
+                LogHelper.e(TAG, "媒体文件:${mAVFiles} \n 媒体文件总长度:${mVideoDuration}")
+                JNIManager.getPlayEngine()?.setDataSource(listItem)
             }
+            play()
         }
-
     }
 
     private fun play() {
-        if (index >= mAVFiles?.size!!) return
-        val path = mAVFiles?.get(index)?.path
-        player_view.setDataSource(path)
         player_view.start()
-        LogHelper.e(TAG, path)
-        index += 1;
-
     }
 
     override fun initData() {
@@ -167,9 +147,6 @@ public class AVEditorActivity : BaseActivity<Int>(), AnimTextView.OnClickListene
 
     override fun onProgressChanged(progress: Int) {
         LogHelper.e(TAG, "progress:${progress}")
-        if (progress == 100) {
-            play()
-        }
     }
 
     /**

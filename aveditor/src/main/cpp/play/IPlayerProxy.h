@@ -6,8 +6,11 @@
 #define IAVEDIT_IPLAYERPROXY_H
 
 #include <mutex>
+#include <entity/MediaEntity.h>
 #include "IPlayer.h"
 #include "../builder/AVPlayerBuilder.h"
+
+
 
 class IPlayerProxy {
 
@@ -17,6 +20,7 @@ public:
 protected:
     IPlayer *pPlayer = 0;
     std::mutex mux;
+
     /**
      * 播放源
      */
@@ -40,7 +44,7 @@ public:
      * @param path
      * @return
      */
-    virtual int open(const char *path,int isMediaCodec);
+    virtual int open(const char *path, int isMediaCodec);
 
     /**
      * seek
@@ -91,6 +95,13 @@ public:
      */
     void setDataSource(const char *source);
 
+
+    /**
+     * 设置播放源
+     * @param source
+     */
+    void setDataSource(JNIEnv *jniEnv, jobject lists);
+
     /**
      * 拿到播放源
      * @return
@@ -100,10 +111,12 @@ public:
     /**
      * 拿到总时长 ms
      */
-     int64_t getTotalDuration();
+    int64_t getTotalDuration();
 
 
-    ITransfer * getTransferInstance();
+    ITransfer *getTransferInstance();
+
+
 
 };
 

@@ -13,6 +13,7 @@
 #include "audio/ITransfer.h"
 #include <stdint.h>
 #include <mutex>
+#include <entity/MediaEntity.h>
 
 
 class IPlayer : public IThread {
@@ -34,6 +35,27 @@ public:
     ITransfer *transfer = 0;
     IVideoPlayer *videoView = 0;
     IAudioPlayer *audioPlay = 0;
+
+    /**
+     * 用于装多个片段 Media 源
+     */
+    std::deque<MediaEntity *> mediaLists;
+
+//    std::deque<MediaEntity*> mediaLists;
+    //获取总的 totalDuration
+    int64_t totalDuration;
+    //是否播放完成
+    int isPlayComplete = false;
+
+    /**
+     * 找到下一个索引
+     */
+    int nextIndex = 0;
+
+    /**
+     * 是否循环播放
+     */
+    int isLoopPlay = false;
 
 protected:
     //用作音视频同步
@@ -105,6 +127,26 @@ public:
      * @param isMediacodec
      */
     virtual void initMediaCodec(void *vm);
+
+    /**
+     * 设置
+     * @param jniEnv
+     * @param lists
+     */
+    virtual void setDataSource(JNIEnv *jniEnv, jobject lists);
+
+
+    /**
+     * 设置下一个片段播放路径
+     */
+    virtual bool setNextDataSource();
+
+    /**
+     * 播放下一个片段
+     */
+    virtual void playNext();
+
+
 };
 
 

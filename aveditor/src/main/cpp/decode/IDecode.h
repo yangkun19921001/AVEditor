@@ -7,6 +7,7 @@
 
 
 #include <list>
+#include <utils/AVQueue.h>
 #include "base/IObserver.h"
 
 
@@ -27,6 +28,7 @@ protected:
      * 读取缓存
      */
     std::list <AVData> packs;
+//    AVQueue<AVData>  packs;
     /**
      * 互斥锁
      */

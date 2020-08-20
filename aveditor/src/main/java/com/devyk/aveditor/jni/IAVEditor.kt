@@ -1,6 +1,6 @@
 package com.devyk.aveditor.jni
 
-import com.devyk.aveditor.entity.MediaEntine
+import com.devyk.aveditor.entity.MediaEntity
 
 
 /**
@@ -16,22 +16,22 @@ public interface IAVEditor {
     /**
      * 添加一个音视频片段
      */
-    fun addAVFile(path: MediaEntine)
+    fun addAVFile(path: MediaEntity)
 
     /**
      * 插入一个音视频片段
      */
-    fun insertAVFile(index: Int, media: MediaEntine)
+    fun insertAVFile(index: Int, media: MediaEntity)
 
     /**
      * 添加多段音视频片段
      */
-    fun addAVFiles(medias: ArrayList<MediaEntine>)
+    fun addAVFiles(medias: ArrayList<MediaEntity>)
 
     /**
      * 插入多段音视频片段
      */
-    fun insertAVFiles(index: Int, path: ArrayList<MediaEntine>)
+    fun insertAVFiles(index: Int, path: ArrayList<MediaEntity>)
 
     /**
      * 插入配乐

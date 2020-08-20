@@ -71,9 +71,8 @@ int AVDecode::open(AVParameter par, int isMediaCodec) {
     LOGI("avcodec_find_decoder  success !  isMediacodec:%d", isMediaCodec);
     //创建解码器上下文
     this->pCodec = avcodec_alloc_context3(codec);
-    //将解码器设置解码参数
+    //将解码参数赋值到解码上下文中
     ret = avcodec_parameters_to_context(this->pCodec, parameters);
-//    ret =  avcodec_parameters_from_context(parameters, this->pCodec);
     if (ret < 0) {
         mux.unlock();
         close();
@@ -166,6 +165,7 @@ AVData AVDecode::getDecodeFrame() {
 
     //拿到解码之后的数据 PCM/H264 0 is ok.
     int ret = avcodec_receive_frame(pCodec, pFrame);
+
     if (ret != 0) {
         mux.unlock();
         char buf[1024] = {0};

@@ -9,8 +9,8 @@ package com.devyk.aveditor.stream.packer
  *     desc    : This is PackerType
  * </pre>
  */
-public enum class PackerType {
-    MP4,
-    FLV,
-    RTMP
+public enum class PackerType(format: String) {
+    MP4("mp4"),
+    FLV("flv"),
+    RTMP("rtmp")
 }

@@ -2,6 +2,7 @@
 // Created by 阳坤 on 2020-05-21.
 //
 
+#include <muxer/AVMuxer.h>
 #include "AVDemux.h"
 
 
@@ -81,7 +82,8 @@ int AVDemux::open(const char *source) {
         mAudioPacketExist = false;
     }
     //读取媒体文件总长度 ms
-    this->totalDuration = pFormatCtx->duration / 1000 ;
+    this->totalDuration = pFormatCtx->duration / 1000;
+
 
     LOGE("open source success :%s", source);
     LOGE("source totalDuration :%lld", totalDuration);
@@ -160,6 +162,7 @@ AVParameter AVDemux::getAInfo() {
     return para;
 }
 
+
 AVData AVDemux::read() {
     mux.lock();
     if (!pFormatCtx) {
@@ -170,6 +173,14 @@ AVData AVDemux::read() {
     AVPacket *packet = av_packet_alloc();
     //读取一帧音视频流 0 is success!
     int ret = av_read_frame(pFormatCtx, packet);
+
+    if (ret == AVERROR_EOF) {//代表读取完成了
+        mux.unlock();
+        av_packet_free(&packet);
+        packet = 0;
+        return AVData();
+    }
+
     if (ret != 0) {
         mux.unlock();
         av_packet_free(&packet);
@@ -190,7 +201,7 @@ AVData AVDemux::read() {
         avData.data = (unsigned char *) (packet);
 //        LOGE("读取到视频数据");
     } else {//先暂时不用管其它的
-        LOGE("读取到其它数据流 -- %d ",packet->stream_index);
+        LOGE("读取到其它数据流 -- %d ", packet->stream_index);
         mux.unlock();
         av_packet_free(&packet);
         packet = 0;
@@ -202,6 +213,14 @@ AVData AVDemux::read() {
     packet->dts = packet->dts * (1000 * r2d(pFormatCtx->streams[packet->stream_index]->time_base));
     avData.pts = packet->pts;
     mux.unlock();
+
+//    if (!muxer){
+//        muxer = new AVMuxerEngine();
+//        muxer->initMuxer("sdcard/aveditor/ffmpeg_muxer.mp4","mp4");
+//        muxer->start();
+//    }
+//    avData.data = reinterpret_cast<unsigned char *>(av_packet_clone(packet));
+//    muxer->enqueue(avData);
     return avData;
 }
 
@@ -242,5 +261,6 @@ int AVDemux::close() {
     if (pFormatCtx)
         avformat_close_input(&pFormatCtx);//关闭
     mux.unlock();
+
     return false;
 }

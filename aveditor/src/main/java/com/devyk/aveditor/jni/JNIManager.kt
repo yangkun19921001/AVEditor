@@ -28,6 +28,11 @@ object JNIManager {
      */
     private var mAVFileDecodeEngine: IMusicDecode? = null
 
+    /**
+     * FFmpeg 打包
+     */
+    private var mAVMuxer: INativeMuxer? = null
+
 
 
     init {
@@ -35,6 +40,7 @@ object JNIManager {
         mPlayerEngine = PlayerEngine()
         mAVFileDecodeEngine = AVFileDecodeEngine()
         mAVEditor = AVEditorEngine()
+        mAVMuxer = AVMuxerEngine()
     }
 
 
@@ -60,6 +66,13 @@ object JNIManager {
     }
 
     /**
+     * 动态替换复用器
+     */
+    public fun <T : INativeMuxer> setAVMuxerEngine(t: T) {
+        mAVMuxer = t
+    }
+
+    /**
      * 拿到播放的模块
      */
     public fun getPlayEngine(): IPlayer? = mPlayerEngine
@@ -74,4 +87,10 @@ object JNIManager {
      * 拿到媒体编辑模块
      */
     public fun getAVEditorEngine(): IAVEditor? = mAVEditor
+
+
+    /**
+     * 拿到媒体编辑模块
+     */
+    public fun getAVMuxerEngine(): INativeMuxer? = mAVMuxer
 }

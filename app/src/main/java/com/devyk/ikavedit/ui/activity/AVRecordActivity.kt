@@ -6,12 +6,10 @@ import android.os.Environment
 import android.view.View
 import android.view.ViewGroup
 import com.devyk.aveditor.callback.OnSelectFilterListener
-import com.devyk.aveditor.entity.MediaEntine
+import com.devyk.aveditor.entity.MediaEntity
 import com.devyk.aveditor.entity.Speed
 import com.devyk.aveditor.entity.Watermark
-import com.devyk.aveditor.stream.packer.Packer
 import com.devyk.aveditor.stream.packer.PackerType
-import com.devyk.aveditor.stream.packer.mp4.MP4Packer
 import com.devyk.aveditor.utils.BitmapUtils
 import com.devyk.aveditor.utils.LogHelper
 import com.devyk.aveditor.utils.ThreadUtils
@@ -63,7 +61,7 @@ public class AVRecordActivity : BaseActivity<Int>(), TimerUtils.OnTimerUtilsList
     //选择滤镜的弹窗
     private var mSelectFilterDialog: SelectFilterDialog? = null
     //装录制完成的媒体文件
-    private val mMedias = ArrayList<MediaEntine>()
+    private val mMedias = ArrayList<MediaEntity>()
     //录制功能
     private val mFunTitles = arrayOf("拍照", "录像", "拍30秒", "拍60秒", "开直播")
     //录制速率
@@ -222,13 +220,14 @@ public class AVRecordActivity : BaseActivity<Int>(), TimerUtils.OnTimerUtilsList
         record_button.setOnGestureListener(object : RecordButton.OnGestureListener {
 
             override fun onDown() {
+                LogHelper.e(TAG, "开始录制")
                 mTimer.start(mMaxRecordDuration)
                 val outVideoFilePath = createRecordFilePath()
                 FileUtils.createFileByDeleteOldFile(outVideoFilePath)
-                videoView.setPaker(PackerType.MP4,outVideoFilePath)
+                videoView.setPaker(PackerType.MP4, outVideoFilePath)
                 videoView.setRecordAudioSource(mRecordMusicFilePath)
                 videoView.startRecord(mSpeed)
-                mMedias.add(MediaEntine(outVideoFilePath, 0, 0))
+                mMedias.add(MediaEntity(outVideoFilePath, 0, 0))
                 setChildViewsStatus(false, window.decorView)
                 if (line_progress_view.isExist()) {
                     record_done.visibility = View.VISIBLE
@@ -236,6 +235,7 @@ public class AVRecordActivity : BaseActivity<Int>(), TimerUtils.OnTimerUtilsList
             }
 
             override fun onUp() {
+                LogHelper.e(TAG, "当前录制完成")
                 mTimer.stop()
                 mMedias.get(mMedias.size - 1).stopDuration = mCurrentRecordProgress.toLong()
                 line_progress_view.addProgress(mCurrentRecordProgress * 1.0F / mCurrentRecordDuration)

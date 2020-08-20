@@ -15,10 +15,14 @@ set(SHARED_PATH ${CMAKE_SOURCE_DIR}/../jniLibs/${CMAKE_ANDROID_ARCH_ABI})
 set(XLOG_PATH ${CMAKE_SOURCE_DIR}/xlog)
 #Base
 set(BASE_PATH ${CMAKE_SOURCE_DIR}/base)
+#变音变调
+set(SOUNDTOUCH_PATH ${CMAKE_SOURCE_DIR}/soundtouch)
 
 
 #-------------------------------------------------找文件----------------------------------------------
 #找文件
+
+
 #jni cpp
 FILE(GLOB JNI_ALL_CPP ${JNI_PATH}/*.cpp)
 FILE(GLOB JNI_ALL_H ${JNI_PATH}/*.h)
@@ -51,11 +55,24 @@ FILE(GLOB JNI_PATH_ALL_H ${JNI_PATH}/play/*.h)
 #回调模块
 FILE(GLOB CALLBACK_PATH_ALL_CPP ${JNI_PATH}/callback/*.cpp)
 FILE(GLOB CALLBACK_PATH_ALL_H ${JNI_PATH}/callback/*.h)
+#utils 模块
+FILE(GLOB UTILS_PATH_ALL_CPP ${JNI_PATH}/utils/*.cpp)
+FILE(GLOB UTILS_PATH_ALL_H ${JNI_PATH}/utils/*.h)
+#数据实体 模块
+FILE(GLOB ENTITY_PATH_ALL_CPP ${JNI_PATH}/entity/*.cpp)
+FILE(GLOB ENTITY_PATH_ALL_H ${JNI_PATH}/entity/*.h)
+#封装音视频数据 mp4 flv 等
+FILE(GLOB MUXER_PATH_ALL_CPP ${JNI_PATH}/muxer/*.cpp)
+FILE(GLOB MUXER_PATH_ALL_H ${JNI_PATH}/muxer/*.h)
+#soundtouch  path
+FILE(GLOB SOUNDTOUCH_SOURCE_H_PATH ${CMAKE_SOURCE_DIR}/source/*.h)
+FILE(GLOB SOUNDTOUCH_CPP_PATH ${CMAKE_SOURCE_DIR}/source/*.cpp)
 
 
 #-------------------------------------------------加载头文件----------------------------------------------
 #加载头文件
-#include_directories(${JNI_ALL_H})
+include_directories(${SOUNDTOUCH_PATH}/include)
+include_directories(${SOUNDTOUCH_SOURCE_H_PATH})
 include_directories(${FFMPEG_INCLUDE_PATH}/include)
 include_directories(${XLOG_PATH}/include)
 include_directories(${CMAKE_SOURCE_DIR})
@@ -66,7 +83,11 @@ include_directories(${AUDIO_ALL_H})
 include_directories(${VIDEO_ALL_H})
 include_directories(${BASE_ALL_H})
 include_directories(${BASE_DATA_ALL_H})
+include_directories(${BUILDER_ALL_H})
 include_directories(${CALLBACK_PATH_ALL_H})
+include_directories(${UTILS_PATH_ALL_H})
+include_directories(${ENTITY_PATH_ALL_H})
+include_directories(${MUXER_PATH_ALL_H})
 
 
 #-------------------------------------------------加载库文件----------------------------------------------
@@ -90,8 +111,6 @@ add_library(marsxlog SHARED IMPORTED)
 set_target_properties(marsxlog PROPERTIES IMPORTED_LOCATION ${SHARED_PATH}/libmarsxlog.so)
 
 
-
-
 add_library(
         avtools
         SHARED
@@ -106,6 +125,10 @@ add_library(
         ${BUILDER_ALL_CPP}
         ${JNI_PATH_ALL_CPP}
         ${CALLBACK_PATH_ALL_CPP}
+        ${UTILS_PATH_ALL_CPP}
+        ${ENTITY_PATH_ALL_CPP}
+        ${MUXER_PATH_ALL_CPP}
+        ${SOUNDTOUCH_CPP_PATH}
 )
 
 

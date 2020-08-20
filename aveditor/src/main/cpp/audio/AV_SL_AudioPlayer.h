@@ -9,6 +9,7 @@
 #include "IAudioPlayer.h"
 #include <SLES/OpenSLES.h>
 #include <SLES/OpenSLES_Android.h>
+
 /**
  * 具体 OpenSL ES 渲染模块
  */
@@ -16,13 +17,16 @@ class AV_SL_AudioPlayer : public IAudioPlayer {
 protected:
     unsigned char *buffer = 0;
     std::mutex mux;
-
+    //SoundTouch
+//    SoundTouch *soundTouch = NULL;
 
 
 public:
     AV_SL_AudioPlayer();
 
     virtual ~AV_SL_AudioPlayer();
+
+
 
 public:
     /**
@@ -51,6 +55,19 @@ public:
     int OpenSLSampleRate(SLuint32 sampleRate);
 
     int GetChannelMask(int channels);
+
+    /**
+ * 速率初始化
+ */
+    void initSoundTouch(int sampleRate,int channels,int speed);
+//    {
+//        this->sampleBuffer = static_cast<SAMPLETYPE *>(malloc(this->sampleRate * 2 * 2));
+//        soundTouch = new SoundTouch();
+//        soundTouch->setSampleRate(sampleRate);
+//        soundTouch->setChannels(2);
+//        soundTouch->setPitch(1);
+//        soundTouch->setTempo(speed);
+//    }
 };
 
 

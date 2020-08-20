@@ -1,6 +1,6 @@
 #KAVEdit
 
-这是一款短视频编辑 SDK。仿抖音 APP 音视频处理功能!
+这是一款短视频编辑 SDK，仿 DouYin 音视频处理。功能包含有美颜、滤镜、贴纸、特效、录制、分段录制、速率录制、变声、配乐、rtmp 直播推流、图片转视频、剪辑等功能。
 
 
 
@@ -36,15 +36,22 @@
 - 音频，视频剪辑合成
 
 ### 效果
-![](https://devyk.oss-cn-qingdao.aliyuncs.com/blog/20200819002631.gif)
+
+**播放器**
 
 ![](https://devyk.oss-cn-qingdao.aliyuncs.com/blog/20200524193715.gif)
 
 ![](https://devyk.oss-cn-qingdao.aliyuncs.com/blog/20200524194013.gif)
 
 
+**音视频录制编辑**
+![](https://devyk.oss-cn-qingdao.aliyuncs.com/blog/20200820232848.gif)
 
-#感谢
+
+
+
+
+## 感谢
 
 - [FFmpeg](https://ffmpeg.org/)
 - [google/grafika](https://github.com/google/grafika)

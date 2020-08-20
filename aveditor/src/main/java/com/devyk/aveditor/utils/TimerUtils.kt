@@ -20,27 +20,31 @@ public class TimerUtils(private val mListener: OnTimerUtilsListener, private var
     private var mHandler: Handler? = null
     private var mStartTime: Long = 0
     var duration: Int = 0
+    var mLock = java.lang.Object()
 
     private val mRunnable = object : Runnable {
         override fun run() {
-            Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND)
-            if (mStartTime == 0L) {
-                mStartTime = SystemClock.elapsedRealtime()
-            }
-            val time = SystemClock.elapsedRealtime() - mStartTime
-            if (time >= duration) {
-                ThreadUtils.runChildThread {
-                    mListener.update(this@TimerUtils, duration)
-                    mListener.end(this@TimerUtils)
+            synchronized(mLock) {
+                Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND)
+                if (mStartTime == 0L) {
+                    mStartTime = SystemClock.elapsedRealtime()
                 }
-                return
-            } else {
-                ThreadUtils.runChildThread {
-                    mListener.update(this@TimerUtils, time.toInt())
+                val time = SystemClock.elapsedRealtime() - mStartTime
+                if (time >= duration) {
+                    ThreadUtils.runChildThread {
+                        mListener.update(this@TimerUtils, duration)
+                        mListener.end(this@TimerUtils)
+                    }
+                    return
+                } else {
+                    ThreadUtils.runChildThread {
+                        mListener.update(this@TimerUtils, time.toInt())
+                    }
                 }
+
+                mHandler?.postDelayed(this, mUpdateInterval.toLong())
             }
 
-            mHandler?.postDelayed(this, mUpdateInterval.toLong())
         }
     }
 
@@ -63,22 +67,30 @@ public class TimerUtils(private val mListener: OnTimerUtilsListener, private var
     }
 
     fun start(duration: Int) {
-        this.duration = duration
-        mStartTime = 0
-        stop()
-        mHandler?.postDelayed(mRunnable, 0)
+        synchronized(mLock) {
+            this.duration = duration
+            mStartTime = 0
+            stop()
+            mHandler?.postDelayed(mRunnable, 0)
+        }
+
     }
 
     fun stop() {
-        mStartTime = 0
-        mHandler?.removeCallbacks(mRunnable)
+        synchronized(mLock) {
+            mStartTime = 0
+            mHandler?.removeCallbacks(mRunnable)
+        }
+
     }
 
     fun release() {
-        mHandlerThread?.looper?.quit()
-        mHandlerThread?.quit()
-        mHandlerThread = null
-        mHandler?.removeCallbacks(mRunnable)
-        mHandler = null
+        synchronized(mLock){
+            mHandlerThread?.looper?.quit()
+            mHandlerThread?.quit()
+            mHandlerThread = null
+            mHandler?.removeCallbacks(mRunnable)
+            mHandler = null
+        }
     }
 }

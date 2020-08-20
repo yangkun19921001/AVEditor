@@ -1,6 +1,6 @@
 package com.devyk.aveditor.jni
 
-import com.devyk.aveditor.entity.MediaEntine
+import com.devyk.aveditor.entity.MediaEntity
 
 
 /**
@@ -30,22 +30,22 @@ public class AVEditorEngine : IAVEditor {
     /**
      * 添加一个音视频文件到将要合并的队列中
      */
-    override external fun addAVFile(path: MediaEntine)
+    override external fun addAVFile(path: MediaEntity)
 
     /**
      * 插入一个媒体到 index 位置
      */
-    override external fun insertAVFile(index: Int, media: MediaEntine)
+    override external fun insertAVFile(index: Int, media: MediaEntity)
 
     /**
      * 添加多个媒体文件
      */
-    override external fun addAVFiles(medias: ArrayList<MediaEntine>)
+    override external fun addAVFiles(medias: ArrayList<MediaEntity>)
 
     /**
      * 插入多个媒体文件
      */
-    override external fun insertAVFiles(index: Int, path: ArrayList<MediaEntine>)
+    override external fun insertAVFiles(index: Int, path: ArrayList<MediaEntity>)
 
     /**
      * 添加配乐

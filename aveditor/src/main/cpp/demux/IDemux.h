@@ -20,6 +20,7 @@ extern "C" {
  */
 class IDemux : public IObserver {
 
+
 public:
     /**
      * 总时长
@@ -35,6 +36,8 @@ public:
     * 是否有视频流
     */
     int mVideoPacketExist = true;
+
+
 
 public:
     /**
@@ -70,6 +73,7 @@ public:
      * @return
      */
     virtual AVData read() = 0;
+
 
     /**
      * 转换时间戳

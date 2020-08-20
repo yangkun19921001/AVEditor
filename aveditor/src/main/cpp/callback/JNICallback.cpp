@@ -19,6 +19,8 @@ JNICallback::JNICallback(JavaVM *vm, JNIEnv *env, jobject obj) {
     this->onPCMData = jniEnv->GetMethodID(jcls, "onPCMData", "([B)V");
     this->onDecodeStop = jniEnv->GetMethodID(jcls, "onDecodeStop", "()V");
 
+
+
 }
 
 JNICallback::~JNICallback() {

@@ -35,6 +35,7 @@ static void play_pcm_callback(SLAndroidSimpleBufferQueueItf bf, void *contex) {
 }
 
 int AV_SL_AudioPlayer::startPlayer(AVParameter parameter) {
+    //先设置暂停，有数据就恢复
     close();
     mux.lock();
     //1 创建引擎
@@ -89,7 +90,7 @@ int AV_SL_AudioPlayer::startPlayer(AVParameter parameter) {
     re = (*eng)->CreateAudioPlayer(eng, &player, &ds, &audioSink, sizeof(ids) / sizeof(SLInterfaceID), ids, req);
     if (re != SL_RESULT_SUCCESS) {
         mux.unlock();
-        LOGE("CreateAudioPlayer failed! %d",re);
+        LOGE("CreateAudioPlayer failed! %d", re);
         return false;
     } else {
         LOGI("CreateAudioPlayer success!");
@@ -119,6 +120,7 @@ int AV_SL_AudioPlayer::startPlayer(AVParameter parameter) {
     (*pcmQue)->Enqueue(pcmQue, "", 1);
     isExit = false;
     mux.unlock();
+
     LOGI("SLAudioPlay::StartPlay success!");
     return true;
 }
@@ -253,4 +255,15 @@ int AV_SL_AudioPlayer::GetChannelMask(int channels) {
             break;
     }
     return channelMask;
+}
+
+
+/**
+ * 初始化变音/变速器
+ * @param sampleRate
+ * @param channels
+ * @param speed
+ */
+void AV_SL_AudioPlayer::initSoundTouch(int sampleRate, int channels, int speed) {
+
 }

@@ -24,12 +24,14 @@ AVData IAudioPlayer::getData() {
     AVData d;
     isRuning = true;
     while (!isExit) {
+        framesMutex.lock();
         if (isPause()) {
             sleep(2);
+            framesMutex.unlock();
             continue;
         }
 
-        framesMutex.lock();
+
         if (!frames.empty()) {
             //有数据返回
             d = frames.front();
@@ -38,8 +40,8 @@ AVData IAudioPlayer::getData() {
             pts = d.pts;
             return d;
         }
-        framesMutex.unlock();
         sleep();
+        framesMutex.unlock();
     }
     isRuning = false;
     //未获取数据
@@ -55,3 +57,5 @@ void IAudioPlayer::clear() {
     }
     framesMutex.unlock();
 }
+
+

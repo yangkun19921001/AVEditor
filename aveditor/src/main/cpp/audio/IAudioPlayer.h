@@ -40,6 +40,8 @@ public:
      */
     virtual int startPlayer(AVParameter parameter) = 0;
 
+
+
     /**
      * 关闭资源
      */

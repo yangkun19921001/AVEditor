@@ -2,6 +2,7 @@
 // Created by 阳坤 on 2020-05-23.
 //
 
+#include <builder/AVToolsBuilder.h>
 #include "IPlayer.h"
 #include "../builder/AVPlayerBuilder.h"
 #include "../../../../../../../../../Android/NDK/android-ndk-r17c/sources/cxx-stl/llvm-libc++/include/cstdint"
@@ -31,8 +32,6 @@ int IPlayer::open(const char *path, int mediacodec) {
 //        return false;
     }
 
-
-
     //重采样 有可能不需要，解码后或者解封后可能是直接能播放的数据
     //if(outPara.sample_rate <= 0)
     outPara = demux->getAInfo();
@@ -46,7 +45,8 @@ int IPlayer::open(const char *path, int mediacodec) {
     if (!resample || !resample->open(demux->getAInfo(), outPara)) {
         LOGE("resample->Open %s failed!", path);
     }
-
+    isPlayComplete = true;
+    totalDuration = demux->totalDuration;
 
     mux.unlock();
     return 1;
@@ -188,6 +188,7 @@ void IPlayer::setPause(bool isP) {
         audioPlay->setPause(isP);
     if (videoView)
         videoView->setPause(isP);
+
     mux.unlock();
 
 }
@@ -195,7 +196,7 @@ void IPlayer::setPause(bool isP) {
 void IPlayer::main() {
     while (!isExit) {
         mux.lock();
-        if (!audioPlay || !vdecode) {
+        if (!audioPlay || !vdecode || isPause()) {
             mux.unlock();
             sleep();
             continue;
@@ -205,6 +206,38 @@ void IPlayer::main() {
         int apts = audioPlay->pts;
         //XLOGE("apts = %d",apts);
         vdecode->synPts = apts;
+
+
+        //根据音频来判断是否播放完成
+        if (demux->mAudioPacketExist && audioPlay->pts != 0L) {
+            mux.unlock();
+            if (audioPlay->pts / 1000L >= totalDuration / 1000 && !isPlayComplete) {
+                LOGD("播放状态：complete audioPts:%d totalDuration:%ld nextIndex:%d", audioPlay->pts / 1000,
+                     totalDuration / 1000, nextIndex);
+                isPlayComplete = true;
+                playNext();
+            } else if (audioPlay->pts / 1000L < totalDuration / 1000) {
+                isPlayComplete = false;
+            }
+            LOGD("播放状态：play audioPts:%d totalDuration:%ld nextIndex:%d", audioPlay->pts / 1000,
+                 totalDuration / 1000, nextIndex);
+            sleep();
+            continue;
+        }
+
+        //如果没有音频数据，那么根据视频来判断
+        if (demux->mAudioPacketExist && vdecode->pts != 0L) {
+            mux.unlock();
+            if (vdecode->pts / 1000 >= totalDuration / 1000 && !isPlayComplete) {
+                LOGD("播放状态：comple videoPts:%d totalDuration:%ld", vdecode->pts / 1000, totalDuration / 1000);
+                isPlayComplete = true;
+                isExit = true;
+                playNext();
+
+            } else if (vdecode->pts / 1000L < totalDuration / 1000) {
+                isPlayComplete = false;
+            }
+        }
 
         mux.unlock();
         sleep();
@@ -221,9 +254,13 @@ double IPlayer::playPos() {
     if (total > 0) {
         if (vdecode) {
 //            pos = (double) vdecode->pts / (double) total + 0.01;
-            pos = ((double) vdecode->pts / 1000 / (double) total + 0.01) * 100;
-            LOGE(" 总时长：%lld ms \"解码进度：%f s", total,pos);
-            if (pos >= 100){
+            if (demux && demux->mAudioPacketExist)
+                pos = ((double) audioPlay->pts / 1000 / (double) total + 0.01) * 100;
+            else if (demux && demux->mVideoPacketExist && !demux->mAudioPacketExist) {
+                pos = ((double) vdecode->pts / 1000 / (double) total + 0.01) * 100;
+            }
+            LOGE(" 总时长：%lld ms \"解码进度：%f s", total, pos);
+            if (pos >= 100) {
                 mux.unlock();
                 return 100;
             }
@@ -272,4 +309,102 @@ uint64_t IPlayer::getTotalDuration() {
         return demux->totalDuration;
     else
         return 0;
+}
+
+/**
+ * set多个 URL
+ * @param jniEnv
+ * @param lists
+ */
+void IPlayer::setDataSource(JNIEnv *jniEnv, jobject lists) {
+    mediaLists.clear();
+    nextIndex = 0;
+    //获取 ArrayList 对象
+    jclass listClass = jniEnv->GetObjectClass(lists);
+    //获取 list size 方法
+    jmethodID listSize = jniEnv->GetMethodID(listClass, "size", "()I");
+    //获取 list get 方法
+    jmethodID listGet = jniEnv->GetMethodID(listClass, "get", "(I)Ljava/lang/Object;");
+    //执行 size
+    jint size = jniEnv->CallIntMethod(lists, listSize);
+
+    for (int i = 0; i < size; ++i) {
+        //获取 MediaEntity 实体
+        jobject mediaEntity = jniEnv->CallObjectMethod(lists, listGet, i);
+        jclass mediaEntityClass = jniEnv->GetObjectClass(mediaEntity);
+
+        //获取路径
+        jfieldID path_field_id = jniEnv->GetFieldID(mediaEntityClass, "path", "Ljava/lang/String;");
+        jstring path_string = static_cast<jstring>(jniEnv->GetObjectField(mediaEntity, path_field_id));
+        const char *media_path = jniEnv->GetStringUTFChars(path_string, JNI_FALSE);
+        char *newFilePath = new char[strlen(media_path) + 1];
+        sprintf(newFilePath, "%s%c", media_path, 0);
+
+        //获取开始时间
+        jfieldID mediaStartDuration = jniEnv->GetFieldID(mediaEntityClass, "startDuration", "J");
+        jlong startDuration = reinterpret_cast<jlong>(jniEnv->GetLongField(mediaEntity, mediaStartDuration));
+
+        //获取结束时间
+        jfieldID mediaStopDuration = jniEnv->GetFieldID(mediaEntityClass, "stopDuration", "J");
+        jlong stopDuration = reinterpret_cast<jlong>(jniEnv->GetLongField(mediaEntity, mediaStopDuration));
+
+
+        MediaEntity *mediabean = new MediaEntity();
+        mediabean->path = newFilePath;
+        mediabean->startDuration = startDuration;
+        mediabean->stopDuration = stopDuration;
+        mediaLists.push_back(mediabean);
+        LOGD("path:%s startDuration:%ld  stopDuration:%ld ", newFilePath, startDuration, stopDuration);
+        jniEnv->ReleaseStringUTFChars(path_string, media_path);
+    }
+
+    //默认设置第一个
+    bool isNext = setNextDataSource();
+    if (isNext) {
+        LOGD("切换成功:%s", AVToolsBuilder::getInstance()->getPlayEngine()->getDataSource());
+    }
+}
+
+bool IPlayer::setNextDataSource() {
+    if (mediaLists.size() > 0) {
+        if (nextIndex == mediaLists.size()) {//3
+            nextIndex = 0;
+            if (!isLoopPlay)return false;
+        }
+        MediaEntity *mediaEntity = mediaLists.at(nextIndex);
+        AVToolsBuilder::getInstance()->getPlayEngine()->setDataSource(mediaEntity->path);
+        LOGD("nextIndex %d, set datasource:%s mediaLists.size():%d", nextIndex, mediaEntity->path, mediaLists.size());
+        nextIndex++;
+        return true;
+    }
+    return false;
+}
+
+void IPlayer::playNext() {
+    mux.lock();
+    if (setNextDataSource()) {
+        AVToolsBuilder::getInstance()->getPlayEngine()->getTransferInstance()->registerModel(false);
+        if (vdecode)
+            vdecode->close();
+        if (adecode)
+            adecode->close();
+        if (demux)
+            demux->close();
+        //解封装
+        if (!demux || !demux->open(AVToolsBuilder::getInstance()->getPlayEngine()->getDataSource())) {
+            LOGE("demux->Open %s failed!", AVToolsBuilder::getInstance()->getPlayEngine()->getDataSource());
+        }
+        //解码 解码可能不需要，如果是解封之后就是原始数据
+        if (!vdecode || !vdecode->open(demux->getVInfo(), false)) {
+            LOGE("vdecode->Open %s failed!", AVToolsBuilder::getInstance()->getPlayEngine()->getDataSource());
+        }
+        if (!adecode || !adecode->open(demux->getAInfo())) {
+            LOGE("adecode->Open %s failed!", AVToolsBuilder::getInstance()->getPlayEngine()->getDataSource());
+        }
+
+        totalDuration = demux->totalDuration;
+    } else {
+        LOGD("play not datasource");
+    }
+    mux.unlock();
 }

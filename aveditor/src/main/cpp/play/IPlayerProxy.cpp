@@ -21,6 +21,9 @@ void IPlayerProxy::initMediaCodec(void *vm) {
 
 int IPlayerProxy::open(const char *path, int isMediaCodec) {
     int ret = 0;
+    if (!path) {
+        return ret;
+    }
     mux.lock();
     if (pPlayer) {
         ret = pPlayer->open(path, isMediaCodec);
@@ -42,8 +45,13 @@ int IPlayerProxy::seekTo(double pos) {
 void IPlayerProxy::close() {
     LOGD("IPlayerProxy: close in");
     mux.lock();
-    if (pPlayer)
+    if (pPlayer) {
         pPlayer->close();
+    }
+
+    if (url) {
+        delete[](url);
+    }
     mux.unlock();
     LOGD("IPlayerProxy: close in");
 }
@@ -51,8 +59,10 @@ void IPlayerProxy::close() {
 int IPlayerProxy::start() {
     bool re = false;
     mux.lock();
-    if (pPlayer)
+    if (pPlayer) {
+
         re = pPlayer->start();
+    }
     mux.unlock();
     return re;
 }
@@ -110,9 +120,21 @@ int64_t IPlayerProxy::getTotalDuration() {
     return time;
 }
 
-ITransfer * IPlayerProxy::getTransferInstance() {
+ITransfer *IPlayerProxy::getTransferInstance() {
     return pPlayer->transfer;
 }
+
+/**
+ * set多个 URL
+ * @param jniEnv
+ * @param lists
+ */
+void IPlayerProxy::setDataSource(JNIEnv *jniEnv, jobject lists) {
+    if (pPlayer)
+        pPlayer->setDataSource(jniEnv, lists);
+}
+
+
 
 
 

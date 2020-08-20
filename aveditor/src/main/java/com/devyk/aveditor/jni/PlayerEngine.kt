@@ -1,5 +1,7 @@
 package com.devyk.aveditor.jni
 
+import com.devyk.aveditor.entity.MediaEntity
+
 /**
  * <pre>
  *     author  : devyk on 2020-08-12 16:57
@@ -20,6 +22,11 @@ public class PlayerEngine : IPlayer {
      * 设置播放源
      */
     public external override fun setDataSource(source: String?)
+
+    /**
+     * 设置播放源
+     */
+    public external override fun setDataSource(sources: ArrayList<MediaEntity>?)
 
     /**
      * 播放

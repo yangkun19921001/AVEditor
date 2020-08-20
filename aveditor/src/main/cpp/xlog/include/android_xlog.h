@@ -15,7 +15,7 @@
 
 #include "xloggerbase.h"
 
-#define TRINITY_TAG "Native--->IKAEdit-->"
+#define TRINITY_TAG "AVTools-->"
 
 //是否打印日志
 

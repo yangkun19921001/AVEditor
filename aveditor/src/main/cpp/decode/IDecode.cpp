@@ -11,7 +11,6 @@ void IDecode::update(AVData data) {
     }
     while (!isExit) {
         packsMutex.lock();
-
         if (packs.size() < maxCache) {
             packs.push_back(data);
             packsMutex.unlock();

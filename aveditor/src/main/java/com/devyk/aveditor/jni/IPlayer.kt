@@ -1,5 +1,8 @@
 package com.devyk.aveditor.jni
 
+import com.devyk.aveditor.entity.MediaEntity
+import java.util.ArrayList
+
 /**
  * <pre>
  *     author  : devyk on 2020-08-12 17:17
@@ -13,35 +16,42 @@ public interface IPlayer {
     /**
      * init 初始化
      */
-    public  fun initSurface(surface: Any)
+    public fun initSurface(surface: Any)
 
     /**
      * 设置播放源
      */
-    public  fun setDataSource(source: String?)
+    public fun setDataSource(source: String?)
+
+    /**
+     * 设置多个播放源第一个播放完成之后再播放第二个
+     */
+    public fun setDataSource(sources: ArrayList<MediaEntity>?)
 
     /**
      * 播放
      */
-    public  fun start()
+    public fun start()
 
     /**
      * 播放
      */
-    public  fun progress(): Double
+    public fun progress(): Double
 
     /**
      * 暂停
      */
-    public  fun setPause(status: Boolean)
+    public fun setPause(status: Boolean)
 
     /**
      * 指定跳转到某个时间点播放
      */
-    public  fun seekTo(seek: Double): Int;
+    public fun seekTo(seek: Double): Int;
 
     /**
      * 停止
      */
-    public  fun stop()
+    public fun stop()
+
+
 }

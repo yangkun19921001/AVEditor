@@ -11,7 +11,7 @@ import android.opengl.EGLExt
 import android.os.Build
 import android.text.TextUtils
 import android.util.Pair
-import com.devyk.aveditor.entity.MediaEntine
+import com.devyk.aveditor.entity.MediaEntity
 import com.devyk.aveditor.utils.LogHelper.TAG
 import java.io.*
 import java.nio.BufferOverflowException
@@ -359,7 +359,7 @@ public object MediaMergeUtils {
     }
 
     @Throws(IOException::class)
-    fun combineVideoSegments(videoList: List<MediaEntine>?, outputPath: String) {
+    fun combineVideoSegments(videoList: List<MediaEntity>?, outputPath: String) {
         if (videoList == null || videoList.size == 0) {
             return
         }
