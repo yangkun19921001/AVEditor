@@ -1,3 +1,5 @@
+
+
 ## KAVEdit
 
 这是一款短视频编辑 SDK，仿 DouYin 音视频处理。功能包含有美颜、滤镜、贴纸、特效、录制、分段录制、速率录制、变声、配乐、rtmp 直播推流、图片转视频、剪辑等功能。
@@ -62,13 +64,13 @@
 
 
 
-![](https://devyk.oss-cn-qingdao.aliyuncs.com/blog/20200830190426.jpg)
+![](https://devyk.oss-cn-qingdao.aliyuncs.com/blog/20200830192244.jpg) ![](https://devyk.oss-cn-qingdao.aliyuncs.com/blog/20200830192505.jpg)![](https://devyk.oss-cn-qingdao.aliyuncs.com/blog/20200830192337.jpg)
 
-![](https://devyk.oss-cn-qingdao.aliyuncs.com/blog/20200830190427.jpg)
+![](https://devyk.oss-cn-qingdao.aliyuncs.com/blog/20200830192558.jpg)
 
-![](https://devyk.oss-cn-qingdao.aliyuncs.com/blog/20200830190428.jpg)
 
-![](https://devyk.oss-cn-qingdao.aliyuncs.com/blog/20200830190429.jpg)
+
+
 
 
 
