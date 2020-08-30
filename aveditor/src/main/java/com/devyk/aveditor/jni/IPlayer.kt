@@ -1,6 +1,7 @@
 package com.devyk.aveditor.jni
 
 import com.devyk.aveditor.entity.MediaEntity
+import com.devyk.aveditor.entity.Speed
 import java.util.ArrayList
 
 /**
@@ -27,6 +28,17 @@ public interface IPlayer {
      * 设置多个播放源第一个播放完成之后再播放第二个
      */
     public fun setDataSource(sources: ArrayList<MediaEntity>?)
+
+
+    /**
+     * 设置播放的声音音量
+     */
+    public fun setPlayVolume(v:Int);
+
+    /**
+     * 设置播放的速率
+     */
+    public fun  setPlaySpeed(speed: Speed)
 
     /**
      * 播放

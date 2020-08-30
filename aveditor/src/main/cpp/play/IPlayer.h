@@ -104,6 +104,15 @@ public:
     virtual double playPos();
 
     /**
+     * 设置播放的音量
+     */
+    void setPlayVolume(int v);
+    /**
+     * 设置播放的速率
+     */
+    void setPlaySpeed(double d);
+
+    /**
      * 获取总时间
      */
     uint64_t getTotalDuration();

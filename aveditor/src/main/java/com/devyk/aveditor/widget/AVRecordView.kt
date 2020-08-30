@@ -81,9 +81,9 @@ public class AVRecordView : AVCameraView {
     /**
      * 开始录制
      */
-    fun startRecord(speed: Speed) {
+    fun startRecord(speed: Speed = Speed.NORMAL) {
         LogHelper.e("SORT->", "startRecord")
-        mStreamController?.start()
+        mStreamController?.start(speed)
     }
 
     fun setPause() {

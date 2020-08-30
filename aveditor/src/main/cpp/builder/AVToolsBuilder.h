@@ -22,6 +22,12 @@ public:
   */
     virtual IPlayerProxy *getPlayEngine(unsigned char index = 0);
 
+    /**
+  * 创建速率模块
+  * @return
+  */
+    virtual  SoundTouchUtils *getSoundTouchEngine();
+
 };
 
 

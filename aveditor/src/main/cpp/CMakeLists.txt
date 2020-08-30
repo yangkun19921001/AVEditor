@@ -11,6 +11,8 @@ set(JNI_PATH ${CMAKE_SOURCE_DIR})
 set(FFMPEG_INCLUDE_PATH ${CMAKE_SOURCE_DIR}/../../../../thirdparties/ffmpeg)
 #librtmp 头文件路径
 set(LIBRTMP_INCLUDE_PATH ${CMAKE_SOURCE_DIR}/../../../../thirdparties/librtmp)
+#librtmp 头文件路径
+set(SOUNDTOUCH_INCLUDE_PATH ${CMAKE_SOURCE_DIR}/soundtouch)
 # 动态库 路径
 set(SHARED_PATH ${CMAKE_SOURCE_DIR}/../jniLibs/${CMAKE_ANDROID_ARCH_ABI})
 # 静态库 路径
@@ -20,7 +22,7 @@ set(XLOG_PATH ${CMAKE_SOURCE_DIR}/xlog)
 #Base
 set(BASE_PATH ${CMAKE_SOURCE_DIR}/base)
 #变音变调
-set(SOUNDTOUCH_PATH ${CMAKE_SOURCE_DIR}/soundtouch)
+#set(SOUNDTOUCH_PATH ${CMAKE_SOURCE_DIR}/soundtouch)
 
 
 #-------------------------------------------------找文件----------------------------------------------
@@ -69,13 +71,14 @@ FILE(GLOB ENTITY_PATH_ALL_H ${JNI_PATH}/entity/*.h)
 FILE(GLOB MUXER_PATH_ALL_CPP ${JNI_PATH}/muxer/*.cpp)
 FILE(GLOB MUXER_PATH_ALL_H ${JNI_PATH}/muxer/*.h)
 #soundtouch  path
-FILE(GLOB SOUNDTOUCH_SOURCE_H_PATH ${CMAKE_SOURCE_DIR}/source/*.h)
-FILE(GLOB SOUNDTOUCH_CPP_PATH ${CMAKE_SOURCE_DIR}/source/*.cpp)
+FILE(GLOB SOUNDTOUCH_H_PATH ${SOUNDTOUCH_INCLUDE_PATH}/include/*.h)
+FILE(GLOB SOUNDTOUCH_SOURCE_H_PATH ${SOUNDTOUCH_INCLUDE_PATH}/source/*.h)
+FILE(GLOB SOUNDTOUCH_SOURCE_CPP_PATH ${SOUNDTOUCH_INCLUDE_PATH}/source/*.cpp)
 
 
 #-------------------------------------------------加载头文件----------------------------------------------
 #加载头文件
-include_directories(${SOUNDTOUCH_PATH}/include)
+include_directories(${SOUNDTOUCH_H_PATH})
 include_directories(${SOUNDTOUCH_SOURCE_H_PATH})
 include_directories(${FFMPEG_INCLUDE_PATH}/include)
 include_directories(${LIBRTMP_INCLUDE_PATH}/include)
@@ -116,7 +119,10 @@ add_library(marsxlog SHARED IMPORTED)
 set_target_properties(marsxlog PROPERTIES IMPORTED_LOCATION ${SHARED_PATH}/libmarsxlog.so)
 
 add_library(rtmp STATIC IMPORTED)
-set_target_properties(rtmp PROPERTIES IMPORTED_LOCATION ${SHARED_PATH}/librtmp.a)
+set_target_properties(rtmp PROPERTIES IMPORTED_LOCATION ${STATIC_PATH}/librtmp.a)
+
+#add_library(sountouch SHARED IMPORTED)
+#set_target_properties(sountouch PROPERTIES IMPORTED_LOCATION ${SHARED_PATH}/libsoundtouch.so)
 
 
 add_library(
@@ -136,7 +142,7 @@ add_library(
         ${UTILS_PATH_ALL_CPP}
         ${ENTITY_PATH_ALL_CPP}
         ${MUXER_PATH_ALL_CPP}
-        ${SOUNDTOUCH_CPP_PATH}
+        ${SOUNDTOUCH_SOURCE_CPP_PATH}
 )
 
 

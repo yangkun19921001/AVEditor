@@ -1,6 +1,7 @@
 package com.devyk.aveditor.jni
 
 import com.devyk.aveditor.entity.MediaEntity
+import com.devyk.aveditor.entity.Speed
 
 /**
  * <pre>
@@ -12,6 +13,15 @@ import com.devyk.aveditor.entity.MediaEntity
  * </pre>
  */
 public class PlayerEngine : IPlayer {
+
+
+    public external override fun setPlayVolume(v: Int);
+
+    override fun setPlaySpeed(speed: Speed) {
+        setPlaySpeed(speed.value)
+    }
+
+    private external fun setPlaySpeed(speed: Double);
 
     /**
      * init 初始化

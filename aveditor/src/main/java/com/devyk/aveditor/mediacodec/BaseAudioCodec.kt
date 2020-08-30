@@ -8,6 +8,8 @@ import com.devyk.aveditor.config.AudioConfiguration
 import com.devyk.aveditor.entity.Speed
 
 import java.nio.ByteBuffer
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+
 
 /**
  * <pre>
@@ -45,6 +47,7 @@ abstract class BaseAudioCodec(private var mAudioConfiguration: AudioConfiguratio
 
     @Synchronized
     override fun start() {
+        mPts = 0
         mMediaCodec = AudioMediaCodec.getAudioMediaCodec(mAudioConfiguration!!)
         mMediaCodec!!.start()
         Log.e("encode", "--start")
@@ -54,7 +57,7 @@ abstract class BaseAudioCodec(private var mAudioConfiguration: AudioConfiguratio
      * 将数据入队 java.lang.IllegalStateException
      */
     @Synchronized
-    override fun enqueueCodec(input: ByteArray?) {
+    override fun <T> enqueueCodec(input: T?) {
         if (mMediaCodec == null) {
             return
         }
@@ -62,11 +65,20 @@ abstract class BaseAudioCodec(private var mAudioConfiguration: AudioConfiguratio
         var outputBuffers = mMediaCodec!!.outputBuffers
         val inputBufferIndex = mMediaCodec!!.dequeueInputBuffer(12000)
 
+        var inputSize = 0
         if (inputBufferIndex >= 0) {
-            val inputBuffer = inputBuffers[inputBufferIndex]
-            inputBuffer.clear()
-            inputBuffer.put(input)
-            mMediaCodec!!.queueInputBuffer(inputBufferIndex, 0, input!!.size, 0, 0)
+            if (input is ByteArray) {
+                val inputBuffer = inputBuffers[inputBufferIndex]
+                inputBuffer.clear()
+                inputBuffer.put(input)
+                inputSize = input.size
+            } else if (input is ShortArray) {
+                val inputBuffer = inputBuffers[inputBufferIndex].asShortBuffer()
+                inputBuffer.clear()
+                inputBuffer.put(input)
+                inputSize = input.size
+            }
+            mMediaCodec!!.queueInputBuffer(inputBufferIndex, 0, inputSize, 0, 0)
         }
         var outputBufferIndex = mMediaCodec!!.dequeueOutputBuffer(mBufferInfo, 12000)
         if (outputBufferIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
@@ -78,7 +90,7 @@ abstract class BaseAudioCodec(private var mAudioConfiguration: AudioConfiguratio
             outputBuffer?.let { outputBuffer ->
                 if (mBufferInfo.size != 0) {
                     mBufferInfo.presentationTimeUs = getPTSUs()
-                    LogHelper.e(TAG, "音频时间戳：${mBufferInfo!!.presentationTimeUs / 1000_000}")
+//                    LogHelper.e(TAG, "音频时间戳：${mBufferInfo!!.presentationTimeUs / 1000_000}")
                     onAudioData(outputBuffer, mBufferInfo)
                     prevOutputPTSUs = mBufferInfo.presentationTimeUs
                     mMediaCodec!!.releaseOutputBuffer(outputBufferIndex, false)
@@ -101,14 +113,21 @@ abstract class BaseAudioCodec(private var mAudioConfiguration: AudioConfiguratio
     }
 
     protected fun getPTSUs(): Long {
-        var result = System.nanoTime() / 1000L
-        // presentationTimeUs should be monotonic
-        // otherwise muxer fail to write
-        if (result < prevOutputPTSUs) {
-            result = prevOutputPTSUs - result + result
-        }
-        return result
+
+        if (mPts == 0L)
+            mPts = System.nanoTime() / 1000;
+
+//        var result = System.nanoTime() / 1000L
+//        // presentationTimeUs should be monotonic
+//        // otherwise muxer fail to write
+//        if (result < prevOutputPTSUs) {
+//            result = prevOutputPTSUs - result + result
+//        }
+//        return result
+        return  System.nanoTime() / 1000 - mPts
     }
+
+
 
     /**
      * 获取输出的格式

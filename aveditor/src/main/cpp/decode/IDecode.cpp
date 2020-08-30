@@ -25,22 +25,19 @@ void IDecode::update(AVData data) {
 int IDecode::clear() {
     int ret = 0;
     //TODO ---- 音频模块这里会导致死锁,先暂时释放
-    if (isAudio) {
-        packsMutex.unlock();
-    }
-
-    packsMutex.lock();
-
+    packsMutex.unlock();
     while (!packs.empty()) {
         ret = 1;
+        packsMutex.lock();
         AVData data = packs.front();
         if (data.data)
             data.drop();
         packs.pop_front();
+        packsMutex.unlock();
     }
     pts = 0;
     synPts = 0;
-    packsMutex.unlock();
+
 
     return ret;
 }
@@ -58,7 +55,7 @@ void IDecode::main() {
         }
         //判断音视频同步
         if (!isAudio && synPts > 0) {
-            //TODO 这里要注意一样，更优解是
+            //TODO 这里要注意，更优解是
             //1、如果视频的 pts 小于 音频的 pts 那么视频 pts 就 seek
             //2、如果视频的 pts 大于 音频的 pts 那么需要丢帧
             if (synPts < pts) {
@@ -85,6 +82,7 @@ void IDecode::main() {
                 //拿到解码之后的数据
                 AVData frame = getDecodeFrame();
                 if (!frame.data) {
+                    packsMutex.unlock();
                     break;
                 }
                 pts = frame.pts;
@@ -96,6 +94,7 @@ void IDecode::main() {
         packsMutex.unlock();
     }
 
+    packsMutex.unlock();
 
 }
 

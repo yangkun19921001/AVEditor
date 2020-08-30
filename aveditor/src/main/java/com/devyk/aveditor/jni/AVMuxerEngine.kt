@@ -10,9 +10,50 @@ package com.devyk.aveditor.jni
  * </pre>
  */
 public class AVMuxerEngine : INativeMuxer {
-    override external fun initMuxer(outPath: String?, outFormat: String?)
 
-    override external fun enqueue(byteArray: ByteArray?,isAudio: Boolean)
+    public override fun initMuxer(
+        outPath: String?,
+        videoWidth: Int,
+        videoHeight: Int,
+        frame_rate: Int,
+        videoBitRate: Int,
+        audioSampleRate: Int,
+        audioChannels: Int,
+        audioBitRate: Int
+    ) {
+        native_initMuxer(
+            outPath,
+            videoWidth,
+            videoHeight,
+            frame_rate,
+            videoBitRate,
+            audioSampleRate,
+            audioChannels,
+            audioBitRate
+        )
+    }
 
-    override external fun close()
+    override fun enqueue(byteArray: ByteArray?, isAudio: Boolean, pts: Long) {
+        native_enqueue(byteArray, isAudio, pts)
+    }
+
+    override fun close() {
+        native_close()
+    }
+
+
+    private external fun native_enqueue(byteArray: ByteArray?, isAudio: Boolean, pts: Long);
+
+    private external fun native_close()
+
+    private external fun native_initMuxer(
+        outPath: String?,
+        videoWidth: Int,
+        videoHeight: Int,
+        frameRate: Int,
+        videoBitRate: Int,
+        audioSampleRate: Int,
+        audioChannels: Int,
+        audioBitRate: Int
+    )
 }

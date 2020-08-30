@@ -9,6 +9,7 @@ import android.provider.ContactsContract
 import com.devyk.aveditor.callback.IController
 import com.devyk.aveditor.config.AudioConfiguration
 import com.devyk.aveditor.config.VideoConfiguration
+import com.devyk.aveditor.entity.Speed
 import com.devyk.aveditor.stream.PacketType
 import com.devyk.aveditor.stream.packer.Packer
 import com.devyk.aveditor.stream.packer.PackerType
@@ -92,13 +93,13 @@ public class StreamController : IController.OnAudioDataListener, IController.OnV
      * 设置打包器
      */
     fun setPacker(packer: PackerType, outPath: String? = getCurData()) {
-        this.mPacker = MP4Packer(outPath)
+        this.mPacker = MP4Packer(outPath,mAudioConfiguration,mVideoConfiguration)
         when (packer) {
             PackerType.MP4 -> {
-                this.mPacker = MP4Packer(outPath)
+                this.mPacker = MP4Packer(outPath,mAudioConfiguration,mVideoConfiguration)
             }
             PackerType.FLV -> {
-                this.mPacker = MP4Packer(outPath)
+                this.mPacker = MP4Packer(outPath,mAudioConfiguration,mVideoConfiguration)
             }
             PackerType.RTMP -> {
                 this.mPacker = RtmpPacker()
@@ -149,14 +150,14 @@ public class StreamController : IController.OnAudioDataListener, IController.OnV
         }
     }
 
-    fun start() {
+    fun start(speed: Speed) {
+        mPacker?.start()
         LogHelper.e("SORT->", "start")
         if (mAudioController == null || mVideoController == null)
             init()
         mAudioController?.setRecordAudioSource(recordAudioSource)
-        mAudioController?.start()
+        mAudioController?.start(speed)
         mVideoController?.start()
-
 
     }
 

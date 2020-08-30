@@ -8,13 +8,18 @@ import com.devyk.aveditor.callback.OnAudioEncodeListener
 import com.devyk.aveditor.config.AudioConfiguration
 import com.devyk.aveditor.decode.FFmpegAudioDecode
 import com.devyk.aveditor.decode.IAudioDecode
+import com.devyk.aveditor.entity.Speed
 import com.devyk.aveditor.jni.IMusicDecode
+import com.devyk.aveditor.jni.JNIManager
 import com.devyk.aveditor.mediacodec.AudioEncoder
 import com.devyk.aveditor.utils.LogHelper
+import com.devyk.aveditor.utils.LogHelper.TAG
 import com.devyk.aveditor.utils.ThreadUtils
 
 import java.nio.ByteBuffer
-
+import java.sql.Array
+import java.util.*
+import java.util.concurrent.LinkedBlockingQueue
 
 
 /**
@@ -62,6 +67,12 @@ public class AudioController(audioConfiguration: AudioConfiguration) : IControll
      */
     private var mAudioDataListener: IController.OnAudioDataListener? = null
 
+    private var mSpeedPcmData: ShortArray? = null
+
+    /**
+     * 默认的速率
+     */
+    private var mSpeed = Speed.NORMAL
 
     init {
         mAudioConfiguration = audioConfiguration
@@ -82,8 +93,9 @@ public class AudioController(audioConfiguration: AudioConfiguration) : IControll
     /**
      * 触发 开始
      */
-    override fun start() {
-        LogHelper.e("SORT->","start mRecordAudioSource")
+    override fun start(speed: Speed) {
+        LogHelper.e("SORT->", "start mRecordAudioSource")
+        mSpeed = speed
         mRecordAudioSource?.let {
             mAudioDecode.addRecordMusic(it)
             mAudioDecode.start()
@@ -124,21 +136,33 @@ public class AudioController(audioConfiguration: AudioConfiguration) : IControll
         }
         mAudioProcessor.stop()
 
+        JNIManager.getAVSpeedEngine()?.close(0)
     }
 
     /**
      * 当采集 PCM 数据的时候返回
      */
     override fun onPcmData(pcmData: ByteArray) {
-        mAudioEncoder?.enqueueCodec(pcmData)
+        if (mSpeed == Speed.NORMAL) {
+            mAudioEncoder?.enqueueCodec(pcmData)
+            return
+        }
+        Arrays.fill(mSpeedPcmData, 0)
+        val soundtouch = JNIManager.getAVSpeedEngine()?.changeSpeed(0, pcmData, mSpeedPcmData!!, pcmData.size)
+        soundtouch?.let { outSize ->
+            if (outSize > 0) {
+                mAudioEncoder?.enqueueCodec(Arrays.copyOf(mSpeedPcmData, outSize))
+            }
+        }
     }
 
     /**
      * 当开始采集
      */
     override fun onStart(sampleRate: Int, channels: Int, sampleFormat: Int) {
+        mSpeedPcmData = ShortArray(sampleRate * channels * 2)
+        JNIManager.getAVSpeedEngine()?.initSpeedController(0, channels, sampleRate, mSpeed.value, 1.0)
         mAudioEncoder?.start()
-
     }
 
     /**
@@ -178,7 +202,7 @@ public class AudioController(audioConfiguration: AudioConfiguration) : IControll
     }
 
     fun setRecordAudioSource(recordAudioSource: String?) {
-        LogHelper.e("SORT->","mRecordAudioSource setRecordAudioSource")
+        LogHelper.e("SORT->", "mRecordAudioSource setRecordAudioSource")
         mRecordAudioSource = recordAudioSource
 
     }
@@ -191,11 +215,11 @@ public class AudioController(audioConfiguration: AudioConfiguration) : IControll
     }
 
     /**
-     * 这里是 C++ 解码传递过来的
+     * 这里是 C++ 解码传递过来的，是 PCM 数据
      */
     override fun onDecodeData(data: ByteArray) {
-        mAudioEncoder?.enqueueCodec(data)
-
+//        mAudioEncoder?.enqueueCodec(data)
+        onPcmData(data)
     }
 
     override fun onDecodeStop() {

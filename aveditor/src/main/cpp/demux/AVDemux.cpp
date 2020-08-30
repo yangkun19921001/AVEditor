@@ -58,7 +58,7 @@ int AVDemux::open(const char *source) {
         close();
         char error_meg[1024] = {0};
         av_strerror(ret, error_meg, sizeof(error_meg));
-        LOGE("find stream info failed :%s", source);
+        LOGE("find stream info failed :%s error:%s \n", source,error_meg);
 
         return false;
     }
@@ -84,9 +84,8 @@ int AVDemux::open(const char *source) {
     //读取媒体文件总长度 ms
     this->totalDuration = pFormatCtx->duration / 1000;
 
-
     LOGE("open source success :%s", source);
-    LOGE("source totalDuration :%lld", totalDuration);
+    LOGE("source totalDuration :%lld  pFormatCtx->duration:%lld", totalDuration, pFormatCtx->duration);
     return true;
 }
 
@@ -152,6 +151,7 @@ AVParameter AVDemux::getAInfo() {
     para.para = pFormatCtx->streams[re]->codecpar;
     //音频声音通道
     para.channels = pFormatCtx->streams[re]->codecpar->channels;
+    para.duration = pFormatCtx->streams[re]->duration;
     //采样率
     para.sample_rate = pFormatCtx->streams[re]->codecpar->sample_rate;
     LOGE("Audio Info 音频通道 %d 采样率：%lld 格式:%d", para.channels, para.sample_rate,

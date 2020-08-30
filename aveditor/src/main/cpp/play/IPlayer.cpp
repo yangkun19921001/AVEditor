@@ -58,47 +58,59 @@ void IPlayer::close() {
     //2 先关闭主体线程，再清理观察者
     //同步线程
     IThread::stop();
+    LOGD("IPlayer:close in 1");
     //解封装
     if (demux) {
         demux->stop();
 
     }
-
+    LOGD("IPlayer:close in 2");
     //解码
     if (vdecode) {
         vdecode->stop();
     }
+    LOGD("IPlayer:close in 3");
     if (adecode) {
         adecode->stop();
     }
+    LOGD("IPlayer:close in 4");
     if (audioPlay) {
         audioPlay->stop();
     }
-
+    LOGD("IPlayer:close in 5");
     //2 清理缓冲队列
     if (vdecode) {
         vdecode->clear();
     }
+
+    LOGD("IPlayer:close in 6");
     if (adecode) {
         adecode->clear();
     }
+
+    LOGD("IPlayer:close in 7");
     if (audioPlay) {
         audioPlay->clear();
     }
-
+    LOGD("IPlayer:close in 8");
     //3 清理资源
     if (audioPlay) {
         audioPlay->close();
     }
+    LOGD("IPlayer:close in 9");
     if (videoView) {
         videoView->close();
     }
+
+    LOGD("IPlayer:close in 10");
     if (vdecode) {
         vdecode->close();
     }
+    LOGD("IPlayer:close in 11");
     if (adecode) {
         adecode->close();
     }
+    LOGD("IPlayer:close in 12");
     if (demux) {
         demux->close();
     }
@@ -219,8 +231,7 @@ void IPlayer::main() {
             } else if (audioPlay->pts / 1000L < totalDuration / 1000) {
                 isPlayComplete = false;
             }
-            LOGD("播放状态：play audioPts:%d totalDuration:%ld nextIndex:%d", audioPlay->pts / 1000,
-                 totalDuration / 1000, nextIndex);
+
             sleep();
             continue;
         }
@@ -311,13 +322,24 @@ uint64_t IPlayer::getTotalDuration() {
         return 0;
 }
 
+
 /**
  * set多个 URL
  * @param jniEnv
  * @param lists
  */
 void IPlayer::setDataSource(JNIEnv *jniEnv, jobject lists) {
-    mediaLists.clear();
+    if (mediaLists.size() > 0) {
+        while (!mediaLists.empty()){
+            MediaEntity *media =   mediaLists.front();
+            LOGD("clear path:%s \n",media->path);
+            delete[](media->path);
+            delete media;
+            mediaLists.pop_front();
+
+        }
+    }
+
     nextIndex = 0;
     //获取 ArrayList 对象
     jclass listClass = jniEnv->GetObjectClass(lists);
@@ -380,6 +402,7 @@ bool IPlayer::setNextDataSource() {
     return false;
 }
 
+
 void IPlayer::playNext() {
     mux.lock();
     if (setNextDataSource()) {
@@ -407,4 +430,15 @@ void IPlayer::playNext() {
         LOGD("play not datasource");
     }
     mux.unlock();
+}
+
+void IPlayer::setPlayVolume(int v) {
+    if (audioPlay)
+        audioPlay->setPlayVolume(v);
+}
+
+void IPlayer::setPlaySpeed(double d) {
+    if (audioPlay)
+        audioPlay->setPlaySpeed(d);
+
 }

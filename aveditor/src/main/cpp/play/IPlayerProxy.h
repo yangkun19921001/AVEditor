@@ -97,6 +97,16 @@ public:
 
 
     /**
+     * 设置播放的音量
+     */
+    void setPlayVolume(int v);
+    /**
+     * 设置播放的速率
+     */
+    void setPlaySpeed(double d);
+
+
+    /**
      * 设置播放源
      * @param source
      */

@@ -7,6 +7,7 @@ import android.opengl.EGLContext
 import com.devyk.aveditor.callback.IController
 import com.devyk.aveditor.callback.OnVideoEncodeListener
 import com.devyk.aveditor.config.VideoConfiguration
+import com.devyk.aveditor.entity.Speed
 import com.devyk.aveditor.video.camera.CameraRecorder
 
 import java.nio.ByteBuffer
@@ -33,7 +34,7 @@ public class VideoController(context: Context, textureId:Int, eglContext: EGLCon
         mCameraVideoController?.prepare(videoConfiguration)
         mCameraVideoController?.setOnVideoEncodeListener(this)
     }
-    override fun start() {
+    override fun start(speed: Speed) {
         mCameraVideoController?.start()
     }
 

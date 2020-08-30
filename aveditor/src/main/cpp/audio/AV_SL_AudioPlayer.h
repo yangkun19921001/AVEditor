@@ -9,6 +9,9 @@
 #include "IAudioPlayer.h"
 #include <SLES/OpenSLES.h>
 #include <SLES/OpenSLES_Android.h>
+#include "utils/SoundTouchUtils.h"
+
+//#include "../builder/AVToolsBuilder.h"
 
 /**
  * 具体 OpenSL ES 渲染模块
@@ -17,16 +20,21 @@ class AV_SL_AudioPlayer : public IAudioPlayer {
 protected:
     unsigned char *buffer = 0;
     std::mutex mux;
-    //SoundTouch
-//    SoundTouch *soundTouch = NULL;
-
+    SAMPLETYPE *sd_buffer;
+    /**
+     * 播放的速率
+     */
+    double mPlaySpeed = 1.0;
+    /**
+      * 当前播放的音量
+    */
+    int curVolume = 10;
 
 
 public:
     AV_SL_AudioPlayer();
 
     virtual ~AV_SL_AudioPlayer();
-
 
 
 public:
@@ -36,6 +44,17 @@ public:
      * @return
      */
     virtual int startPlayer(AVParameter parameter);
+
+    /**
+    * 设置播放的速率
+    * @param v
+    */
+    virtual void setPlaySpeed(double v);
+
+    /**
+     * 设置播放的声音
+     */
+    virtual void setPlayVolume(int percent);
 
     /**
      * 关闭资源
@@ -57,18 +76,8 @@ public:
 
     int GetChannelMask(int channels);
 
-    /**
- * 速率初始化
- */
-    void initSoundTouch(int sampleRate,int channels,int speed);
-//    {
-//        this->sampleBuffer = static_cast<SAMPLETYPE *>(malloc(this->sampleRate * 2 * 2));
-//        soundTouch = new SoundTouch();
-//        soundTouch->setSampleRate(sampleRate);
-//        soundTouch->setChannels(2);
-//        soundTouch->setPitch(1);
-//        soundTouch->setTempo(speed);
-//    }
+
+    int readPcmData();
 };
 
 

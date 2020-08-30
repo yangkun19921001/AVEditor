@@ -13,13 +13,18 @@
 #define NATIVE_MUSIC_ENCODE_PATH "com/devyk/aveditor/jni/AVFileDecodeEngine"
 #define JNI_PLAY_JAVA_PATH "com/devyk/aveditor/jni/PlayerEngine"
 #define JNI_MUXER_JAVA_PATH "com/devyk/aveditor/jni/AVMuxerEngine"
+#define JNI_SPEED_JAVA_PATH "com/devyk/aveditor/jni/AVSpeedEngine"
 #define NELEM(x) ((int) (sizeof(x) / sizeof((x)[0])))
 
 
 JavaVM *jVM = 0;
 IMuxer *muxer = 0;
 
-static void Android_JNI_initSurface(JNIEnv *env, jobject instance, jobject surface) {
+
+
+//--------------------------------------------------- 播放器相关 API -----------------------------------------------------//
+
+static void Android_JNI_PLAY_initSurface(JNIEnv *env, jobject instance, jobject surface) {
     ANativeWindow *win = ANativeWindow_fromSurface(env, surface);
 
     AVToolsBuilder::getInstance()->getPlayEngine()->initWindow(win);
@@ -54,23 +59,17 @@ static void Android_JNI_initSurface(JNIEnv *env, jobject instance, jobject surfa
 
 }
 
-static void Android_JNI_setDataSource(JNIEnv *env, jobject instance, jstring url_) {
+static void Android_JNI_PLAY_setDataSource(JNIEnv *env, jobject instance, jstring url_) {
     const char *url = env->GetStringUTFChars(url_, 0);
     AVToolsBuilder::getInstance()->getPlayEngine()->setDataSource(url);
     env->ReleaseStringUTFChars(url_, url);
 }
 
-static void Android_JNI_setDataSources(JNIEnv *env, jobject instance, jobject lists) {
-//    const char *url = env->GetStringUTFChars(url_, 0);
-//    AVToolsBuilder::getInstance()->getPlayEngine()->setDataSource(url);
-//    env->ReleaseStringUTFChars(url_, url);
-//    std::list<MediaEntity> mediaLists;
-
+static void Android_JNI_PLAY_setDataSources(JNIEnv *env, jobject instance, jobject lists) {
     AVToolsBuilder::getInstance()->getPlayEngine()->setDataSource(env, lists);
-
 }
 
-static void Android_JNI_start(JNIEnv *env, jobject instance) {
+static void Android_JNI_PLAY_start(JNIEnv *env, jobject instance) {
     AVToolsBuilder::getInstance()->getPlayEngine()->getTransferInstance()->registerModel(false);
     if (AVToolsBuilder::getInstance()->getPlayEngine()->open(
             AVToolsBuilder::getInstance()->getPlayEngine()->getDataSource(), false)) {
@@ -79,6 +78,47 @@ static void Android_JNI_start(JNIEnv *env, jobject instance) {
 }
 
 
+static jdouble Android_JNI_PLAY_progress(JNIEnv *env, jobject instance) {
+    return AVToolsBuilder::getInstance()->getPlayEngine()->playPos();
+}
+
+static void Android_JNI_PLAY_setPause(JNIEnv *env, jobject instance, jboolean isPause) {
+    AVToolsBuilder::getInstance()->getPlayEngine()->setPause(isPause);
+}
+
+static void Android_JNI_PLAY_stop(JNIEnv *env, jobject instance) {
+    AVToolsBuilder::getInstance()->getPlayEngine()->close();
+}
+
+
+static void Android_JNI_PLAY_setPlayVolume(JNIEnv *env, jobject instance, jint volume) {
+    AVToolsBuilder::getInstance()->getPlayEngine()->setPlayVolume(volume);
+}
+
+static void Android_JNI_PLAY_setPlaySpeed(JNIEnv *env, jobject instance, jdouble volume) {
+    AVToolsBuilder::getInstance()->getPlayEngine()->setPlaySpeed(volume);
+}
+
+static int Android_JNI_PLAY_seekTo(JNIEnv *env, jobject instance, jdouble seek) {
+    if (AVToolsBuilder::getInstance()->getPlayEngine()->getTotalDuration() > 0)
+        return AVToolsBuilder::getInstance()->getPlayEngine()->seekTo(
+                seek / (double) 100);
+    return 0;
+}
+
+static void Android_JNI_pause(JNIEnv *jniEnv, jobject jobject1) {
+    AVToolsBuilder::getInstance()->getPlayEngine()->setPause(true);
+
+}
+
+static void Android_JNI_resume(JNIEnv *jniEnv, jobject jobject1) {
+    AVToolsBuilder::getInstance()->getPlayEngine()->setPause(false);
+
+}
+
+//--------------------------------------------------- 播放器相关 API -----------------------------------------------------//
+
+//--------------------------------------------------- MP3 边解码边播放 -----------------------------------------------------//
 /**
  * 解码并且播放
  * @param env
@@ -89,25 +129,6 @@ static void Android_JNI_decodeMusicAlsoPlay(JNIEnv *env, jobject instance) {
             AVToolsBuilder::getInstance()->getPlayEngine()->getDataSource(), false)) {
         AVToolsBuilder::getInstance()->getPlayEngine()->start();
     }
-}
-
-static jdouble Android_JNI_progress(JNIEnv *env, jobject instance) {
-    return AVToolsBuilder::getInstance()->getPlayEngine()->playPos();
-}
-
-static void Android_JNI_setPause(JNIEnv *env, jobject instance, jboolean isPause) {
-    AVToolsBuilder::getInstance()->getPlayEngine()->setPause(isPause);
-}
-
-static void Android_JNI_stop(JNIEnv *env, jobject instance) {
-    AVToolsBuilder::getInstance()->getPlayEngine()->close();
-}
-
-static int Android_JNI_seekTo(JNIEnv *env, jobject instance, jdouble seek) {
-    if (AVToolsBuilder::getInstance()->getPlayEngine()->getTotalDuration() > 0)
-        return AVToolsBuilder::getInstance()->getPlayEngine()->seekTo(
-                seek / (double) 100);
-    return 0;
 }
 
 
@@ -121,34 +142,33 @@ static void Android_JNI_addRecordMusic(JNIEnv *jniEnv, jobject jobject1, jstring
     jniEnv->ReleaseStringUTFChars(pathFile, url);
 }
 
-
-static void Android_JNI_pause(JNIEnv *jniEnv, jobject jobject1) {
-    AVToolsBuilder::getInstance()->getPlayEngine()->setPause(true);
-
-}
-
-static void Android_JNI_resume(JNIEnv *jniEnv, jobject jobject1) {
-    AVToolsBuilder::getInstance()->getPlayEngine()->setPause(false);
-
-}
-
-
+//--------------------------------------------------- 封装器 API -----------------------------------------------------//
 /**
  * 初始化封装器
  * @param jniEnv
  * @param jobject1
  * @param outPath
  * @param outformat
+ *   const char *outPath, const char *outFormat = MP4,
+            int video_width, int video_height,
+            int frame_rate, int video_bit_rate,
+            int audio_sample_rate, int audio_channels, int audio_bit_rate
  */
-static void Android_JNI_initMuxer(JNIEnv *jniEnv, jobject jobject1, jstring outPath, jstring outformat) {
+static void Android_JNI_muxer_initMuxer(JNIEnv *jniEnv, jobject jobject1,
+                                        jstring outPath,
+                                        jint video_width, jint video_height,
+                                        jint frame_rate, jint video_bit_rate,
+                                        jint audio_sample_rate, jint audio_channels, jint audio_bit_rate
+) {
     const char *outUrl = jniEnv->GetStringUTFChars(outPath, 0);
-    const char *outUrlFormat = jniEnv->GetStringUTFChars(outPath, 0);
 
-    muxer = new AVMuxer();
-    muxer->initMuxer(outUrl, outUrlFormat);
-
+    if (!muxer)
+        muxer = new AVMuxer();
+    int ret = muxer->init(outUrl, video_width, video_height, frame_rate, video_bit_rate, audio_sample_rate,
+                          audio_channels, audio_bit_rate, "DevYK -> AVToos");
+    if (ret >= 0)
+        muxer->start();
     jniEnv->ReleaseStringUTFChars(outPath, outUrl);
-    jniEnv->ReleaseStringUTFChars(outformat, outUrlFormat);
 
 }
 
@@ -158,15 +178,28 @@ static void Android_JNI_initMuxer(JNIEnv *jniEnv, jobject jobject1, jstring outP
  * @param jobject1
  * @param bytes
  */
-static void Android_JNI_muxer_enqueue(JNIEnv *jniEnv, jobject jobject1, jbyteArray bytes, jboolean isAudio) {
+
+static void
+Android_JNI_muxer_enqueue(JNIEnv *jniEnv, jobject jobject1, jbyteArray bytes, jboolean isAudio, jlong pts
+) {
     jbyte *jbyte1 = jniEnv->GetByteArrayElements(bytes, 0);
+    jsize size = jniEnv->GetArrayLength(bytes);
 
-//    if (muxer)
-//        muxer->enqueue()
-
+    AVData data;
+    if (muxer) {
+        data.alloc(size, reinterpret_cast<const char *>(jbyte1));
+        data.pts = pts;
+        data.size = size;
+        if (isAudio) {
+            data.isAudio = true;
+            LOGI("size and position is  Android_JNI_muxer_enqueue {%lld, %d,%lld}", pts, size, data.pts);
+        }
+        muxer->enqueue(data);
+        delete[] data.data;
+    }
     jniEnv->ReleaseByteArrayElements(bytes, jbyte1, 0);
-
 }
+
 
 /**
  * 关闭封装器
@@ -174,10 +207,79 @@ static void Android_JNI_muxer_enqueue(JNIEnv *jniEnv, jobject jobject1, jbyteArr
  * @param jobject1
  */
 static void Android_JNI_muxer_close(JNIEnv *jniEnv, jobject jobject1) {
-    if (muxer)
+    if (muxer) {
         muxer->close();
+        muxer = 0;
+    }
+
 }
 
+//--------------------------------------------------- 封装器 API -----------------------------------------------------//
+
+
+//------------------------------------------------ 音频变速 ----------------------------------------------------------------------//
+/**
+ * 初始化 Speed 控制器
+ * @param jniEnv
+ * @param jobject1
+ * @param track
+ * @param channels
+ * @param sampleingRate
+ * @param tempo
+ * @param pitchSemi
+ */
+static void Android_JNI_SPEED_initSpeedController(JNIEnv *jniEnv, jobject jobject1,
+                                                  jint track, jint channels,
+                                                  jint sampleingRate,
+                                                  jdouble tempo,
+                                                  jdouble pitchSemi) {
+
+    AVToolsBuilder::getInstance()->getSoundTouchEngine()->initSpeedController(channels, sampleingRate, tempo,
+                                                                              pitchSemi);
+
+
+}
+
+/**
+ * 改变速率
+ */
+static jint Android_JNI_SPEED_changeSpeed(JNIEnv *jniEnv, jobject jobject1,
+                                          jint track, jbyteArray pcm, jshortArray out, jint size) {
+
+    int outSize = 0;
+    jshort *outPcm = jniEnv->GetShortArrayElements(out, 0);
+    jbyte *inPcm = jniEnv->GetByteArrayElements(pcm, 0);
+
+    outSize = AVToolsBuilder::getInstance()->getSoundTouchEngine()->soundtouch(reinterpret_cast<uint8_t *>(inPcm),
+                                                                               &outPcm, size
+    );
+
+    jniEnv->ReleaseShortArrayElements(out, outPcm, 0);
+    jniEnv->ReleaseByteArrayElements(pcm, inPcm, 0);
+//
+    return outSize;
+}
+
+
+/**
+ * 关闭 soundtouch
+ */
+static void Android_JNI_SPEED_close(JNIEnv *jniEnv, jobject jobject1,
+                                    jint track) {
+    AVToolsBuilder::getInstance()->getSoundTouchEngine()->close(
+    );
+}
+
+/**
+ * 设置录制的 speed
+ */
+static void Android_JNI_SPEED_setRecordSpeed(JNIEnv *jniEnv, jobject jobject1,
+                                             jint track, jdouble speed) {
+    AVToolsBuilder::getInstance()->getSoundTouchEngine()->setSpeed(speed
+    );
+}
+
+//------------------------------------------------ 音频变速 ----------------------------------------------------------------------//
 
 /**
  * 解码相关函数
@@ -187,45 +289,58 @@ static JNINativeMethod NativeMethod[] = {
         {"start",          "()V",                   (void *) Android_JNI_decodeMusicAlsoPlay},
         {"pause",          "()V",                   (void *) Android_JNI_pause},
         {"resume",         "()V",                   (void *) Android_JNI_resume},
-        {"stop",           "()V",                   (void *) Android_JNI_stop}
+        {"stop",           "()V",                   (void *) Android_JNI_PLAY_stop}
 };
 
 /**
  * 播放相关函数
  */
 static JNINativeMethod mNativePlayMethods[] = {
-        {"initSurface",   "(Ljava/lang/Object;)V",    (void **) Android_JNI_initSurface},
-        {"setDataSource", "(Ljava/lang/String;)V",    (void **) Android_JNI_setDataSource},
-        {"setDataSource", "(Ljava/util/ArrayList;)V", (void **) Android_JNI_setDataSources},
-        {"start",         "()V",                      (void **) Android_JNI_start},
-        {"setPause",      "(Z)V",                     (void **) Android_JNI_setPause},
-        {"stop",          "()V",                      (void **) Android_JNI_stop},
-        {"progress",      "()D",                      (void **) Android_JNI_progress},
-        {"seekTo",        "(D)I",                     (void **) Android_JNI_seekTo}
+        {"initSurface",   "(Ljava/lang/Object;)V",    (void **) Android_JNI_PLAY_initSurface},
+        {"setDataSource", "(Ljava/lang/String;)V",    (void **) Android_JNI_PLAY_setDataSource},
+        {"setDataSource", "(Ljava/util/ArrayList;)V", (void **) Android_JNI_PLAY_setDataSources},
+        {"start",         "()V",                      (void **) Android_JNI_PLAY_start},
+        {"setPause",      "(Z)V",                     (void **) Android_JNI_PLAY_setPause},
+        {"stop",          "()V",                      (void **) Android_JNI_PLAY_stop},
+        {"progress",      "()D",                      (void **) Android_JNI_PLAY_progress},
+        {"setPlaySpeed",  "(D)V",                     (void **) Android_JNI_PLAY_setPlaySpeed},
+        {"setPlayVolume", "(I)V",                     (void **) Android_JNI_PLAY_setPlayVolume},
+        {"seekTo",        "(D)I",                     (void **) Android_JNI_PLAY_seekTo}
 };
 
 
 /**
  * 编辑相关
  */
-static JNINativeMethod mNativeEditorMethods[] = {
-        {"initSurface",   "(Ljava/lang/Object;)V", (void **) Android_JNI_initSurface},
-        {"setDataSource", "(Ljava/lang/String;)V", (void **) Android_JNI_setDataSource},
-        {"start",         "()V",                   (void **) Android_JNI_start},
-        {"setPause",      "(Z)V",                  (void **) Android_JNI_setPause},
-        {"stop",          "()V",                   (void **) Android_JNI_stop},
-        {"progress",      "()D",                   (void **) Android_JNI_progress},
-        {"seekTo",        "(D)I",                  (void **) Android_JNI_seekTo}
-};
+//static JNINativeMethod mNativeEditorMethods[] = {
+//        {"initSurface",   "(Ljava/lang/Object;)V", (void **) Android_JNI_initSurface},
+//        {"setDataSource", "(Ljava/lang/String;)V", (void **) Android_JNI_setDataSource},
+//        {"start",         "()V",                   (void **) Android_JNI_start},
+//        {"setPause",      "(Z)V",                  (void **) Android_JNI_setPause},
+//        {"stop",          "()V",                   (void **) Android_JNI_stop},
+//        {"progress",      "()D",                   (void **) Android_JNI_progress},
+//        {"seekTo",        "(D)I",                  (void **) Android_JNI_seekTo}
+//};
 
 
 /**
  * 音视频封装包相关
  */
 static JNINativeMethod mNativeMuxerMethods[] = {
-        {"initMuxer", "(Ljava/lang/String;Ljava/lang/String;)V", (void **) Android_JNI_initMuxer},
-        {"enqueue",   "([BZ)V",                                  (void **) Android_JNI_muxer_enqueue},
-        {"close",     "()V",                                     (void **) Android_JNI_muxer_close},
+        {"native_initMuxer", "(Ljava/lang/String;IIIIIII)V", (void **) Android_JNI_muxer_initMuxer},
+        {"native_enqueue",   "([BZJ)V",                      (void **) Android_JNI_muxer_enqueue},
+        {"native_close",     "()V",                          (void **) Android_JNI_muxer_close},
+};
+
+/**
+ * 速率控制
+ */
+static JNINativeMethod mNativeSpeedMethods[] = {
+        {"initSpeedController", "(IIIDD)V",  (void **) Android_JNI_SPEED_initSpeedController},
+        {"changeSpeed",         "(I[B[SI)I", (void **) Android_JNI_SPEED_changeSpeed},
+        {"close",               "(I)V",      (void **) Android_JNI_SPEED_close},
+        {"setRecordSpeed",      "(ID)V",     (void **) Android_JNI_SPEED_setRecordSpeed},
+
 };
 
 jint JNI_OnLoad(JavaVM *javaVM, void *pVoid) {
@@ -234,18 +349,26 @@ jint JNI_OnLoad(JavaVM *javaVM, void *pVoid) {
     if (javaVM->GetEnv(reinterpret_cast<void **>(&jniEnv), JNI_VERSION_1_6) != JNI_OK)
         return JNI_ERR;
 
+    //Mp3 文件解码
     jclass javaClass = jniEnv->FindClass(NATIVE_MUSIC_ENCODE_PATH);
     jniEnv->RegisterNatives(javaClass, NativeMethod, sizeof(NativeMethod) / sizeof(NativeMethod[0]));
     jniEnv->DeleteLocalRef(javaClass);
 
+    //播放
     jclass nativePlayMethodClass = jniEnv->FindClass(JNI_PLAY_JAVA_PATH);
     jniEnv->RegisterNatives(nativePlayMethodClass, mNativePlayMethods, NELEM(mNativePlayMethods));
     jniEnv->DeleteLocalRef(nativePlayMethodClass);
 
 
+    //封装器
     jclass nativeMuxerMethodClass = jniEnv->FindClass(JNI_MUXER_JAVA_PATH);
     jniEnv->RegisterNatives(nativeMuxerMethodClass, mNativeMuxerMethods, NELEM(mNativeMuxerMethods));
     jniEnv->DeleteLocalRef(nativeMuxerMethodClass);
+
+    //速率控制
+    jclass nativeSpeedMethodClass = jniEnv->FindClass(JNI_SPEED_JAVA_PATH);
+    jniEnv->RegisterNatives(nativeSpeedMethodClass, mNativeSpeedMethods, NELEM(mNativeSpeedMethods));
+    jniEnv->DeleteLocalRef(nativeSpeedMethodClass);
 
     LOGE("FFMPEG CONFIG %s \n", avutil_configuration());
     LOGE("FFMPEG VERSION%s \n", av_version_info());

@@ -20,7 +20,7 @@ public interface IAudioCodec{
     /**
      * 将数据送入编解码器
      */
-    fun enqueueCodec(input: ByteArray?);
+     fun <T> enqueueCodec(input: T?)
 
     /**
      * 停止编码

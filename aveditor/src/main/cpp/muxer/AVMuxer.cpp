@@ -6,64 +6,68 @@
 
 
 /**
- * 初始化复用器
- * @param outPath
- * @param ourFormat
- * @return
+ * 初始化默认
  */
-int AVMuxer::initMuxer(const char *outPath, const char *ourFormat) {
-    int ret = 0;
-    //声明一个输出格式的上下文
-    ret = avformat_alloc_output_context2(&formatCtx, NULL, ourFormat, outPath);
-    //7.打开网络输出流
-    if (avio_open(&formatCtx->pb, outPath, AVIO_FLAG_WRITE) < 0) {
-        LOGE("Could not open output URL '%s'", outPath);
-    }
+int AVMuxer::init(const char *path, int video_width, int video_height, int frame_rate, int video_bit_rate,
+                  int audio_sample_rate, int audio_channels, int audio_bit_rate, char *tag_name) {
 
-    ofmt = formatCtx->oformat;
-    //8.写文件头部
-    if (avformat_write_header(formatCtx, NULL) < 0) {
-        LOGE("Error occurred when opening output URL");
-    }
-    return 0;
-}
+    isInitSucceed = -1;
+    outUrl = new char[strlen(path) + 1];
+    strcpy(outUrl, path);
 
-/**
- * 可以开始写入音视频数据了
- * @param avData
- */
-void AVMuxer::dequeue(AVData avData) {
-    if (!formatCtx)return;
-    if (avData.isAudio) {
 
+    mp4Muxer = new Mp4Muxer();
+    if (mp4Muxer->Init(outUrl, video_width, video_height, frame_rate, video_bit_rate, audio_sample_rate, audio_channels,
+                       audio_bit_rate, tag_name) < 0) {
+        LOGE("Mp4Muxer init fail.");
+        mp4Muxer->Stop();
+        return -1;
     } else {
-
+        isInitSucceed = 1;
     }
-    AVPacket *avPacket = (AVPacket *) avData.data;
-    int ret = av_interleaved_write_frame(formatCtx, avPacket);
-    if (ret < 0) {
-        LOGE("Error write frame %s", av_err2str(ret));
-    }
+    return isInitSucceed;
 }
 
+int AVMuxer::start() {
+    int ret = IMuxer::start();
+    return ret;
+}
 
-/**
- * 清理资源
- */
 void AVMuxer::clear() {
-    IMuxer::clear();
+    close();
 }
 
 void AVMuxer::close() {
-    if (!formatCtx)return;
-//9.收尾工作
-    av_write_trailer(formatCtx);
-    if (formatCtx && !(ofmt->flags & AVFMT_NOFILE)) {
-        avio_close(formatCtx->pb);
 
+    if (mp4Muxer) {
+        mp4Muxer->Stop();
+        mp4Muxer = NULL;
     }
-    avformat_free_context(formatCtx);
-    formatCtx = 0;
+
 }
+
+int AVMuxer::enqueue(AVData avData) {
+    int ret = 0;
+    if (mp4Muxer)
+        mp4Muxer->enqueue(avData.data, avData.isAudio, avData.size, avData.pts);
+    return ret;
+}
+
+
+/**
+ * 这里 < 0 退出
+ * @return
+ */
+int AVMuxer::dequeue() {
+    int ret = 0;
+    if (mp4Muxer)
+        ret = mp4Muxer->Encode();
+    return ret;
+}
+
+
+
+
+
 
 

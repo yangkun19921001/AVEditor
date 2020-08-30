@@ -134,6 +134,17 @@ void IPlayerProxy::setDataSource(JNIEnv *jniEnv, jobject lists) {
         pPlayer->setDataSource(jniEnv, lists);
 }
 
+void IPlayerProxy::setPlayVolume(int v) {
+    if (pPlayer)
+        pPlayer->setPlayVolume(v);
+
+}
+
+void IPlayerProxy::setPlaySpeed(double d) {
+    if (pPlayer)
+        pPlayer->setPlaySpeed(d);
+}
+
 
 
 

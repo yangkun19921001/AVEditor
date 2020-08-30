@@ -12,7 +12,6 @@ package com.devyk.aveditor.jni
 object JNIManager {
 
 
-
     /**
      * 播放模块
      */
@@ -33,6 +32,10 @@ object JNIManager {
      */
     private var mAVMuxer: INativeMuxer? = null
 
+    /**
+     * 录制速率控制
+     */
+    private var mSpeedController: ISpeedController? = null
 
 
     init {
@@ -41,6 +44,7 @@ object JNIManager {
         mAVFileDecodeEngine = AVFileDecodeEngine()
         mAVEditor = AVEditorEngine()
         mAVMuxer = AVMuxerEngine()
+        mSpeedController = AVSpeedEngine();
     }
 
 
@@ -93,4 +97,9 @@ object JNIManager {
      * 拿到媒体编辑模块
      */
     public fun getAVMuxerEngine(): INativeMuxer? = mAVMuxer
+
+    /**
+     * 拿到速率控制
+     */
+    public fun getAVSpeedEngine(): ISpeedController? = mSpeedController
 }

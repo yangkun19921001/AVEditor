@@ -66,7 +66,7 @@ public open class AVCameraView : GLSurfaceView,
     /**
      * Camera 纹理
      */
-    private var mSurfaceTextureView: SurfaceTexture? = null
+    public var mSurfaceTextureView: SurfaceTexture? = null
 
 
     constructor(context: Context?) : this(context, null)

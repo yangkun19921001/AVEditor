@@ -43,6 +43,7 @@ public:
      * 时间基
      */
      AVRational timebase;
+    int64_t duration;
 };
 
 

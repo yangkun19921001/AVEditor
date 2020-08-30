@@ -2,6 +2,8 @@
 // Created by 阳坤 on 2020-05-22.
 //
 
+
+#include <builder/AVToolsBuilder.h>
 #include "AV_SL_AudioPlayer.h"
 
 static SLObjectItf engineSL = NULL;
@@ -10,13 +12,15 @@ static SLObjectItf mix = NULL;
 static SLObjectItf player = NULL;
 static SLPlayItf iplayer = NULL;
 static SLAndroidSimpleBufferQueueItf pcmQue = NULL;
+//音量
+static SLVolumeItf pcmVolumePlay = NULL;
 
 AV_SL_AudioPlayer::AV_SL_AudioPlayer() {
-    this->buffer = new unsigned char[1024 * 1024];
+
 }
 
 AV_SL_AudioPlayer::~AV_SL_AudioPlayer() {
-    delete buffer;
+    delete[]buffer;
     buffer = 0;
 }
 
@@ -32,6 +36,7 @@ static void play_pcm_callback(SLAndroidSimpleBufferQueueItf bf, void *contex) {
         return;
     }
     ap->playCallback((void *) bf);
+
 }
 
 int AV_SL_AudioPlayer::startPlayer(AVParameter parameter) {
@@ -40,6 +45,11 @@ int AV_SL_AudioPlayer::startPlayer(AVParameter parameter) {
     mux.lock();
     //1 创建引擎
     eng = createSL();
+    this->buffer = new unsigned char[parameter.sample_rate * parameter.channels * 2];
+    this->sd_buffer = new SAMPLETYPE[parameter.sample_rate * parameter.channels * 2];
+    //初始化速率控制
+    AVToolsBuilder::getInstance()->getSoundTouchEngine()->initSpeedController(parameter.channels,
+                                                                              parameter.sample_rate, mPlaySpeed, 1);
     if (eng) {
         LOGI("CreateSL success！ ");
     } else {
@@ -96,6 +106,11 @@ int AV_SL_AudioPlayer::startPlayer(AVParameter parameter) {
         LOGI("CreateAudioPlayer success!");
     }
     (*player)->Realize(player, SL_BOOLEAN_FALSE);
+
+
+
+
+
     //获取player接口
     re = (*player)->GetInterface(player, SL_IID_PLAY, &iplayer);
     if (re != SL_RESULT_SUCCESS) {
@@ -103,6 +118,13 @@ int AV_SL_AudioPlayer::startPlayer(AVParameter parameter) {
         LOGE("GetInterface SL_IID_PLAY failed!");
         return false;
     }
+
+
+    //设置音量接口
+    (*player)->GetInterface(player, SL_IID_VOLUME, &pcmVolumePlay);
+    setPlayVolume(this->curVolume);
+
+
     re = (*player)->GetInterface(player, SL_IID_BUFFERQUEUE, &pcmQue);
     if (re != SL_RESULT_SUCCESS) {
         mux.unlock();
@@ -151,15 +173,51 @@ void AV_SL_AudioPlayer::close() {
         (*engineSL)->Destroy(engineSL);
     }
 
+    AVToolsBuilder::getInstance()->getSoundTouchEngine()->close();
+//    finish()
     engineSL = NULL;
     eng = NULL;
     mix = NULL;
     player = NULL;
     iplayer = NULL;
     pcmQue = NULL;
+    pcmVolumePlay = NULL;
     mux.unlock();
 
 }
+
+//void AV_SL_AudioPlayer::playCallback(void *p) {
+//    if (!p)return;
+//
+//
+//    SLAndroidSimpleBufferQueueItf bf = (SLAndroidSimpleBufferQueueItf) p;
+//    //XLOGE("SLAudioPlay::PlayCall");
+//
+//  int size  =   readPcmData();
+//
+//    //阻塞
+//    AVData d = getData();
+//    if (d.size <= 0) {
+//        LOGE("GetData() size is 0");
+//        return;
+//    }
+//    if (!buffer)
+//        return;
+//    memcpy(buffer, d.data, d.size);
+//
+//    d.size = AVToolsBuilder::getInstance()->getSoundTouchEngine()->soundtouch(buffer,
+//                                                                              &sd_buffer, d.size);
+////    d.size = setSoundTouchData(d.size);
+//    if (d.size <= 0)
+//        return;
+//
+//    mux.lock();
+//    if (pcmQue && (*pcmQue))
+//        (*pcmQue)->Enqueue(pcmQue, sd_buffer, d.size);
+//    mux.unlock();
+//    d.drop();
+//
+//}
 
 void AV_SL_AudioPlayer::playCallback(void *p) {
     if (!p)return;
@@ -167,20 +225,16 @@ void AV_SL_AudioPlayer::playCallback(void *p) {
 
     SLAndroidSimpleBufferQueueItf bf = (SLAndroidSimpleBufferQueueItf) p;
     //XLOGE("SLAudioPlay::PlayCall");
-    //阻塞
-    AVData d = getData();
-    if (d.size <= 0) {
-        LOGE("GetData() size is 0");
+
+    int size = readPcmData();
+
+    if (size <= 0)
         return;
-    }
-    if (!buffer)
-        return;
-    memcpy(buffer, d.data, d.size);
+
     mux.lock();
     if (pcmQue && (*pcmQue))
-        (*pcmQue)->Enqueue(pcmQue, buffer, d.size);
+        (*pcmQue)->Enqueue(pcmQue, sd_buffer, size);
     mux.unlock();
-    d.drop();
 
 }
 
@@ -257,13 +311,65 @@ int AV_SL_AudioPlayer::GetChannelMask(int channels) {
     return channelMask;
 }
 
+int AV_SL_AudioPlayer::readPcmData() {
+    int num = 0;
+    while (!isExit) {
+        //阻塞
+        AVData d = getData();
+        if (d.size <= 0) {
+            LOGE("GetData() size is 0");
+            return 0;
+        }
+        memcpy(buffer, d.data, d.size);
+        free(d.data);
+        num = AVToolsBuilder::getInstance()->getSoundTouchEngine()->soundtouch(buffer, &sd_buffer, d.size);
+        if (num == 0)
+            continue;
+//        d.drop();
+
+        return num;
+    }
+}
 
 /**
- * 初始化变音/变速器
- * @param sampleRate
- * @param channels
- * @param speed
+ * 设置播放的速率
+ * @param v
  */
-void AV_SL_AudioPlayer::initSoundTouch(int sampleRate, int channels, int speed) {
-
+void AV_SL_AudioPlayer::setPlaySpeed(double v) {
+    this->mPlaySpeed = v;
+    AVToolsBuilder::getInstance()->getSoundTouchEngine()->setSpeed(this->mPlaySpeed);
 }
+
+/**
+ * 设置播放的音量
+ * @param percent
+ */
+void AV_SL_AudioPlayer::setPlayVolume(int percent) {
+    this->curVolume = percent;
+    if (pcmVolumePlay != NULL) {
+        if (percent > 30) {
+            (*pcmVolumePlay)->SetVolumeLevel(pcmVolumePlay, (100 - percent) * -20);
+        } else if (percent > 25) {
+            (*pcmVolumePlay)->SetVolumeLevel(pcmVolumePlay, (100 - percent) * -22);
+        } else if (percent > 20) {
+            (*pcmVolumePlay)->SetVolumeLevel(pcmVolumePlay, (100 - percent) * -25);
+        } else if (percent > 15) {
+            (*pcmVolumePlay)->SetVolumeLevel(pcmVolumePlay, (100 - percent) * -28);
+        } else if (percent > 10) {
+            (*pcmVolumePlay)->SetVolumeLevel(pcmVolumePlay, (100 - percent) * -30);
+        } else if (percent > 5) {
+            (*pcmVolumePlay)->SetVolumeLevel(pcmVolumePlay, (100 - percent) * -34);
+        } else if (percent > 3) {
+            (*pcmVolumePlay)->SetVolumeLevel(pcmVolumePlay, (100 - percent) * -37);
+        } else if (percent > 0) {
+            (*pcmVolumePlay)->SetVolumeLevel(pcmVolumePlay, (100 - percent) * -40);
+        } else {
+            (*pcmVolumePlay)->SetVolumeLevel(pcmVolumePlay, (100 - percent) * -100);
+        }
+    }
+}
+
+
+
+
+

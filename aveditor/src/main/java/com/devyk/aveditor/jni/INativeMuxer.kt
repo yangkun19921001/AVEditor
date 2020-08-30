@@ -14,9 +14,24 @@ import com.devyk.aveditor.stream.packer.PackerType
 
 public interface INativeMuxer {
 
-    fun initMuxer(outPath: String?, outFormat: String? = PackerType.MP4.name);
+//    const char *outPath, const char *outFormat = MP4,
+//    int video_width, int video_height,
+//    int frame_rate, int video_bit_rate,
+//    int audio_sample_rate, int audio_channels, int audio_bit_rate
 
-    fun enqueue(byteArray: ByteArray?,isAudio: Boolean = false);
+    fun initMuxer(
+        outPath: String?,
+        videoWidth: Int,
+        videoHeight: Int,
+        frame_rate: Int,
+        videoBitRate: Int,
+        audioSampleRate: Int,
+        audioChannels: Int,
+        audioBitRate: Int
+    );
+
+    fun enqueue(byteArray: ByteArray?, isAudio: Boolean = false, pts: Long);
 
     fun close()
+
 }

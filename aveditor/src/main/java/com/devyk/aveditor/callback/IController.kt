@@ -2,6 +2,7 @@ package com.devyk.aveditor.callback
 
 import android.media.MediaCodec
 import android.media.MediaFormat
+import com.devyk.aveditor.entity.Speed
 import java.nio.ByteBuffer
 
 /**
@@ -15,7 +16,7 @@ import java.nio.ByteBuffer
  */
 public interface IController {
 
-    fun start()
+    fun start(speed: Speed = Speed.NORMAL)
 
     fun pause()
 

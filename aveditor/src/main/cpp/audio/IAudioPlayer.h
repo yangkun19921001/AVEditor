@@ -41,6 +41,17 @@ public:
     virtual int startPlayer(AVParameter parameter) = 0;
 
 
+    /**
+     * 设置播放的速率
+     * @param v
+     */
+    virtual void setPlaySpeed(double v) = 0;
+
+    /**
+     * 设置播放的声音
+     */
+     virtual void setPlayVolume(int percent) = 0;
+
 
     /**
      * 关闭资源
@@ -51,6 +62,8 @@ public:
      * 清理缓存
      */
     virtual void clear();
+
+
 };
 
 

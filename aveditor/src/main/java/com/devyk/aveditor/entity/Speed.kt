@@ -1,14 +1,14 @@
 package com.devyk.aveditor.entity
 
-enum class Speed(val value: Float) {
+enum class Speed(val value: Double) {
     //级慢
-    VERY_SLOW(0.25f),
+    VERY_SLOW(0.25),
     //慢
-    SLOW(0.5f),
+    SLOW(0.5),
     //正常
-    NORMAL(1.0f),
+    NORMAL(1.0),
     //快
-    FAST(2.0f),
+    FAST(2.0),
     //极快
-    VERY_FAST(3.0f)
+    VERY_FAST(3.0)
 }
