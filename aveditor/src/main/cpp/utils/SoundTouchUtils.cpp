@@ -40,6 +40,7 @@ void SoundTouchUtils::close() {
     isExit = true;
     if (!soundTouch)
         return;
+    soundTouch->flush();
     soundTouch->clear();
     soundTouch = 0;
 }

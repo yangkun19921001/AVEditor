@@ -225,13 +225,15 @@ void AV_SL_AudioPlayer::playCallback(void *p) {
 
     SLAndroidSimpleBufferQueueItf bf = (SLAndroidSimpleBufferQueueItf) p;
     //XLOGE("SLAudioPlay::PlayCall");
-
+    mux.lock();
     int size = readPcmData();
 
-    if (size <= 0)
+    if (size <= 0) {
+        mux.unlock();
         return;
+    }
 
-    mux.lock();
+
     if (pcmQue && (*pcmQue))
         (*pcmQue)->Enqueue(pcmQue, sd_buffer, size);
     mux.unlock();
@@ -316,19 +318,21 @@ int AV_SL_AudioPlayer::readPcmData() {
     while (!isExit) {
         //阻塞
         AVData d = getData();
-        if (d.size <= 0) {
-            LOGE("GetData() size is 0");
+        if (d.size <= 0 || !d.data) {
+            mux.unlock();
             return 0;
         }
         memcpy(buffer, d.data, d.size);
         free(d.data);
         num = AVToolsBuilder::getInstance()->getSoundTouchEngine()->soundtouch(buffer, &sd_buffer, d.size);
-        if (num == 0)
+        if (num == 0) {
+            mux.unlock();
             continue;
-//        d.drop();
-
+        }
+        d.drop();
         return num;
     }
+    return num;
 }
 
 /**
