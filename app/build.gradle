@@ -52,7 +52,6 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     //test
     testImplementation rootProject.ext.dependencies["junit"]
-
     //androidx
     implementation rootProject.ext.dependencies["appcompat"]
     implementation rootProject.ext.dependencies["constraintlayout"]
@@ -75,7 +74,6 @@ dependencies {
     implementation rootProject.ext.dependencies["devyk_native_crash_report"]
     //adapter
     implementation rootProject.ext.dependencies["adapter"]
-
 
     //音视频编辑 SDK
     implementation project(path: ':aveditor')

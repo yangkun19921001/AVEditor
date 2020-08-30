@@ -105,7 +105,17 @@ public class AVRecordActivity : BaseActivity<Int>(), TimerUtils.OnTimerUtilsList
     override fun initListener() {
         douyin_button_fun_tab.setOnTabSelectListener(object : OnTabSelectListener {
             override fun onTabSelect(position: Int) {
-                when (douyin_button_fun_tab.getTitleView(position).text) {
+
+                douyin_button_fun_tab.setTextsize(mSelectTextSize, mUnSelectTextSize)
+            }
+
+            override fun onTabReselect(position: Int) {
+            }
+        })
+
+        douyin_button_speed_tab.setOnTabSelectListener(object : OnTabSelectListener {
+            override fun onTabSelect(position: Int) {
+                when (douyin_button_speed_tab.getTitleView(position).text) {
                     mRecordSpeedTitles[0] -> {
                         mSpeed = Speed.VERY_SLOW
                     }
@@ -125,15 +135,6 @@ public class AVRecordActivity : BaseActivity<Int>(), TimerUtils.OnTimerUtilsList
                         mSpeed = Speed.NORMAL
                     }
                 }
-                douyin_button_fun_tab.setTextsize(mSelectTextSize, mUnSelectTextSize)
-            }
-
-            override fun onTabReselect(position: Int) {
-            }
-        })
-
-        douyin_button_speed_tab.setOnTabSelectListener(object : OnTabSelectListener {
-            override fun onTabSelect(position: Int) {
                 douyin_button_speed_tab.setTextsize(mSelectTextSize, mUnSelectTextSize)
             }
 
