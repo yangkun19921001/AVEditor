@@ -37,7 +37,7 @@ public:
      * 初始化
      * @param vm
      */
-    void initMediaCodec(void *vm = 0);
+    int initMediaCodec(void *vm = 0);
 
     /**
      * 打开资源

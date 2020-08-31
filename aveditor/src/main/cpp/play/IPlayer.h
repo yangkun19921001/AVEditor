@@ -135,7 +135,7 @@ public:
      * 是否设置硬编码器
      * @param isMediacodec
      */
-    virtual void initMediaCodec(void *vm);
+    virtual int initMediaCodec(void *vm);
 
     /**
      * 设置

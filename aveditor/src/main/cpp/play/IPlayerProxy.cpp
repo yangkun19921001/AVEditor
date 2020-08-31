@@ -11,12 +11,14 @@ IPlayerProxy::IPlayerProxy() {
 }
 
 
-void IPlayerProxy::initMediaCodec(void *vm) {
+int IPlayerProxy::initMediaCodec(void *vm) {
+    int ret = -1;
     mux.lock();
     if (pPlayer) {
-        pPlayer->initMediaCodec(vm);
+        ret = pPlayer->initMediaCodec(vm);
     }
     mux.unlock();
+    return ret;
 }
 
 int IPlayerProxy::open(const char *path, int isMediaCodec) {

@@ -41,7 +41,7 @@ public:
  * 初始化硬件编码器
  * @param vm
  */
-    static void initMediaCodec(void *vm);
+    static int initMediaCodec(void *vm);
 
     /**
      * 打开解码器

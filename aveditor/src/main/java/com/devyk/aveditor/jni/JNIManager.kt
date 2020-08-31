@@ -40,7 +40,7 @@ object JNIManager {
 
     init {
         System.loadLibrary("avtools")
-        mPlayerEngine = PlayerEngine()
+        mPlayerEngine = AVPlayerEngine()
         mAVFileDecodeEngine = AVFileDecodeEngine()
         mAVEditor = AVEditorEngine()
         mAVMuxer = AVMuxerEngine()
@@ -79,7 +79,7 @@ object JNIManager {
     /**
      * 拿到播放的模块
      */
-    public fun getPlayEngine(): IPlayer? = mPlayerEngine
+    public fun getAVPlayEngine(): IPlayer? = mPlayerEngine
 
     /**
      * 拿到媒体解码模块

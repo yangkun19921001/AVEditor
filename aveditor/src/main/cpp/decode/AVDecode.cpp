@@ -7,8 +7,8 @@
 
 FILE *file = 0;
 
-void AVDecode::initMediaCodec(void *vm) {
-    av_jni_set_java_vm(vm, 0);
+int AVDecode::initMediaCodec(void *vm) {
+    return av_jni_set_java_vm(vm, 0);
 }
 
 

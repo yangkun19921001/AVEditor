@@ -45,7 +45,7 @@ class AVPlayView : GLSurfaceView, SurfaceHolder.Callback, GLSurfaceView.Renderer
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {
         setRenderer(this)
         isExit = false
-        mIPlayer = JNIManager.getPlayEngine()
+        mIPlayer = JNIManager.getAVPlayEngine()
         Thread(this).start()
     }
 

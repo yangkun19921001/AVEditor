@@ -9,10 +9,10 @@ import com.devyk.aveditor.entity.Speed
  *     blog    : https://juejin.im/user/578259398ac2470061f3a3fb/posts
  *     github  : https://github.com/yangkun19921001
  *     mailbox : yang1001yk@gmail.com
- *     desc    : This is PlayerEngine
+ *     desc    : This is AVPlayerEngine
  * </pre>
  */
-public class PlayerEngine : IPlayer {
+public class AVPlayerEngine : IPlayer {
 
 
     public external override fun setPlayVolume(v: Int);

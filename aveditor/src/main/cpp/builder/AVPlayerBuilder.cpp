@@ -34,8 +34,8 @@ IPlayer *AVPlayerBuilder::createPlayer(unsigned char index) {
     return IPlayer::getInstance(index);
 }
 
-void AVPlayerBuilder::initMediaCodec(void *vm) {
-    AVDecode::initMediaCodec(vm);
+int AVPlayerBuilder::initMediaCodec(void *vm) {
+    return   AVDecode::initMediaCodec(vm);
 
 }
 

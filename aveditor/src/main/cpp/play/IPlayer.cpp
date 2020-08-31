@@ -264,13 +264,12 @@ double IPlayer::playPos() {
         total = demux->totalDuration / 1000;
     if (total > 0) {
         if (vdecode) {
-//            pos = (double) vdecode->pts / (double) total + 0.01;
             if (demux && demux->mAudioPacketExist)
-                pos = ((double) audioPlay->pts / 1000 / (double) total + 0.01) * 100;
+                pos = ((double)(adecode->pts)/(double)(demux->totalDuration)+0.01)*100; //加 0.01 是为了更加精准
             else if (demux && demux->mVideoPacketExist && !demux->mAudioPacketExist) {
-                pos = ((double) vdecode->pts / 1000 / (double) total + 0.01) * 100;
+                pos =  ((double)(vdecode->pts)/(double)(demux->totalDuration)+0.01)*100;
             }
-            LOGE(" 总时长：%lld ms \"解码进度：%f s", total, pos);
+            LOGE(" 总时长：%lld s \"解码进度：%f  ", total, pos);
             if (pos >= 100) {
                 mux.unlock();
                 return 100;
@@ -310,8 +309,8 @@ int IPlayer::start() {
     return true;
 }
 
-void IPlayer::initMediaCodec(void *javaVM) {
-    AVPlayerBuilder::initMediaCodec(javaVM);
+int IPlayer::initMediaCodec(void *javaVM) {
+    return   AVPlayerBuilder::initMediaCodec(javaVM);
 
 }
 

@@ -11,9 +11,10 @@
 #include "builder/AVToolsBuilder.h"
 
 #define NATIVE_MUSIC_ENCODE_PATH "com/devyk/aveditor/jni/AVFileDecodeEngine"
-#define JNI_PLAY_JAVA_PATH "com/devyk/aveditor/jni/PlayerEngine"
+#define JNI_PLAY_JAVA_PATH "com/devyk/aveditor/jni/AVPlayerEngine"
 #define JNI_MUXER_JAVA_PATH "com/devyk/aveditor/jni/AVMuxerEngine"
 #define JNI_SPEED_JAVA_PATH "com/devyk/aveditor/jni/AVSpeedEngine"
+#define JNI_EDITOR_JAVA_PATH "com/devyk/aveditor/jni/AVEditorEngine"
 #define NELEM(x) ((int) (sizeof(x) / sizeof((x)[0])))
 
 
@@ -281,6 +282,29 @@ static void Android_JNI_SPEED_setRecordSpeed(JNIEnv *jniEnv, jobject jobject1,
 
 //------------------------------------------------ 音频变速 ----------------------------------------------------------------------//
 
+
+//------------------------------------------------ 音视频编辑 ----------------------------------------------------------------------//
+static void Android_JNI_EDITOR_avStartMerge(JNIEnv *jniEnv, jobject jobject1, jstring outPath, jstring mediaFormat) {}
+
+static jint Android_JNI_EDITOR_avMergeProgress(JNIEnv *jniEnv, jobject jobject1) {
+    return 0;
+}
+
+static void Android_JNI_EDITOR_addAVFile(JNIEnv *jniEnv, jobject jobject1, jobject mediaEntity) {}
+
+static void Android_EDITOR_JNI_insertAVFile(JNIEnv *jniEnv, jobject jobject1, jint index, jobject mediaEntity) {}
+
+static void Android_JNI_EDITOR_addAVFiles(JNIEnv *jniEnv, jobject jobject1, jobject lists) {}
+
+static void Android_JNI_EDITOR_insertAVFiles(JNIEnv *jniEnv, jobject jobject1, jint index, jobject lists) {}
+
+static void
+Android_JNI_EDITOR_addMusicFile(JNIEnv *jniEnv, jobject jobject1, jlong startDur, jlong stopDur, jstring inPath,
+                                jint bgVolume, jint musicVolume) {}
+
+static void Android_JNI_EDITOR_removeAVFile(JNIEnv *jniEnv, jobject jobject1, jint index) {}
+//------------------------------------------------ 音视频编辑 ----------------------------------------------------------------------//
+
 /**
  * 解码相关函数
  */
@@ -310,17 +334,18 @@ static JNINativeMethod mNativePlayMethods[] = {
 
 
 /**
- * 编辑相关
+ * 音视频编辑
  */
-//static JNINativeMethod mNativeEditorMethods[] = {
-//        {"initSurface",   "(Ljava/lang/Object;)V", (void **) Android_JNI_initSurface},
-//        {"setDataSource", "(Ljava/lang/String;)V", (void **) Android_JNI_setDataSource},
-//        {"start",         "()V",                   (void **) Android_JNI_start},
-//        {"setPause",      "(Z)V",                  (void **) Android_JNI_setPause},
-//        {"stop",          "()V",                   (void **) Android_JNI_stop},
-//        {"progress",      "()D",                   (void **) Android_JNI_progress},
-//        {"seekTo",        "(D)I",                  (void **) Android_JNI_seekTo}
-//};
+static JNINativeMethod mNativeEditorMethods[] = {
+        {"avStartMerge",    "(Ljava/lang/String;Ljava/lang/String;)V",     (void **) Android_JNI_EDITOR_avStartMerge},
+        {"avMergeProgress", "()I",                                         (void **) Android_JNI_EDITOR_avMergeProgress},
+        {"addAVFile",       "(Lcom/devyk/aveditor/entity/MediaEntity;)V",  (void **) Android_JNI_EDITOR_addAVFile},
+        {"insertAVFile",    "(ILcom/devyk/aveditor/entity/MediaEntity;)V", (void **) Android_EDITOR_JNI_insertAVFile},
+        {"addAVFiles",      "(Ljava/util/ArrayList;)V",                    (void **) Android_JNI_EDITOR_addAVFiles},
+        {"insertAVFiles",   "(ILjava/util/ArrayList;)V",                   (void **) Android_JNI_EDITOR_insertAVFiles},
+        {"addMusicFile",    "(JJLjava/lang/String;II)V",                   (void **) Android_JNI_EDITOR_addMusicFile},
+        {"removeAVFile",    "(I)V",                                        (void **) Android_JNI_EDITOR_removeAVFile}
+};
 
 
 /**
@@ -370,9 +395,19 @@ jint JNI_OnLoad(JavaVM *javaVM, void *pVoid) {
     jniEnv->RegisterNatives(nativeSpeedMethodClass, mNativeSpeedMethods, NELEM(mNativeSpeedMethods));
     jniEnv->DeleteLocalRef(nativeSpeedMethodClass);
 
+    //音视频编辑
+    jclass nativeEditorMethodClass = jniEnv->FindClass(JNI_EDITOR_JAVA_PATH);
+    jniEnv->RegisterNatives(nativeEditorMethodClass, mNativeEditorMethods, NELEM(mNativeEditorMethods));
+    jniEnv->DeleteLocalRef(nativeEditorMethodClass);
+
     LOGE("FFMPEG CONFIG %s \n", avutil_configuration());
     LOGE("FFMPEG VERSION%s \n", av_version_info());
-    AVToolsBuilder::getInstance()->getPlayEngine()->initMediaCodec(pVoid);
+
+    if (AVToolsBuilder::getInstance()->getPlayEngine()->initMediaCodec(pVoid) == 0){
+        LOGE("FFMPEG MediaCodec init success! \n");
+    } else{
+        LOGE("FFMPEG MediaCodec init error! \n");
+    }
 
     return JNI_VERSION_1_6;
 

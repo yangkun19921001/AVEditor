@@ -19,7 +19,7 @@ public:
      * 初始化硬件解码
      * @param vm
      */
-    static void initMediaCodec(void *vm);
+    static int initMediaCodec(void *vm);
 
     static AVPlayerBuilder *getInstance() {
         static AVPlayerBuilder ff;
