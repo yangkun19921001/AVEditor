@@ -9,10 +9,10 @@ import com.devyk.aveditor.utils.LogHelper.TAG
  *     blog    : https://juejin.im/user/578259398ac2470061f3a3fb/posts
  *     github  : https://github.com/yangkun19921001
  *     mailbox : yang1001yk@gmail.com
- *     desc    : This is AVFileDecodeEngine 负责文件解码
+ *     desc    : This is AVAudioDecodeEngine 负责文件解码
  * </pre>
  */
-public class AVFileDecodeEngine : IMusicDecode {
+public class AVAudioDecodeEngine : IMusicDecode {
 
 
     private var mListener: IMusicDecode.OnDecodeListener? = null

@@ -19,6 +19,16 @@ public interface INativeMuxer {
 //    int frame_rate, int video_bit_rate,
 //    int audio_sample_rate, int audio_channels, int audio_bit_rate
 
+    /**
+     * @param outPath 输出的文件路径
+     * @param videoWidth 视频宽
+     * @param videoHeight 视频高
+     * @param frame_rate 帧率
+     * @param videoBitRate 视频码率
+     * @param audioSampleRate 音频采样率
+     * @param audioChannels 音频通道数量
+     * @param audioBitRate 音频码流
+     */
     fun initMuxer(
         outPath: String?,
         videoWidth: Int,
@@ -30,8 +40,16 @@ public interface INativeMuxer {
         audioBitRate: Int
     );
 
+    /**
+     * @param 送入队列的数据
+     * @param isAudio 是否是音频数据
+     * @param pts 时间戳
+     */
     fun enqueue(byteArray: ByteArray?, isAudio: Boolean = false, pts: Long);
 
+    /**
+     * 关闭复用器
+     */
     fun close()
 
 }

@@ -10,7 +10,7 @@
 #include "play/IPlayerProxy.h"
 #include "builder/AVToolsBuilder.h"
 
-#define NATIVE_MUSIC_ENCODE_PATH "com/devyk/aveditor/jni/AVFileDecodeEngine"
+#define NATIVE_MUSIC_ENCODE_PATH "com/devyk/aveditor/jni/AVAudioDecodeEngine"
 #define JNI_PLAY_JAVA_PATH "com/devyk/aveditor/jni/AVPlayerEngine"
 #define JNI_MUXER_JAVA_PATH "com/devyk/aveditor/jni/AVMuxerEngine"
 #define JNI_SPEED_JAVA_PATH "com/devyk/aveditor/jni/AVSpeedEngine"
@@ -88,7 +88,16 @@ static void Android_JNI_PLAY_setPause(JNIEnv *env, jobject instance, jboolean is
 }
 
 static void Android_JNI_PLAY_stop(JNIEnv *env, jobject instance) {
+
+    if (AVToolsBuilder::getInstance()->getPlayEngine()->getTransferInstance()->REGISTER_AUDIO_TRANSFER_MODEL){
+        AVToolsBuilder::getInstance()->getPlayEngine()->getTransferInstance()->onDecodeStop();
+    }
+
+
     AVToolsBuilder::getInstance()->getPlayEngine()->close();
+
+
+
 }
 
 
@@ -235,7 +244,7 @@ static void Android_JNI_SPEED_initSpeedController(JNIEnv *jniEnv, jobject jobjec
                                                   jdouble tempo,
                                                   jdouble pitchSemi) {
 
-    AVToolsBuilder::getInstance()->getSoundTouchEngine(track)->initSpeedController(channels, sampleingRate, tempo,
+    AVToolsBuilder::getInstance()->getSoundTouchEngine()->initSpeedController(track,channels, sampleingRate, tempo,
                                                                                    pitchSemi);
 
 
@@ -250,7 +259,7 @@ static jint Android_JNI_SPEED_putData(JNIEnv *jniEnv, jobject jobject1,
     int outSize = 0;
     jbyte *inPcm = jniEnv->GetByteArrayElements(pcm, 0);
 
-    outSize = AVToolsBuilder::getInstance()->getSoundTouchEngine(track)->putData(reinterpret_cast<uint8_t *>(inPcm),
+    outSize = AVToolsBuilder::getInstance()->getSoundTouchEngine()->putData(track,reinterpret_cast<uint8_t *>(inPcm),
                                                                                  size
     );
     jniEnv->ReleaseByteArrayElements(pcm, inPcm, 0);
@@ -266,7 +275,7 @@ static jint Android_JNI_SPEED_getData(JNIEnv *jniEnv, jobject jobject1,
 
     int outSize = 0;
     jshort *outPcm = jniEnv->GetShortArrayElements(out, 0);
-    outSize = AVToolsBuilder::getInstance()->getSoundTouchEngine(track)->getData(
+    outSize = AVToolsBuilder::getInstance()->getSoundTouchEngine()->getData(track,
             &outPcm, size
     );
 
@@ -281,7 +290,7 @@ static jint Android_JNI_SPEED_getData(JNIEnv *jniEnv, jobject jobject1,
  */
 static void Android_JNI_SPEED_close(JNIEnv *jniEnv, jobject jobject1,
                                     jint track) {
-    AVToolsBuilder::getInstance()->getSoundTouchEngine(track)->close(
+    AVToolsBuilder::getInstance()->getSoundTouchEngine()->close(track
     );
 }
 
@@ -290,7 +299,7 @@ static void Android_JNI_SPEED_close(JNIEnv *jniEnv, jobject jobject1,
  */
 static void Android_JNI_SPEED_setRecordSpeed(JNIEnv *jniEnv, jobject jobject1,
                                              jint track, jdouble speed) {
-    AVToolsBuilder::getInstance()->getSoundTouchEngine(track)->setSpeed(speed
+    AVToolsBuilder::getInstance()->getSoundTouchEngine()->setSpeed(track,speed
     );
 }
 

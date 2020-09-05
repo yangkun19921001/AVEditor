@@ -7,11 +7,15 @@
 void ITransfer::update(AVData data) {
 
     //暂停就不传输了
-    if (isPause()){
+    if (isPause()) {
         return;
     }
+
+    AVData avData;
+    avData.clone(data);
     //将数据发送给子类
-    onData(data);
+    onData(avData);
+
 }
 
 

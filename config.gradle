@@ -73,6 +73,9 @@ ext {
             "devyk_native_crash_report": "com.github.yangkun19921001:YKCrash:1.0.2",
 
             //adapter https://github.com/CymChad/BaseRecyclerViewAdapterHelper/blob/master/readme/0-BaseRecyclerViewAdapterHelper.md
-            "adapter"                  : "com.github.CymChad:BaseRecyclerViewAdapterHelper:3.0.4"
+            "adapter"                  : "com.github.CymChad:BaseRecyclerViewAdapterHelper:3.0.4",
+
+
+            "aveditor"                 : "com.devyk.avtools:AVTools:0.0.1"
     ]
 }

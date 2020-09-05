@@ -15,6 +15,7 @@ import com.devyk.aveditor.mediacodec.AudioEncoder
 import com.devyk.aveditor.utils.FileUtils
 import com.devyk.aveditor.utils.LogHelper
 import com.devyk.aveditor.utils.LogHelper.TAG
+import com.devyk.aveditor.utils.ThreadUtils
 import java.io.FileOutputStream
 
 import java.nio.ByteBuffer
@@ -148,11 +149,11 @@ public class AudioController(audioConfiguration: AudioConfiguration) : IControll
             return
         }
         Arrays.fill(mSpeedPcmData, 0)
-       JNIManager.getAVSpeedEngine()?.putData(0, pcmData,pcmData.size)
+        JNIManager.getAVSpeedEngine()?.putData(0, pcmData, pcmData.size)
         while (true) {
             val outSize = JNIManager.getAVSpeedEngine()?.getData(0, mSpeedPcmData!!, pcmData.size)
             if (outSize == 0)
-                return;
+                break;
             mAudioEncoder?.enqueueCodec(Arrays.copyOf(mSpeedPcmData, outSize!!))
         }
     }
@@ -209,7 +210,12 @@ public class AudioController(audioConfiguration: AudioConfiguration) : IControll
     }
 
 
+    /**
+     * 音频解码的回调
+     */
     override fun onDecodeStart(sampleRate: Int, channels: Int, sampleFormat: Int) {
+        mSpeedPcmData = ShortArray(sampleRate * channels * 2)
+        JNIManager.getAVSpeedEngine()?.initSpeedController(0, channels, sampleRate, mSpeed.value, 1.0)
         val build = AudioConfiguration.Builder().setChannelCount(channels).setFrequency(sampleRate).build()
         mAudioEncoder.setAudioConfiguration(build)
         mAudioEncoder?.start(mSpeed)
@@ -224,7 +230,7 @@ public class AudioController(audioConfiguration: AudioConfiguration) : IControll
     }
 
     override fun onDecodeStop() {
-        mAudioEncoder?.stop()
+        onStop()
     }
 
     override fun setAudioDataListener(audioDataListener: IController.OnAudioDataListener) {

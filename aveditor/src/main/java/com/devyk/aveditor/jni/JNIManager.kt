@@ -41,7 +41,7 @@ object JNIManager {
     init {
         System.loadLibrary("avtools")
         mPlayerEngine = AVPlayerEngine()
-        mAVFileDecodeEngine = AVFileDecodeEngine()
+        mAVFileDecodeEngine = AVAudioDecodeEngine()
         mAVEditor = AVEditorEngine()
         mAVMuxer = AVMuxerEngine()
         mSpeedController = AVSpeedEngine();

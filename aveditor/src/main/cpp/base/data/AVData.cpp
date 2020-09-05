@@ -28,3 +28,20 @@ void AVData::drop() {
     data = 0;
     size = 0;
 }
+
+void AVData::clone(AVData data) {
+    this->size = data.size;
+    if (size <= 0)return ;
+    this->data = new unsigned char[size];
+    if (!this->data) return ;
+    if (data.data) {
+        memcpy(this->data, data.data, size);
+    }
+    this->pts = data.pts;
+    this->isAudio = data.isAudio;
+    this->width = data.width;
+    this->height = data.height;
+    this->endPacket = data.endPacket;
+    this->format = data.format;
+
+}

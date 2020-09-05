@@ -36,6 +36,8 @@ struct AVData {
     bool alloc(int size, const char *data = 0);
 
     void drop();
+
+    void clone(AVData data);
 };
 
 

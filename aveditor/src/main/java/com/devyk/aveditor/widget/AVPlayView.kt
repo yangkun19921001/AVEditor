@@ -107,7 +107,7 @@ class AVPlayView : GLSurfaceView, SurfaceHolder.Callback, GLSurfaceView.Renderer
     }
 
     /**
-     * 播放
+     * 播放进度
      */
     public fun progress(): Double = mIPlayer?.progress()!!
 
@@ -128,7 +128,9 @@ class AVPlayView : GLSurfaceView, SurfaceHolder.Callback, GLSurfaceView.Renderer
         mIPlayer?.stop()
     }
 
-
+    /**
+     * 播放进度监听
+     */
     public fun addProgressListener(progress: OnProgressListener) {
         lister = progress;
     }

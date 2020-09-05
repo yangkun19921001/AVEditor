@@ -39,6 +39,8 @@ IPlayer *IPlayerBuilder::builderPlayer(unsigned char index) {
     resample->registers(audioPlay);
 
 
+
+
     play->demux = de;
     play->adecode = adecode;
     play->vdecode = vdecode;

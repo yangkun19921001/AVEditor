@@ -16,6 +16,6 @@ IEditor *AVToolsBuilder::getEditorEngine() {
     return &avEditor;
 }
 
-SoundTouchUtils *AVToolsBuilder::getSoundTouchEngine(unsigned char index) {
-    return SoundTouchUtils::getInstance(index);
+SoundTouchUtils *AVToolsBuilder::getSoundTouchEngine() {
+    return SoundTouchUtils::getInstance();
 }

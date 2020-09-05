@@ -32,6 +32,8 @@ protected:
     AVParameter parameter;
 
 
+    int preLen = 0;
+
 public:
     AV_SL_AudioPlayer();
 

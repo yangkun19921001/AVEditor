@@ -24,7 +24,7 @@ public:
       * 创建速率模块
       * @return
       */
-    virtual SoundTouchUtils *getSoundTouchEngine(unsigned char index = 1) = 0;
+    virtual SoundTouchUtils *getSoundTouchEngine() = 0;
 
     /**
       * 创建音视频编辑模块

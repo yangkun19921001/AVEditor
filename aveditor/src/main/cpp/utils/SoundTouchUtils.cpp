@@ -6,48 +6,49 @@
 #include "SoundTouchUtils.h"
 
 void
-SoundTouchUtils::initSpeedController(int channels, int sampleingRate, double tempo, double pitchSemi) {
-    soundTouch = new SoundTouch();
-    soundTouch->setSampleRate(sampleingRate);
-    soundTouch->setChannels(channels);
-    soundTouch->setPitch(pitchSemi);
-    soundTouch->setTempo(tempo);
+SoundTouchUtils::initSpeedController(unsigned char i, int channels, int sampleingRate, double tempo, double pitchSemi) {
+    if (NULL == soundTouch[i])
+        soundTouch[i] = new SoundTouch();
+    soundTouch[i]->setSampleRate(sampleingRate);
+    soundTouch[i]->setChannels(channels);
+    soundTouch[i]->setPitch(pitchSemi);
+    soundTouch[i]->setTempo(tempo);
     isExit = false;
 }
 
 
-int SoundTouchUtils::putData(uint8_t *input, int size) {
+int SoundTouchUtils::putData(unsigned char i, uint8_t *input, int size) {
     if (size > 0 && input) {
-        soundTouch->putSamples(reinterpret_cast<const SAMPLETYPE *>(input),
-                               size / AUDIO_SAMPLE_FORMAT_16BIT / soundTouch->numChannels());
+        soundTouch[i]->putSamples(reinterpret_cast<const SAMPLETYPE *>(input),
+                                  size / AUDIO_SAMPLE_FORMAT_16BIT / soundTouch[i]->numChannels());
     }
     return size;
 }
 
 
-void SoundTouchUtils::close() {
+void SoundTouchUtils::close(unsigned char i) {
     isExit = true;
-    if (!soundTouch)
+    if (!soundTouch[i])
         return;
-    soundTouch->flush();
-    soundTouch->clear();
-    soundTouch = 0;
+    soundTouch[i]->flush();
+    soundTouch[i]->clear();
+    soundTouch[i] = 0;
 }
 
 /**
  * 动态设置速率
  * @param speed
  */
-void SoundTouchUtils::setSpeed(double speed) {
-    if (soundTouch && speed >= 0.0 && speed <= 3.0)
-        soundTouch->setTempo(speed);
+void SoundTouchUtils::setSpeed(unsigned char i, double speed) {
+    if (soundTouch[i] && speed >= 0.0 && speed <= 3.0)
+        soundTouch[i]->setTempo(speed);
 }
 
-int SoundTouchUtils::getData(short **out, int size) {
+int SoundTouchUtils::getData(unsigned char i, short **out, int size) {
     int num = 0;
-    num = soundTouch->receiveSamples(*out,
-                                     size / AUDIO_SAMPLE_FORMAT_16BIT / soundTouch->numChannels());
-    return num * 2 * soundTouch->numChannels();
+    num = soundTouch[i]->receiveSamples(*out,
+                                        size / AUDIO_SAMPLE_FORMAT_16BIT / soundTouch[i]->numChannels());
+    return num * 2 * soundTouch[i]->numChannels();
 }
 
 

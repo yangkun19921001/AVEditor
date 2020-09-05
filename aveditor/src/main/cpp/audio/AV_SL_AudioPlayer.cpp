@@ -51,8 +51,10 @@ int AV_SL_AudioPlayer::startPlayer(AVParameter parameter) {
     eng = createSL();
     this->buffer = new unsigned char[parameter.sample_rate * parameter.channels * 2];
     this->sd_buffer = new SAMPLETYPE[parameter.sample_rate * parameter.channels * 2];
+
+
     //初始化速率控制
-    AVToolsBuilder::getInstance()->getSoundTouchEngine(1)->initSpeedController(parameter.channels,
+    AVToolsBuilder::getInstance()->getSoundTouchEngine()->initSpeedController(1, parameter.channels,
                                                                               parameter.sample_rate, mPlaySpeed, 1);
     if (eng) {
         LOGI("CreateSL success！ ");
@@ -177,7 +179,7 @@ void AV_SL_AudioPlayer::close() {
         (*engineSL)->Destroy(engineSL);
     }
 
-    AVToolsBuilder::getInstance()->getSoundTouchEngine(1)->close();
+    AVToolsBuilder::getInstance()->getSoundTouchEngine()->close(1);
 //    finish()
     engineSL = NULL;
     eng = NULL;
@@ -323,18 +325,21 @@ int AV_SL_AudioPlayer::readPcmData() {
         //阻塞
         AVData d = getData();
         if (d.size <= 0 || !d.data) {
-            mux.unlock();
-            return 0;
+            if ((num = AVToolsBuilder::getInstance()->getSoundTouchEngine()->getData(1, &sd_buffer,
+                                                                                     preLen)) > 0)
+                return num;
+            else
+                return 0;
         }
         memcpy(buffer, d.data, d.size);
         free(d.data);
-        num  = AVToolsBuilder::getInstance()->getSoundTouchEngine(1)->putData(buffer, d.size);
-        num = AVToolsBuilder::getInstance()->getSoundTouchEngine(1)->getData(&sd_buffer,
-                                                                              d.size);
+        num = AVToolsBuilder::getInstance()->getSoundTouchEngine()->putData(1, buffer, d.size);
+        num = AVToolsBuilder::getInstance()->getSoundTouchEngine()->getData(1, &sd_buffer,
+                                                                            d.size);
         if (num == 0) {
-            mux.unlock();
             continue;
         }
+        preLen = d.size;
         d.drop();
         return num;
     }
@@ -347,7 +352,7 @@ int AV_SL_AudioPlayer::readPcmData() {
  */
 void AV_SL_AudioPlayer::setPlaySpeed(double v) {
     this->mPlaySpeed = v;
-    AVToolsBuilder::getInstance()->getSoundTouchEngine(1)->setSpeed(this->mPlaySpeed);
+    AVToolsBuilder::getInstance()->getSoundTouchEngine()->setSpeed(1, this->mPlaySpeed);
 }
 
 /**

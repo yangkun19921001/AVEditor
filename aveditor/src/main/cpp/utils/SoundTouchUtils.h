@@ -21,30 +21,36 @@
 class SoundTouchUtils {
 
 public:
-    static SoundTouchUtils *getInstance(unsigned char i) {
-        static SoundTouchUtils px[10];
-        return &px[i];
+
+    static SoundTouchUtils *getInstance() {
+        static SoundTouchUtils px;
+        return &px;
     }
 
-    SoundTouch *soundTouch = 0;
+    SoundTouch *soundTouch[10] = {0};
+
+
 public:
+
+
 
     int finished = true;
     pthread_mutex_t mutexSpeed;
-    int isExit= false;
+    int isExit = false;
 
-    void initSpeedController(int channels,
+    void initSpeedController(unsigned char i,int channels,
                              int sampleingRate,
                              double tempo,
                              double pitchSemi);
 
-    void close();
+    void close(unsigned char i);
 
-    void setSpeed(double speed);
+    void setSpeed(unsigned char i,double speed);
 
 
-    int putData(uint8_t *input,int size);
-    int getData(short **out, int size);
+    int putData(unsigned char i,uint8_t *input, int size);
+
+    int getData(unsigned char i,short **out, int size);
 };
 
 
