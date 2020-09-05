@@ -6,6 +6,7 @@
 #define IKAVEDIT_ITOOLSBUILDER_H
 
 
+#include <editor/IEditor.h>
 #include "../play/IPlayerProxy.h"
 
 class IToolsBuilder {
@@ -23,7 +24,13 @@ public:
       * 创建速率模块
       * @return
       */
-    virtual SoundTouchUtils *getSoundTouchEngine() = 0;
+    virtual SoundTouchUtils *getSoundTouchEngine(unsigned char index = 1) = 0;
+
+    /**
+      * 创建音视频编辑模块
+      * @return
+      */
+    virtual IEditor *getEditorEngine() = 0;
 };
 
 

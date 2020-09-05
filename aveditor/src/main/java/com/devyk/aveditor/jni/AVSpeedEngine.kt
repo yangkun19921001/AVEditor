@@ -28,9 +28,9 @@ public class AVSpeedEngine : ISpeedController {
         pitchSemi: Double
     )
 
-     override external fun changeSpeed(track: Int, input: ByteArray,shortArray: ShortArray, length: Int): Int
-
-     override external fun close(track: Int);
+    override external fun putData(track: Int, input: ByteArray,  length: Int): Int
+    external override fun getData(track: Int, shortArray: ShortArray, length: Int): Int
+    override external fun close(track: Int);
 
     override fun setRecordSpeed(track: Int, speed: Speed) {
         setRecordSpeed(track, speed.value)

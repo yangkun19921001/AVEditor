@@ -22,7 +22,9 @@ set(XLOG_PATH ${CMAKE_SOURCE_DIR}/xlog)
 #Base
 set(BASE_PATH ${CMAKE_SOURCE_DIR}/base)
 #变音变调
-#set(SOUNDTOUCH_PATH ${CMAKE_SOURCE_DIR}/soundtouch)
+set(SOUNDTOUCH_PATH ${CMAKE_SOURCE_DIR}/soundtouch)
+#editor
+set(EDITOR_PATH ${CMAKE_SOURCE_DIR}/editor)
 
 
 #-------------------------------------------------找文件----------------------------------------------
@@ -74,6 +76,11 @@ FILE(GLOB MUXER_PATH_ALL_H ${JNI_PATH}/muxer/*.h)
 FILE(GLOB SOUNDTOUCH_H_PATH ${SOUNDTOUCH_INCLUDE_PATH}/include/*.h)
 FILE(GLOB SOUNDTOUCH_SOURCE_H_PATH ${SOUNDTOUCH_INCLUDE_PATH}/source/*.h)
 FILE(GLOB SOUNDTOUCH_SOURCE_CPP_PATH ${SOUNDTOUCH_INCLUDE_PATH}/source/*.cpp)
+FILE(GLOB SOUNDTOUCH_ROOT_H_PATH ${SOUNDTOUCH_PATH}/*.h)
+FILE(GLOB SOUNDTOUCH_ROOT_CPP_PATH ${SOUNDTOUCH_PATH}/*.cpp)
+#editor
+FILE(GLOB EDITOR_H_PATH ${EDITOR_PATH}/*.h)
+FILE(GLOB EDITOR_CPP_PATH ${EDITOR_PATH}/*.cpp)
 
 
 #-------------------------------------------------加载头文件----------------------------------------------
@@ -96,6 +103,8 @@ include_directories(${CALLBACK_PATH_ALL_H})
 include_directories(${UTILS_PATH_ALL_H})
 include_directories(${ENTITY_PATH_ALL_H})
 include_directories(${MUXER_PATH_ALL_H})
+include_directories(${EDITOR_H_PATH})
+include_directories(${SOUNDTOUCH_ROOT_H_PATH})
 
 
 #-------------------------------------------------加载库文件----------------------------------------------
@@ -143,6 +152,8 @@ add_library(
         ${ENTITY_PATH_ALL_CPP}
         ${MUXER_PATH_ALL_CPP}
         ${SOUNDTOUCH_SOURCE_CPP_PATH}
+        ${EDITOR_CPP_PATH}
+        ${SOUNDTOUCH_ROOT_CPP_PATH}
 )
 
 

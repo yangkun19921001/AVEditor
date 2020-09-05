@@ -3,17 +3,17 @@ package com.devyk.aveditor.stream.packer.mp4
 import android.media.MediaCodec
 import android.media.MediaFormat
 import android.media.MediaFormat.*
+import android.util.Log
 import com.devyk.aveditor.config.AudioConfiguration
 import com.devyk.aveditor.config.VideoConfiguration
+import com.devyk.aveditor.entity.Speed
 import com.devyk.aveditor.jni.JNIManager
 import com.devyk.aveditor.stream.packer.Packer
-import com.devyk.aveditor.stream.packer.PackerType
 import com.devyk.aveditor.utils.LogHelper
 import com.devyk.aveditor.utils.LogHelper.TAG
-import com.devyk.aveditor.utils.ThreadUtils
-import java.io.File
 import java.io.FileOutputStream
 import java.nio.ByteBuffer
+import java.util.*
 
 /**
  * <pre>
@@ -39,6 +39,7 @@ public class MP4Packer(
     var mOutFilePath: String? = null
     private var audioConfiguration = AudioConfiguration.createDefault()
     private var videoConfiguration = VideoConfiguration.createDefault()
+
 
     init {
         mOutFilePath = outFilePath;
@@ -68,9 +69,15 @@ public class MP4Packer(
     override fun onVideoData(bb: ByteBuffer?, bi: MediaCodec.BufferInfo?) {
         var data = ByteArray(bi!!.size)
         bb!!.get(data, 0, bi.size)
+//        var pts = getCurFramePts()
+//        frameIndex++
+//        JNIManager.getAVMuxerEngine()?.enqueue(data, false,pts)
+//
+//        Log.e(TAG,"pts--->"+pts/1000000);
+//        pts = getCurFramePts()
         JNIManager.getAVMuxerEngine()?.enqueue(data, false, bi.presentationTimeUs)
-
 //        mFileOutputStream?.write(data)
+        frameIndex++
     }
 
     override fun onAudioData(bb: ByteBuffer, bi: MediaCodec.BufferInfo) {
@@ -115,13 +122,14 @@ public class MP4Packer(
     }
 
 
-    override fun start() {
+    override fun start(speed: Speed) {
         Thread {
+            frameIndex = 0;
             JNIManager.getAVMuxerEngine()?.initMuxer(
                 mOutFilePath,
                 videoConfiguration.width,
                 videoConfiguration.height,
-                videoConfiguration.fps,
+                (videoConfiguration.fps ).toInt(),
                 videoConfiguration.maxBps * 1000,
                 audioConfiguration.frequency
                 ,
@@ -132,10 +140,17 @@ public class MP4Packer(
     }
 
     override fun stop() {
+        frameIndex = 0;
         JNIManager.getAVMuxerEngine()?.close()
 //        mFileOutputStream?.close()
 //        mFileOutputStream2?.close()
     }
 
+
+    var frameIndex = 0L;
+    private fun getCurFramePts(): Long {
+        var pts = frameIndex * (1000 / 20) * 1000
+        return pts
+    }
 
 }

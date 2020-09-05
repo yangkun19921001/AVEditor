@@ -7,17 +7,14 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
-import android.util.Log
 import android.view.Surface
 import com.devyk.aveditor.utils.LogHelper
 import com.devyk.aveditor.config.VideoConfiguration
 import com.devyk.aveditor.entity.Speed
+import com.tencent.mars.xlog.Log
 
 
 import java.util.concurrent.locks.ReentrantLock
-import kotlin.experimental.and
-import android.R.attr.duration
-import android.R.attr.factor
 
 
 /**
@@ -45,10 +42,6 @@ public abstract class BaseVideoEncoder : IVideoCodec {
     private val encodeLock = ReentrantLock()
     private lateinit var mSurface: Surface
     public val TAG = this.javaClass.simpleName
-    private val IDR = 5
-    private val SPS = 7
-    private val BYTES_HEADER = byteArrayOf(0, 0, 0, 1)
-
     private var mNewFormat: MediaFormat? = null
 
 
@@ -58,18 +51,17 @@ public abstract class BaseVideoEncoder : IVideoCodec {
      * 播放速度
      */
     private var mSpeed = Speed.NORMAL.value
+
+
     /**
-     * 开始时间戳
+     * 帧
      */
-    private var startTimeStamp = 0L
+    private var mFrameIndex = 0;
+
     /**
-     * 时间
+     * 显示 PTS
      */
-    private var duration = 0L
-    /**
-     * 上一帧的时间戳
-     */
-    private var mLastTimeStamp: Long = 0L
+    var lastVideoFrameTimeUs = -1L
 
 
     /**
@@ -108,7 +100,9 @@ public abstract class BaseVideoEncoder : IVideoCodec {
     /**
      * 开始编码
      */
-    override fun start() {
+    override fun start(speed: Speed) {
+        mSpeed = speed.value
+        mFrameIndex = 0
         mHandlerThread = HandlerThread("Media-Video-Encode")
         mPts = 0
         mHandlerThread?.run {
@@ -140,6 +134,7 @@ public abstract class BaseVideoEncoder : IVideoCodec {
      * 停止编码
      */
     override fun stop() {
+        mFrameIndex = 0
         if (!isStarted) return
         encodeLock.lock()
         isStarted = false
@@ -221,6 +216,7 @@ public abstract class BaseVideoEncoder : IVideoCodec {
                     }
                     mMediaCodec?.releaseOutputBuffer(outBufferIndex, false)
                 }
+
                 encodeLock.unlock()
             } else {
                 encodeLock.unlock()
@@ -232,10 +228,17 @@ public abstract class BaseVideoEncoder : IVideoCodec {
 
 
     /**
-     * 绘制
+     * 视频时间戳计算公式 : video_ts = n * ts_freq / fps;
+    n : 第n帧视频
+    ts_freq : 选定的时间戳的采样频率
+    fps : 视频帧率
      */
     public fun drawEncode() {
         encodeLock.lock()
+        //检查时间戳是否有误
+        var detectTimeError = false
+        //视频一帧的的时间戳
+        val VIDEO_FRAME_TIME_US = (1000 * 1000f / mConfiguration.fps).toInt()
         var outBuffers = mMediaCodec?.getOutputBuffers()
         if (!isStarted) {
             // if not running anymore, complete stream
@@ -259,24 +262,15 @@ public abstract class BaseVideoEncoder : IVideoCodec {
 
             val bb = outBuffers!![outBufferIndex!!]
 
+            var pts = getPTSUs().toDouble()
+            //视频变速处理
+            pts /= mSpeed
+            //做变速处理
+            mBufferInfo.presentationTimeUs = pts.toLong()
 
-//            mBufferInfo.presentationTimeUs =getPTSUs()
-//            if (mBufferInfo.presentationTimeUs < prevOutputPTSUs) {
-//                // 增加 1微妙 / 20帧率 / 速率
-//                mBufferInfo.presentationTimeUs = (prevOutputPTSUs + 1000000f / mConfiguration.fps / mSpeed).toLong()
-//            }
-
-//            adaptTimeUs(mBufferInfo)
-
-            mBufferInfo.presentationTimeUs =  getPTSUs()
 
             // config data sps/pps
             if ((mBufferInfo.flags and MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0) {
-                // The codec config_ data was pulled out when we got the
-                // INFO_OUTPUT_FORMAT_CHANGED status. The MediaMuxer won't
-                // accept
-                // a single big blob -- it wants separate csd-0/csd-1 chunks --
-                // so simply saving this off won't work.
                 if (mBufferInfo.size != 0) {
                     if (!mPause) {
                         onVideoEncode(bb, mBufferInfo!!)
@@ -284,17 +278,22 @@ public abstract class BaseVideoEncoder : IVideoCodec {
                     mBufferInfo.size = 0
                 }
             }
-
             if (mBufferInfo.size != 0) {
                 if (mBufferInfo.flags == MediaCodec.BUFFER_FLAG_END_OF_STREAM && mBufferInfo.presentationTimeUs < 0) {
                     mBufferInfo.presentationTimeUs = 0
                 }
-//                LogHelper.e(
-//                    TAG,
-//                    "视频时间戳：${mBufferInfo!!.presentationTimeUs} ---> ${mBufferInfo!!.presentationTimeUs / 1000_000}"
-//                )
+
                 if (!mPause) {
+//                    mPts = (mFrameIndex * 1000 / mConfiguration.fps / mSpeed).toLong()
+                    LogHelper.e(
+                        TAG,
+                        "视频时间戳  mPts :${mPts/1000}     Encode :${mBufferInfo.presentationTimeUs}   PTS/1000000:${mBufferInfo.presentationTimeUs / 1000000} "
+                    )
+
+
                     onVideoEncode(bb, mBufferInfo!!)
+
+                    mFrameIndex++;
                 }
                 mMediaCodec?.releaseOutputBuffer(outBufferIndex, false)
             }
@@ -332,33 +331,14 @@ public abstract class BaseVideoEncoder : IVideoCodec {
     public fun isStart(): Boolean = isStarted
 
     protected fun getPTSUs(): Long {
-
         if (mPts == 0L)
-            mPts = System.nanoTime() / 1000;
-
-//        var result = System.nanoTime() / 1000L
-//        // presentationTimeUs should be monotonic
-//        // otherwise muxer fail to write
-//        if (result < prevOutputPTSUs) {
-//            result = prevOutputPTSUs - result + result
-//        }
-//        return result
-        return  System.nanoTime() / 1000 - mPts
+            mPts = (System.nanoTime() / 1000.0f).toLong();
+        return ((System.nanoTime() / 1000.0f - mPts)).toLong()
+//        if (mPts == 0L)
+//            mPts = (System.nanoTime() / 1000.0f / mSpeed).toLong();
+//        return ((System.nanoTime() / 1000.0f / mSpeed - mPts)).toLong()
     }
 
-    private fun adaptTimeUs(info: MediaCodec.BufferInfo) {
-        info.presentationTimeUs = (info.presentationTimeUs / mSpeed).toLong()
-        if (startTimeStamp == 0L) {
-            startTimeStamp = info.presentationTimeUs
-        } else {
-            duration = info.presentationTimeUs - startTimeStamp
-        }
-        //        //偶现时间戳错乱，这里做个保护，假设一秒30帧
-        //        if (info.presentationTimeUs <= mLastTimeStamp) {
-        //            info.presentationTimeUs = (long) (mLastTimeStamp + C.SECOND_IN_US / 30 / factor);
-        //        }
-        mLastTimeStamp = info.presentationTimeUs
-    }
 
     abstract fun onVideoOutformat(outputFormat: MediaFormat?)
 

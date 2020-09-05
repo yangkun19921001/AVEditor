@@ -1,5 +1,6 @@
 
 import android.media.MediaCodec
+import com.devyk.aveditor.entity.Speed
 import com.devyk.aveditor.stream.AnnexbHelper
 import com.devyk.aveditor.stream.PacketType
 import com.devyk.aveditor.stream.packer.Packer
@@ -38,7 +39,7 @@ class RtmpPacker : Packer, AnnexbHelper.AnnexbNaluListener {
         packetListener = listener
     }
 
-    override fun start() {
+    override fun start(speed: Speed) {
         mAnnexbHelper.setAnnexbNaluListener(this)
     }
 

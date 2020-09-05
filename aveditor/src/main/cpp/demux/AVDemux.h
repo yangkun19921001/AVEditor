@@ -34,6 +34,11 @@ protected:
     int video_stream_index = -1;
 
     /**
+     * 流数据是否读取完成
+     */
+     int read_stream_complete = 0;
+
+    /**
      * 构造函数
      */
 public:

@@ -12,10 +12,8 @@ interface ISpeedController {
         pitchSemi: Double
     )
 
-
-    public fun changeSpeed(track: Int, input: ByteArray, out: ShortArray, length: Int):Int
-
+    public fun putData(track: Int, input: ByteArray, length: Int): Int
+    public fun getData(track: Int, out: ShortArray, length: Int): Int
     public fun close(track: Int)
-
-    public fun setRecordSpeed(track: Int, speed: Speed=Speed.NORMAL)
+    public fun setRecordSpeed(track: Int, speed: Speed = Speed.NORMAL)
 }

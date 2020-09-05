@@ -15,13 +15,15 @@
 
 #include <pthread.h>
 
+#define AUDIO_SAMPLE_FORMAT_16BIT 2
+
 
 class SoundTouchUtils {
 
 public:
-    static SoundTouchUtils *getInstance() {
-        static SoundTouchUtils px;
-        return &px;
+    static SoundTouchUtils *getInstance(unsigned char i) {
+        static SoundTouchUtils px[10];
+        return &px[i];
     }
 
     SoundTouch *soundTouch = 0;
@@ -41,7 +43,8 @@ public:
     void setSpeed(double speed);
 
 
-    int soundtouch(uint8_t *input, short **out, int size);
+    int putData(uint8_t *input,int size);
+    int getData(short **out, int size);
 };
 
 

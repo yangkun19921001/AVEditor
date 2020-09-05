@@ -235,8 +235,8 @@ static void Android_JNI_SPEED_initSpeedController(JNIEnv *jniEnv, jobject jobjec
                                                   jdouble tempo,
                                                   jdouble pitchSemi) {
 
-    AVToolsBuilder::getInstance()->getSoundTouchEngine()->initSpeedController(channels, sampleingRate, tempo,
-                                                                              pitchSemi);
+    AVToolsBuilder::getInstance()->getSoundTouchEngine(track)->initSpeedController(channels, sampleingRate, tempo,
+                                                                                   pitchSemi);
 
 
 }
@@ -244,19 +244,33 @@ static void Android_JNI_SPEED_initSpeedController(JNIEnv *jniEnv, jobject jobjec
 /**
  * 改变速率
  */
-static jint Android_JNI_SPEED_changeSpeed(JNIEnv *jniEnv, jobject jobject1,
-                                          jint track, jbyteArray pcm, jshortArray out, jint size) {
+static jint Android_JNI_SPEED_putData(JNIEnv *jniEnv, jobject jobject1,
+                                      jint track, jbyteArray pcm, jint size) {
+
+    int outSize = 0;
+    jbyte *inPcm = jniEnv->GetByteArrayElements(pcm, 0);
+
+    outSize = AVToolsBuilder::getInstance()->getSoundTouchEngine(track)->putData(reinterpret_cast<uint8_t *>(inPcm),
+                                                                                 size
+    );
+    jniEnv->ReleaseByteArrayElements(pcm, inPcm, 0);
+//
+    return outSize;
+}
+
+/**
+ * 改变速率
+ */
+static jint Android_JNI_SPEED_getData(JNIEnv *jniEnv, jobject jobject1,
+                                      jint track, jshortArray out, jint size) {
 
     int outSize = 0;
     jshort *outPcm = jniEnv->GetShortArrayElements(out, 0);
-    jbyte *inPcm = jniEnv->GetByteArrayElements(pcm, 0);
-
-    outSize = AVToolsBuilder::getInstance()->getSoundTouchEngine()->soundtouch(reinterpret_cast<uint8_t *>(inPcm),
-                                                                               &outPcm, size
+    outSize = AVToolsBuilder::getInstance()->getSoundTouchEngine(track)->getData(
+            &outPcm, size
     );
 
     jniEnv->ReleaseShortArrayElements(out, outPcm, 0);
-    jniEnv->ReleaseByteArrayElements(pcm, inPcm, 0);
 //
     return outSize;
 }
@@ -267,7 +281,7 @@ static jint Android_JNI_SPEED_changeSpeed(JNIEnv *jniEnv, jobject jobject1,
  */
 static void Android_JNI_SPEED_close(JNIEnv *jniEnv, jobject jobject1,
                                     jint track) {
-    AVToolsBuilder::getInstance()->getSoundTouchEngine()->close(
+    AVToolsBuilder::getInstance()->getSoundTouchEngine(track)->close(
     );
 }
 
@@ -276,7 +290,7 @@ static void Android_JNI_SPEED_close(JNIEnv *jniEnv, jobject jobject1,
  */
 static void Android_JNI_SPEED_setRecordSpeed(JNIEnv *jniEnv, jobject jobject1,
                                              jint track, jdouble speed) {
-    AVToolsBuilder::getInstance()->getSoundTouchEngine()->setSpeed(speed
+    AVToolsBuilder::getInstance()->getSoundTouchEngine(track)->setSpeed(speed
     );
 }
 
@@ -284,7 +298,15 @@ static void Android_JNI_SPEED_setRecordSpeed(JNIEnv *jniEnv, jobject jobject1,
 
 
 //------------------------------------------------ 音视频编辑 ----------------------------------------------------------------------//
-static void Android_JNI_EDITOR_avStartMerge(JNIEnv *jniEnv, jobject jobject1, jstring outPath, jstring mediaFormat) {}
+static void Android_JNI_EDITOR_avStartMerge(JNIEnv *jniEnv, jobject jobject1, jstring outPath, jstring mediaFormat) {
+    deque<MediaEntity *> mediaLists = AVToolsBuilder::getInstance()->getPlayEngine()->getDataSources();
+    const char *outUrl = jniEnv->GetStringUTFChars(outPath, 0);
+    if (mediaLists.size() > 0 && AVToolsBuilder::getInstance()->getEditorEngine()->open(outUrl, mediaLists) == 1) { ;
+        AVToolsBuilder::getInstance()->getEditorEngine()->start();
+    }
+
+    jniEnv->ReleaseStringUTFChars(outPath, outUrl);
+}
 
 static jint Android_JNI_EDITOR_avMergeProgress(JNIEnv *jniEnv, jobject jobject1) {
     return 0;
@@ -361,13 +383,28 @@ static JNINativeMethod mNativeMuxerMethods[] = {
  * 速率控制
  */
 static JNINativeMethod mNativeSpeedMethods[] = {
-        {"initSpeedController", "(IIIDD)V",  (void **) Android_JNI_SPEED_initSpeedController},
-        {"changeSpeed",         "(I[B[SI)I", (void **) Android_JNI_SPEED_changeSpeed},
-        {"close",               "(I)V",      (void **) Android_JNI_SPEED_close},
-        {"setRecordSpeed",      "(ID)V",     (void **) Android_JNI_SPEED_setRecordSpeed},
+        {"initSpeedController", "(IIIDD)V", (void **) Android_JNI_SPEED_initSpeedController},
+        {"putData",             "(I[BI)I",  (void **) Android_JNI_SPEED_putData},
+        {"getData",             "(I[SI)I",  (void **) Android_JNI_SPEED_getData},
+        {"close",               "(I)V",     (void **) Android_JNI_SPEED_close},
+        {"setRecordSpeed",      "(ID)V",    (void **) Android_JNI_SPEED_setRecordSpeed},
 
 };
 
+/**
+ * JNI 退出执行
+ * @param vm
+ * @param reserved 拿到  Java 虚拟机的唯一指针变量
+ */
+void JNI_OnUnload(JavaVM *vm, void *reserved) {
+
+}
+
+/**
+ * System.load 执行
+ * @param vm
+ * @param reserved 拿到  Java 虚拟机的唯一指针变量
+ */
 jint JNI_OnLoad(JavaVM *javaVM, void *pVoid) {
     jVM = javaVM;
     JNIEnv *jniEnv;
@@ -403,11 +440,13 @@ jint JNI_OnLoad(JavaVM *javaVM, void *pVoid) {
     LOGE("FFMPEG CONFIG %s \n", avutil_configuration());
     LOGE("FFMPEG VERSION%s \n", av_version_info());
 
-    if (AVToolsBuilder::getInstance()->getPlayEngine()->initMediaCodec(pVoid) == 0){
+
+    if (AVToolsBuilder::getInstance()->getPlayEngine()->initMediaCodec(javaVM) == 0) {
         LOGE("FFMPEG MediaCodec init success! \n");
-    } else{
+    } else {
         LOGE("FFMPEG MediaCodec init error! \n");
     }
+
 
     return JNI_VERSION_1_6;
 

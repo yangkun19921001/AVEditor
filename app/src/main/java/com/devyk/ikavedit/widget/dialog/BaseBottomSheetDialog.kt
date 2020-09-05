@@ -55,7 +55,6 @@ abstract class BaseBottomSheetDialog : BottomSheetDialogFragment() {
         super.onCreate(savedInstanceState)
         setStyle(DialogFragment.STYLE_NORMAL, R.style.MyDialog)
         isCancelable = true
-
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

@@ -31,6 +31,7 @@ struct AVData {
     int width = 0;
     int height = 0;
     int format = 0;
+    int endPacket = 0;
 
     bool alloc(int size, const char *data = 0);
 

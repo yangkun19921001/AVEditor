@@ -58,7 +58,7 @@ int AVDemux::open(const char *source) {
         close();
         char error_meg[1024] = {0};
         av_strerror(ret, error_meg, sizeof(error_meg));
-        LOGE("find stream info failed :%s error:%s \n", source,error_meg);
+        LOGE("find stream info failed :%s error:%s \n", source, error_meg);
 
         return false;
     }
@@ -83,7 +83,7 @@ int AVDemux::open(const char *source) {
     }
     //读取媒体文件总长度 ms
     this->totalDuration = pFormatCtx->duration / 1000;
-
+    read_stream_complete = 0;
     LOGE("open source success :%s", source);
     LOGE("source totalDuration :%lld  pFormatCtx->duration:%lld", totalDuration, pFormatCtx->duration);
     return true;
@@ -106,6 +106,7 @@ AVParameter AVDemux::getVInfo() {
     video_stream_index = re;
     AVParameter para;
     para.para = pFormatCtx->streams[re]->codecpar;
+    para.codec = pFormatCtx->streams[re]->codec;
 
     switch (pFormatCtx->streams[re]->codecpar->format) {
         case AV_PIX_FMT_YUV420P:
@@ -158,6 +159,7 @@ AVParameter AVDemux::getAInfo() {
          pFormatCtx->streams[re]->codecpar->format);
     para.format = pFormatCtx->streams[re]->codecpar->format;
     para.timebase = pFormatCtx->streams[re]->time_base;
+    para.codec = pFormatCtx->streams[re]->codec;
     mux.unlock();
     return para;
 }
@@ -165,20 +167,25 @@ AVParameter AVDemux::getAInfo() {
 
 AVData AVDemux::read() {
     mux.lock();
+    //这里说明 读取成功了
+    AVData avData;
+    avData.endPacket = 0;
     if (!pFormatCtx) {
         mux.unlock();
-        return AVData();
+        return avData;
     }
     //初始化 AVPacket
     AVPacket *packet = av_packet_alloc();
     //读取一帧音视频流 0 is success!
     int ret = av_read_frame(pFormatCtx, packet);
 
-    if (ret == AVERROR_EOF) {//代表读取完成了
+    if (ret == AVERROR_EOF && !read_stream_complete) {//代表读取完成了
         mux.unlock();
         av_packet_free(&packet);
         packet = 0;
-        return AVData();
+        avData.endPacket = AVERROR_EOF;
+        read_stream_complete = true;
+        return avData;
     }
 
     if (ret != 0) {
@@ -187,8 +194,7 @@ AVData AVDemux::read() {
         packet = 0;
         return AVData();
     }
-    //这里说明 读取成功了
-    AVData avData;
+
 
     avData.size = packet->size;
 
@@ -205,7 +211,7 @@ AVData AVDemux::read() {
         mux.unlock();
         av_packet_free(&packet);
         packet = 0;
-        return AVData();
+        return avData;
     }
     //计算 pts 值
     //转换pts -> 毫秒
@@ -260,6 +266,7 @@ int AVDemux::close() {
     mux.lock();
     if (pFormatCtx)
         avformat_close_input(&pFormatCtx);//关闭
+    pFormatCtx = NULL;
     mux.unlock();
 
     return false;

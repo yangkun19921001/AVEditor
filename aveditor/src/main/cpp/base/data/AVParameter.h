@@ -5,7 +5,14 @@
 #ifndef IAVEDIT_AVPARAMETER_H
 #define IAVEDIT_AVPARAMETER_H
 
+
+
+
+extern "C" {
 #include <libavutil/rational.h>
+#include <libavcodec/avcodec.h>
+}
+
 
 struct AVCodecParameters;
 
@@ -22,6 +29,11 @@ public:
      * 解码参数
      */
     AVCodecParameters *para = 0;
+
+    /**
+     * 解码参数
+     */
+    AVCodecContext *codec = 0;
     /**
      * 音频通道
      */
@@ -42,7 +54,7 @@ public:
     /**
      * 时间基
      */
-     AVRational timebase;
+    AVRational timebase;
     int64_t duration;
 };
 

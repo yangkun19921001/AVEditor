@@ -3,6 +3,7 @@ package com.devyk.aveditor.mediacodec
 import android.media.MediaCodec
 
 import com.devyk.aveditor.config.VideoConfiguration
+import com.devyk.aveditor.entity.Speed
 
 import java.nio.ByteBuffer
 
@@ -28,7 +29,7 @@ public interface IVideoCodec {
     /**
      * start 编码
      */
-    fun start();
+    fun start(speed: Speed);
 
     /**
      * 停止编码

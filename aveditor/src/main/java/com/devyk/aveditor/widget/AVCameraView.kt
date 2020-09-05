@@ -40,8 +40,6 @@ public open class AVCameraView : GLSurfaceView,
     private val mSpeed: Speed? = null//模式：快速/慢速/常速
 
 
-
-
     protected var mCameraOpenListener: ICameraOpenListener? = null
 
     /**
@@ -89,6 +87,8 @@ public open class AVCameraView : GLSurfaceView,
         mRenderer.setOnRendererListener(this)
     }
 
+
+    var frameIndex = 0;
     /**
      * Camera 刷新回调
      */
@@ -96,7 +96,7 @@ public open class AVCameraView : GLSurfaceView,
         /**
          * 由于 咱们初始化传递的是 RENDERMODE_WHEN_DIRTY 手动渲染模式，当 Camera 有新的数据，我们就应该请求刷新
          */
-        requestRender()
+            requestRender()
     }
 
     /**
@@ -160,6 +160,7 @@ public open class AVCameraView : GLSurfaceView,
      * 释放 Camera 资源的时候调用
      */
     public open fun stopPreview() {
+
         mRenderer?.onSurfaceDestroyed()
         CameraHolder.instance().stopPreview()
         CameraHolder.instance().releaseCamera()
@@ -205,6 +206,14 @@ public open class AVCameraView : GLSurfaceView,
      */
     public fun addWatermark(watermark: Watermark?) {
         mRenderer?.addWatermark(watermark)
+    }
+
+    fun startRecord() {
+        mRenderer?.startRecord()
+    }
+
+    open fun stopRecord() {
+        mRenderer?.stopRecord()
     }
 
 

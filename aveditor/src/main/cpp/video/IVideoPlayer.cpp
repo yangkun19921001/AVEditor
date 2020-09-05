@@ -5,7 +5,7 @@
 #include "IVideoPlayer.h"
 
 void IVideoPlayer::update(AVData data) {
-    if (isPause())
+    if (isPause() || data.size <= 0)
         return;
     //渲染数据
     this->render(data);

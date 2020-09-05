@@ -16,23 +16,12 @@ SoundTouchUtils::initSpeedController(int channels, int sampleingRate, double tem
 }
 
 
-int SoundTouchUtils::soundtouch(uint8_t *input, short **out, int size) {
-    int num = 0;
-    if (size > 0 && input && *out) {
-        /**
-         * 因为 ffmpeg 解码出来是 uint8 1个字节，我们需要转换为 short 2 个字节形式
-         * 用uint_16 来存储PCM数据，就不需要下面的转换。
-         */
-        for (int i = 0; i < size / 2 + 1; i++) {
-            (*out)[i] = (input[i * 2] | (input[i * 2 + 1] << 8));
-        }
-        soundTouch->putSamples(reinterpret_cast<const SAMPLETYPE *>(input), size / 2 / soundTouch->numChannels());
-    } else {
-        close();
+int SoundTouchUtils::putData(uint8_t *input, int size) {
+    if (size > 0 && input) {
+        soundTouch->putSamples(reinterpret_cast<const SAMPLETYPE *>(input),
+                               size / AUDIO_SAMPLE_FORMAT_16BIT / soundTouch->numChannels());
     }
-    num = soundTouch->receiveSamples(*out,
-                                     size / 2 / soundTouch->numChannels());
-    return num * 2 * soundTouch->numChannels();
+    return size;
 }
 
 
@@ -52,6 +41,13 @@ void SoundTouchUtils::close() {
 void SoundTouchUtils::setSpeed(double speed) {
     if (soundTouch && speed >= 0.0 && speed <= 3.0)
         soundTouch->setTempo(speed);
+}
+
+int SoundTouchUtils::getData(short **out, int size) {
+    int num = 0;
+    num = soundTouch->receiveSamples(*out,
+                                     size / AUDIO_SAMPLE_FORMAT_16BIT / soundTouch->numChannels());
+    return num * 2 * soundTouch->numChannels();
 }
 
 

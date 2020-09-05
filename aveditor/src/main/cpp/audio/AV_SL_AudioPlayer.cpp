@@ -22,6 +22,9 @@ AV_SL_AudioPlayer::AV_SL_AudioPlayer() {
 AV_SL_AudioPlayer::~AV_SL_AudioPlayer() {
     delete[]buffer;
     buffer = 0;
+
+    delete[]sd_buffer;
+    sd_buffer = 0;
 }
 
 /**
@@ -40,6 +43,7 @@ static void play_pcm_callback(SLAndroidSimpleBufferQueueItf bf, void *contex) {
 }
 
 int AV_SL_AudioPlayer::startPlayer(AVParameter parameter) {
+    this->parameter = parameter;
     //先设置暂停，有数据就恢复
     close();
     mux.lock();
@@ -48,7 +52,7 @@ int AV_SL_AudioPlayer::startPlayer(AVParameter parameter) {
     this->buffer = new unsigned char[parameter.sample_rate * parameter.channels * 2];
     this->sd_buffer = new SAMPLETYPE[parameter.sample_rate * parameter.channels * 2];
     //初始化速率控制
-    AVToolsBuilder::getInstance()->getSoundTouchEngine()->initSpeedController(parameter.channels,
+    AVToolsBuilder::getInstance()->getSoundTouchEngine(1)->initSpeedController(parameter.channels,
                                                                               parameter.sample_rate, mPlaySpeed, 1);
     if (eng) {
         LOGI("CreateSL success！ ");
@@ -173,7 +177,7 @@ void AV_SL_AudioPlayer::close() {
         (*engineSL)->Destroy(engineSL);
     }
 
-    AVToolsBuilder::getInstance()->getSoundTouchEngine()->close();
+    AVToolsBuilder::getInstance()->getSoundTouchEngine(1)->close();
 //    finish()
     engineSL = NULL;
     eng = NULL;
@@ -324,7 +328,9 @@ int AV_SL_AudioPlayer::readPcmData() {
         }
         memcpy(buffer, d.data, d.size);
         free(d.data);
-        num = AVToolsBuilder::getInstance()->getSoundTouchEngine()->soundtouch(buffer, &sd_buffer, d.size);
+        num  = AVToolsBuilder::getInstance()->getSoundTouchEngine(1)->putData(buffer, d.size);
+        num = AVToolsBuilder::getInstance()->getSoundTouchEngine(1)->getData(&sd_buffer,
+                                                                              d.size);
         if (num == 0) {
             mux.unlock();
             continue;
@@ -341,7 +347,7 @@ int AV_SL_AudioPlayer::readPcmData() {
  */
 void AV_SL_AudioPlayer::setPlaySpeed(double v) {
     this->mPlaySpeed = v;
-    AVToolsBuilder::getInstance()->getSoundTouchEngine()->setSpeed(this->mPlaySpeed);
+    AVToolsBuilder::getInstance()->getSoundTouchEngine(1)->setSpeed(this->mPlaySpeed);
 }
 
 /**

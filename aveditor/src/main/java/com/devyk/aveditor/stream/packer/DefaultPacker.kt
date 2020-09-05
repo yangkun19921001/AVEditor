@@ -1,6 +1,7 @@
 package com.devyk.aveditor.stream.packer
 
 import android.media.MediaCodec
+import com.devyk.aveditor.entity.Speed
 import com.devyk.aveditor.stream.PacketType
 import java.nio.ByteBuffer
 import kotlin.experimental.and
@@ -15,7 +16,7 @@ import kotlin.experimental.and
  * </pre>
  */
 public class DefaultPacker : Packer {
-    override fun start() {
+    override fun start(speed: Speed) {
 
     }
 

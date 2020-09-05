@@ -105,7 +105,6 @@ public class AVRecordActivity : BaseActivity<Int>(), TimerUtils.OnTimerUtilsList
     override fun initListener() {
         douyin_button_fun_tab.setOnTabSelectListener(object : OnTabSelectListener {
             override fun onTabSelect(position: Int) {
-
                 douyin_button_fun_tab.setTextsize(mSelectTextSize, mUnSelectTextSize)
             }
 
@@ -180,7 +179,6 @@ public class AVRecordActivity : BaseActivity<Int>(), TimerUtils.OnTimerUtilsList
      */
     private fun initWatermark() {
         videoView.addWatermark(Watermark(BitmapUtils.messageToBitmap("DevYK", applicationContext)))
-
     }
 
 

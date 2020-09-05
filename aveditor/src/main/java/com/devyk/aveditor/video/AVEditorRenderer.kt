@@ -16,6 +16,7 @@ import com.tencent.mars.xlog.Log.TAG
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
+
 /**
  * <pre>
  *     author  : devyk on 2020-08-07 23:01
@@ -75,7 +76,9 @@ public class AVEditorRenderer(context: Context?) :
      */
     private var mDrawFilterIndex = 0;
 
+
     private var mContext: Context? = null
+
 
     init {
         mContext = context
@@ -156,8 +159,24 @@ public class AVEditorRenderer(context: Context?) :
     /**
      * 当手动调用 requestRenderer 回调该绘制
      */
+
+
     override fun onDrawFrame(gl: GL10?) {
+
+
         //清理屏幕 :告诉opengl 需要把屏幕清理成什么颜色
+        if (isStart) {
+            var pts = getCurFramePts()
+//            onDraw(pts)
+//            frameIndex++
+//             pts = getCurFramePts()
+            onDraw(System.nanoTime())
+//            frameIndex++
+        } else
+            onDraw(System.nanoTime())
+    }
+
+    private fun onDraw(nanoTime: Long) {
         GLES20.glClearColor(0f, 0f, 0f, 0f)
         //执行上一个：glClearColor配置的屏幕颜色
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
@@ -173,15 +192,17 @@ public class AVEditorRenderer(context: Context?) :
                 //这里的纹理需要进行录制
                 var showScreenTexture = onDrawFrameFilter(mFilters.get(mDrawFilterIndex)?.onDrawFrame(mTextureId[0]))
 
-                //回调给 Camera 纹理交于处理显示矩阵
-                mListener?.onRecordTextureId(showScreenTexture, System.nanoTime())
+
+                mListener?.onRecordTextureId(showScreenTexture, nanoTime)
+
+
             } catch (err: Exception) {
                 LogHelper.e(TAG, err?.message)
             }
-
         }
-    }
 
+        frameIndex++
+    }
 
 
     /**
@@ -290,4 +311,35 @@ public class AVEditorRenderer(context: Context?) :
     public fun setOnRendererListener(listener: OnRendererListener) {
         mListener = listener
     }
+
+
+    var isStart = false;
+    fun startRecord() {
+        frameIndex = 0
+        isStart = true
+        pts = -1
+    }
+
+    fun stopRecord() {
+        frameIndex = 0
+        isStart = false
+        pts = -1
+    }
+
+    var frameIndex = 0L;
+//    private fun getCurFramePts(): Long {
+//        var pts = frameIndex * (1000 / 25) * 1000
+//        return pts.toLong()
+//    }
+
+
+    var pts = -1L;
+    private fun getCurFramePts(): Long {
+        if (pts == -1L)
+            pts = System.nanoTime()
+//        return ((System.nanoTime() - pts) / 0.5).toLong()
+        return ((System.nanoTime() - pts)).toLong()
+    }
+
+
 }

@@ -6,7 +6,7 @@
 
 
 void IDecode::update(AVData data) {
-    if (data.isAudio != isAudio) {
+    if (data.isAudio != isAudio || data.size <= 0) {
         return;
     }
     while (!isExit) {

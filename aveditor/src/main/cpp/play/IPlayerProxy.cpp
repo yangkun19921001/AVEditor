@@ -148,6 +148,26 @@ void IPlayerProxy::setPlaySpeed(double d) {
 }
 
 
+/**
+ * 拿到多个片段
+ * @return
+ */
+deque<MediaEntity *> IPlayerProxy::getDataSources() {
+    std::deque<MediaEntity *> mediaLists;
+    if (pPlayer) {
+        if (pPlayer->mediaLists.size() == 0) {
+            MediaEntity *mediaEntity = new MediaEntity();
+            mediaEntity->path = getDataSource();
+            mediaLists.push_back(mediaEntity);
+            return mediaLists;
+        }
+        return pPlayer->mediaLists;
+    }
+
+    return mediaLists;
+}
+
+
 
 
 

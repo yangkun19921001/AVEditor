@@ -7,6 +7,8 @@ import com.devyk.ikavedit.R
 import com.devyk.ikavedit.base.BaseActivity
 import com.devyk.aveditor.entity.MediaEntity
 import com.devyk.aveditor.jni.JNIManager
+import com.devyk.aveditor.stream.packer.PackerType
+import com.devyk.aveditor.utils.FileUtils
 import com.devyk.aveditor.utils.ThreadUtils
 import com.devyk.aveditor.widget.AVPlayView
 import com.devyk.ikavedit.callback.OnFilterItemClickListener
@@ -77,7 +79,7 @@ public class AVEditorActivity : BaseActivity<Int>(), AnimTextView.OnClickListene
         mAVFiles?.let { listItem ->
             ThreadUtils.runChildThread {
                 LogHelper.e(TAG, "媒体文件:${mAVFiles} \n 媒体文件总长度:${mVideoDuration}")
-                JNIManager.getPlayEngine()?.setDataSource(listItem)
+                JNIManager.getAVPlayEngine()?.setDataSource(listItem)
 //                JNIManager.getPlayEngine()?.setDataSource("sdcard/a_songstudio/recording.flv")
 //                JNIManager.getPlayEngine()?.setDataSource("sdcard/aveditor/ffmpeg_muxer.mp4")
             }
@@ -138,6 +140,9 @@ public class AVEditorActivity : BaseActivity<Int>(), AnimTextView.OnClickListene
             }
             //下一步
             next -> {
+                val outPath = createRecordFilePath();
+                FileUtils.createFileByDeleteOldFile(outPath)
+                JNIManager.getAVEditorEngine()?.avStartMerge(outPath, PackerType.MP4.name)
             }
         }
     }

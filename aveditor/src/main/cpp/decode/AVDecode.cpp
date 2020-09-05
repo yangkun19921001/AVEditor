@@ -170,7 +170,7 @@ AVData AVDecode::getDecodeFrame() {
         mux.unlock();
         char buf[1024] = {0};
         av_strerror(ret, buf, sizeof(buf) - 1);
-        LOGE("avcodec_receive_frame error %s", buf);
+        LOGE("avcodec_receive_frame error %s %d isAudio:%d", buf,ret,isAudio);
         return AVData();
     }
 

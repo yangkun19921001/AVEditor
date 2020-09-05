@@ -10,6 +10,7 @@ IPlayer *IPlayerBuilder::builderPlayer(unsigned char index) {
     //FFmpeg 解封装
     IDemux *de = createDemux();
 
+
     //FFmpeg 视频解码
     IDecode *vdecode = createDecode();
 

@@ -5,7 +5,6 @@
 #include <builder/AVToolsBuilder.h>
 #include "IPlayer.h"
 #include "../builder/AVPlayerBuilder.h"
-#include "../../../../../../../../../Android/NDK/android-ndk-r17c/sources/cxx-stl/llvm-libc++/include/cstdint"
 
 IPlayer *IPlayer::getInstance(unsigned char index) {
     static IPlayer p[188];
@@ -265,11 +264,12 @@ double IPlayer::playPos() {
     if (total > 0) {
         if (vdecode) {
             if (demux && demux->mAudioPacketExist)
-                pos = ((double)(adecode->pts)/(double)(demux->totalDuration)+0.01)*100; //加 0.01 是为了更加精准
+                pos = ((double) (adecode->pts) / (double) (demux->totalDuration) + 0.01) * 100; //加 0.01 是为了更加精准
             else if (demux && demux->mVideoPacketExist && !demux->mAudioPacketExist) {
-                pos =  ((double)(vdecode->pts)/(double)(demux->totalDuration)+0.01)*100;
+                pos = ((double) (vdecode->pts) / (double) (demux->totalDuration) + 0.01) * 100;
             }
-            LOGE(" 总时长：%lld s \"解码进度：%f  ", total, pos);
+
+//            LOGE("播放进度：%f  时长：%d",pos,total);
             if (pos >= 100) {
                 mux.unlock();
                 return 100;
@@ -310,7 +310,7 @@ int IPlayer::start() {
 }
 
 int IPlayer::initMediaCodec(void *javaVM) {
-    return   AVPlayerBuilder::initMediaCodec(javaVM);
+    return AVPlayerBuilder::initMediaCodec(javaVM);
 
 }
 
@@ -329,9 +329,9 @@ uint64_t IPlayer::getTotalDuration() {
  */
 void IPlayer::setDataSource(JNIEnv *jniEnv, jobject lists) {
     if (mediaLists.size() > 0) {
-        while (!mediaLists.empty()){
-            MediaEntity *media =   mediaLists.front();
-            LOGD("clear path:%s \n",media->path);
+        while (!mediaLists.empty()) {
+            MediaEntity *media = mediaLists.front();
+            LOGD("clear path:%s \n", media->path);
             delete[](media->path);
             delete media;
             mediaLists.pop_front();

@@ -7,6 +7,7 @@
 
 
 #include "IToolsBuilder.h"
+#include <editor/AVEditor.h>
 
 class AVToolsBuilder : public IToolsBuilder {
 public:
@@ -26,7 +27,14 @@ public:
   * 创建速率模块
   * @return
   */
-    virtual  SoundTouchUtils *getSoundTouchEngine();
+    virtual SoundTouchUtils *getSoundTouchEngine(unsigned char index = 1);
+
+
+    /**
+     * 创建音视频编辑模块
+     * @return
+    */
+    virtual IEditor *getEditorEngine();
 
 };
 

@@ -5,7 +5,6 @@ import android.content.Context
 import android.media.MediaCodec
 import android.media.MediaFormat
 import android.opengl.EGLContext
-import android.provider.ContactsContract
 import com.devyk.aveditor.callback.IController
 import com.devyk.aveditor.config.AudioConfiguration
 import com.devyk.aveditor.config.VideoConfiguration
@@ -22,7 +21,6 @@ import java.io.File
 import java.nio.ByteBuffer
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.logging.SimpleFormatter
 
 /**
  * <pre>
@@ -151,13 +149,13 @@ public class StreamController : IController.OnAudioDataListener, IController.OnV
     }
 
     fun start(speed: Speed) {
-        mPacker?.start()
+        mPacker?.start(speed)
         LogHelper.e("SORT->", "start")
         if (mAudioController == null || mVideoController == null)
             init()
         mAudioController?.setRecordAudioSource(recordAudioSource)
         mAudioController?.start(speed)
-        mVideoController?.start()
+        mVideoController?.start(speed)
 
     }
 

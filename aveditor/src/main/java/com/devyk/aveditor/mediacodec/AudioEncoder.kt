@@ -4,6 +4,7 @@ import android.media.MediaCodec
 import android.media.MediaFormat
 import com.devyk.aveditor.callback.OnAudioEncodeListener
 import com.devyk.aveditor.config.AudioConfiguration
+import com.devyk.aveditor.entity.Speed
 
 import java.nio.ByteBuffer
 
@@ -35,8 +36,8 @@ class AudioEncoder(private val mAudioConfiguration: AudioConfiguration?) : BaseA
     }
 
 
-    override fun start() {
-        super.start()
+    override fun start(mSpeed: Speed) {
+        super.start(mSpeed)
     }
 
     override fun stop() {

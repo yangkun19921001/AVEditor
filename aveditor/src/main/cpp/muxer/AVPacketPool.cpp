@@ -22,6 +22,7 @@ static inline long getCurrentTimeMills()
  */
 int AVPacketPool::enqueueAudio(uint8_t *audioData, int size, int pts) {
     int timeMills = (int)(pts/1000.0f);
+    LOGI("Final is AUDIO  pts：%d", timeMills);
     AudioPacket *audioPacket = new AudioPacket();
     audioPacket->data = new byte[size];
     memcpy(audioPacket->data, audioData, size);
@@ -43,7 +44,7 @@ int AVPacketPool::enqueueVideo(uint8_t *outputData, int size, int lastPresentati
     int timeMills = (int) (lastPresentationTimeUs / 1000.0f);
     // push to queue
     int nalu_type = (outputData[4] & 0x1F);
-    LOGI("Final is in nalu_type is %d... size is %d", nalu_type, size);
+    LOGI("Final is in nalu_type is %d... size is %d  pts：%d", nalu_type, size,timeMills);
     if (H264_NALU_TYPE_SEQUENCE_PARAMETER_SET == nalu_type) {
         std::vector<NALUnit *> *units = new vector<NALUnit *>();
         parseH264SpsPps(outputData, size, units);

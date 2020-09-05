@@ -27,7 +27,10 @@ void IDemux::main() {
         }
 
         AVData data = read();//具体实现类去实现
-        if (data.size > 0) {
+        if (data.endPacket == AVERROR_EOF){
+            sendComplete(data);
+        }
+        if (data.size > 0  ) {
 //            LOGE("分发原始数据 pts:%lld type:%d format", data.pts, data.isAudio, data.format);
             send(data);
         } else {
@@ -35,4 +38,5 @@ void IDemux::main() {
         }
     }
 }
+
 

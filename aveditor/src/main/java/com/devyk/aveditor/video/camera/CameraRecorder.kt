@@ -5,9 +5,9 @@ import android.opengl.EGLContext
 import android.os.Handler
 import android.os.HandlerThread
 import android.view.Surface
+import com.devyk.aveditor.entity.Speed
 import com.devyk.aveditor.mediacodec.VideoEncoder
 import com.devyk.aveditor.utils.EGLUtils
-import com.devyk.aveditor.utils.ThreadUtils
 
 /**
  * <pre>
@@ -55,8 +55,8 @@ public class CameraRecorder(context: Context, textureId: Int, eglContext: EGLCon
     }
 
 
-    override fun start() {
-        super.start()
+    override fun start(speed: Speed) {
+        super.start(speed)
 
     }
 

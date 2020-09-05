@@ -35,7 +35,7 @@ public class VideoController(context: Context, textureId:Int, eglContext: EGLCon
         mCameraVideoController?.setOnVideoEncodeListener(this)
     }
     override fun start(speed: Speed) {
-        mCameraVideoController?.start()
+        mCameraVideoController?.start(speed)
     }
 
     override fun stop() {

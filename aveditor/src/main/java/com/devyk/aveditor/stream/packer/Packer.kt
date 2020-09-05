@@ -2,6 +2,7 @@ package com.devyk.aveditor.stream.packer
 
 import android.media.MediaCodec
 import android.media.MediaFormat
+import com.devyk.aveditor.entity.Speed
 import com.devyk.aveditor.stream.PacketType
 import java.nio.ByteBuffer
 
@@ -66,7 +67,7 @@ public interface Packer {
      */
     fun onAudioOutformat(outputFormat: MediaFormat?) {}
 
-    fun start();
+    fun start(speed: Speed);
     fun stop();
 
 }

@@ -84,6 +84,7 @@ public class AVRecordView : AVCameraView {
     fun startRecord(speed: Speed = Speed.NORMAL) {
         LogHelper.e("SORT->", "startRecord")
         mStreamController?.start(speed)
+        super.startRecord()
     }
 
     fun setPause() {
@@ -97,8 +98,9 @@ public class AVRecordView : AVCameraView {
     /**
      * 停止录制
      */
-    fun stopRecord() {
+    override fun stopRecord() {
         mStreamController?.stop()
+        super.stopRecord()
     }
 
     override fun onSurfaceCreated(textureId: Int, eglContext: EGLContext) {

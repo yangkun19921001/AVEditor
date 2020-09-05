@@ -12,14 +12,13 @@ import com.devyk.aveditor.entity.Speed
 import com.devyk.aveditor.jni.IMusicDecode
 import com.devyk.aveditor.jni.JNIManager
 import com.devyk.aveditor.mediacodec.AudioEncoder
+import com.devyk.aveditor.utils.FileUtils
 import com.devyk.aveditor.utils.LogHelper
 import com.devyk.aveditor.utils.LogHelper.TAG
-import com.devyk.aveditor.utils.ThreadUtils
+import java.io.FileOutputStream
 
 import java.nio.ByteBuffer
-import java.sql.Array
 import java.util.*
-import java.util.concurrent.LinkedBlockingQueue
 
 
 /**
@@ -139,6 +138,7 @@ public class AudioController(audioConfiguration: AudioConfiguration) : IControll
         JNIManager.getAVSpeedEngine()?.close(0)
     }
 
+
     /**
      * 当采集 PCM 数据的时候返回
      */
@@ -148,11 +148,12 @@ public class AudioController(audioConfiguration: AudioConfiguration) : IControll
             return
         }
         Arrays.fill(mSpeedPcmData, 0)
-        val soundtouch = JNIManager.getAVSpeedEngine()?.changeSpeed(0, pcmData, mSpeedPcmData!!, pcmData.size)
-        soundtouch?.let { outSize ->
-            if (outSize > 0) {
-                mAudioEncoder?.enqueueCodec(Arrays.copyOf(mSpeedPcmData, outSize))
-            }
+       JNIManager.getAVSpeedEngine()?.putData(0, pcmData,pcmData.size)
+        while (true) {
+            val outSize = JNIManager.getAVSpeedEngine()?.getData(0, mSpeedPcmData!!, pcmData.size)
+            if (outSize == 0)
+                return;
+            mAudioEncoder?.enqueueCodec(Arrays.copyOf(mSpeedPcmData, outSize!!))
         }
     }
 
@@ -162,7 +163,7 @@ public class AudioController(audioConfiguration: AudioConfiguration) : IControll
     override fun onStart(sampleRate: Int, channels: Int, sampleFormat: Int) {
         mSpeedPcmData = ShortArray(sampleRate * channels * 2)
         JNIManager.getAVSpeedEngine()?.initSpeedController(0, channels, sampleRate, mSpeed.value, 1.0)
-        mAudioEncoder?.start()
+        mAudioEncoder?.start(mSpeed)
     }
 
     /**
@@ -211,7 +212,7 @@ public class AudioController(audioConfiguration: AudioConfiguration) : IControll
     override fun onDecodeStart(sampleRate: Int, channels: Int, sampleFormat: Int) {
         val build = AudioConfiguration.Builder().setChannelCount(channels).setFrequency(sampleRate).build()
         mAudioEncoder.setAudioConfiguration(build)
-        mAudioEncoder?.start()
+        mAudioEncoder?.start(mSpeed)
     }
 
     /**

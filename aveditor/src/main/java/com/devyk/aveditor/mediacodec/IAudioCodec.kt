@@ -1,5 +1,7 @@
 package com.devyk.aveditor.mediacodec
 
+import com.devyk.aveditor.entity.Speed
+
 /**
  * <pre>
  *     author  : devyk on 2020-06-13 23:55
@@ -15,7 +17,7 @@ public interface IAudioCodec{
     /**
      * 准备编码
      */
-    fun start()
+    fun start(mSpeed: Speed)
 
     /**
      * 将数据送入编解码器

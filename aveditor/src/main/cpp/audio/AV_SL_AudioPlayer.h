@@ -29,6 +29,7 @@ protected:
       * 当前播放的音量
     */
     int curVolume = 10;
+    AVParameter parameter;
 
 
 public:

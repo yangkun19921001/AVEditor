@@ -11,7 +11,6 @@
 #include "../builder/AVPlayerBuilder.h"
 
 
-
 class IPlayerProxy {
 
 public:
@@ -100,10 +99,12 @@ public:
      * 设置播放的音量
      */
     void setPlayVolume(int v);
+
     /**
      * 设置播放的速率
      */
     void setPlaySpeed(double d);
+
 
 
     /**
@@ -119,13 +120,18 @@ public:
     const char *getDataSource();
 
     /**
+     * 拿到播放源
+     * @return
+     */
+    deque<MediaEntity *> getDataSources();
+
+    /**
      * 拿到总时长 ms
      */
     int64_t getTotalDuration();
 
 
     ITransfer *getTransferInstance();
-
 
 
 };
