@@ -86,4 +86,5 @@ void AVAudioTransfer::onPush() {
             data.data == 0;
         }
     }
+    LOGI("推送退出");
 }
