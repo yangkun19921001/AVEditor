@@ -70,10 +70,15 @@ static void Android_JNI_PLAY_setDataSources(JNIEnv *env, jobject instance, jobje
     AVToolsBuilder::getInstance()->getPlayEngine()->setDataSource(env, lists);
 }
 
+static void Android_JNI_PLAY_setMediaCodec(JNIEnv *env, jobject instance, jboolean isMediacodec) {
+    AVToolsBuilder::getInstance()->getPlayEngine()->setMediaCodec(isMediacodec);
+}
+
 static void Android_JNI_PLAY_start(JNIEnv *env, jobject instance) {
     AVToolsBuilder::getInstance()->getPlayEngine()->getTransferInstance()->registerModel(false);
     if (AVToolsBuilder::getInstance()->getPlayEngine()->open(
-            AVToolsBuilder::getInstance()->getPlayEngine()->getDataSource(), false)) {
+            AVToolsBuilder::getInstance()->getPlayEngine()->getDataSource(),
+            AVToolsBuilder::getInstance()->getPlayEngine()->isMediaCodec())) {
         AVToolsBuilder::getInstance()->getPlayEngine()->start();
     }
 }
@@ -89,13 +94,12 @@ static void Android_JNI_PLAY_setPause(JNIEnv *env, jobject instance, jboolean is
 
 static void Android_JNI_PLAY_stop(JNIEnv *env, jobject instance) {
 
-    if (AVToolsBuilder::getInstance()->getPlayEngine()->getTransferInstance()->REGISTER_AUDIO_TRANSFER_MODEL){
+    if (AVToolsBuilder::getInstance()->getPlayEngine()->getTransferInstance()->REGISTER_AUDIO_TRANSFER_MODEL) {
         AVToolsBuilder::getInstance()->getPlayEngine()->getTransferInstance()->onDecodeStop();
     }
 
 
     AVToolsBuilder::getInstance()->getPlayEngine()->close();
-
 
 
 }
@@ -136,7 +140,8 @@ static void Android_JNI_resume(JNIEnv *jniEnv, jobject jobject1) {
  */
 static void Android_JNI_decodeMusicAlsoPlay(JNIEnv *env, jobject instance) {
     if (AVToolsBuilder::getInstance()->getPlayEngine()->open(
-            AVToolsBuilder::getInstance()->getPlayEngine()->getDataSource(), false)) {
+            AVToolsBuilder::getInstance()->getPlayEngine()->getDataSource(),
+            AVToolsBuilder::getInstance()->getPlayEngine()->isMediaCodec())) {
         AVToolsBuilder::getInstance()->getPlayEngine()->start();
     }
 }
@@ -244,8 +249,8 @@ static void Android_JNI_SPEED_initSpeedController(JNIEnv *jniEnv, jobject jobjec
                                                   jdouble tempo,
                                                   jdouble pitchSemi) {
 
-    AVToolsBuilder::getInstance()->getSoundTouchEngine()->initSpeedController(track,channels, sampleingRate, tempo,
-                                                                                   pitchSemi);
+    AVToolsBuilder::getInstance()->getSoundTouchEngine()->initSpeedController(track, channels, sampleingRate, tempo,
+                                                                              pitchSemi);
 
 
 }
@@ -259,8 +264,8 @@ static jint Android_JNI_SPEED_putData(JNIEnv *jniEnv, jobject jobject1,
     int outSize = 0;
     jbyte *inPcm = jniEnv->GetByteArrayElements(pcm, 0);
 
-    outSize = AVToolsBuilder::getInstance()->getSoundTouchEngine()->putData(track,reinterpret_cast<uint8_t *>(inPcm),
-                                                                                 size
+    outSize = AVToolsBuilder::getInstance()->getSoundTouchEngine()->putData(track, reinterpret_cast<uint8_t *>(inPcm),
+                                                                            size
     );
     jniEnv->ReleaseByteArrayElements(pcm, inPcm, 0);
 //
@@ -276,7 +281,7 @@ static jint Android_JNI_SPEED_getData(JNIEnv *jniEnv, jobject jobject1,
     int outSize = 0;
     jshort *outPcm = jniEnv->GetShortArrayElements(out, 0);
     outSize = AVToolsBuilder::getInstance()->getSoundTouchEngine()->getData(track,
-            &outPcm, size
+                                                                            &outPcm, size
     );
 
     jniEnv->ReleaseShortArrayElements(out, outPcm, 0);
@@ -299,7 +304,7 @@ static void Android_JNI_SPEED_close(JNIEnv *jniEnv, jobject jobject1,
  */
 static void Android_JNI_SPEED_setRecordSpeed(JNIEnv *jniEnv, jobject jobject1,
                                              jint track, jdouble speed) {
-    AVToolsBuilder::getInstance()->getSoundTouchEngine()->setSpeed(track,speed
+    AVToolsBuilder::getInstance()->getSoundTouchEngine()->setSpeed(track, speed
     );
 }
 
@@ -355,6 +360,7 @@ static JNINativeMethod mNativePlayMethods[] = {
         {"setDataSource", "(Ljava/lang/String;)V",    (void **) Android_JNI_PLAY_setDataSource},
         {"setDataSource", "(Ljava/util/ArrayList;)V", (void **) Android_JNI_PLAY_setDataSources},
         {"start",         "()V",                      (void **) Android_JNI_PLAY_start},
+        {"setMediaCodec", "(Z)V",                     (void **) Android_JNI_PLAY_setMediaCodec},
         {"setPause",      "(Z)V",                     (void **) Android_JNI_PLAY_setPause},
         {"stop",          "()V",                      (void **) Android_JNI_PLAY_stop},
         {"progress",      "()D",                      (void **) Android_JNI_PLAY_progress},

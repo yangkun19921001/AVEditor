@@ -134,6 +134,9 @@ public:
     ITransfer *getTransferInstance();
 
 
+    void setMediaCodec(jboolean isMediaCodec);
+
+    bool isMediaCodec();
 };
 
 

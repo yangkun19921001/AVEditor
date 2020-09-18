@@ -220,7 +220,7 @@ public class AVRecordActivity : BaseActivity<Int>(), TimerUtils.OnTimerUtilsList
 
             override fun onDown() {
                 LogHelper.e(TAG, "开始录制")
-                mTimer.start(mMaxRecordDuration)
+                mTimer.start((mMaxRecordDuration / mSpeed.value).toInt())
                 val outVideoFilePath = createRecordFilePath()
                 FileUtils.createFileByDeleteOldFile(outVideoFilePath)
                 videoView.setPaker(PackerType.MP4, outVideoFilePath)

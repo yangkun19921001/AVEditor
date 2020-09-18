@@ -21,6 +21,7 @@ AVCodec *getCodec(AVCodecParameters *parameters) {
                 LOGE("Couldn't find Codec. H264_MEDIACODEC\n");
                 return NULL;
             }
+            LOGD("avcodec_find_decoder_by_name(H264_MEDIACODEC) success!");
             break;
         case AV_CODEC_ID_MPEG4:
             codec = avcodec_find_decoder_by_name(MPEG4_MEDIACODEC);//硬解码mpeg4
@@ -28,6 +29,7 @@ AVCodec *getCodec(AVCodecParameters *parameters) {
                 LOGE("Couldn't find Codec. MPEG4_MEDIACODEC\n");
                 return NULL;
             }
+            LOGD("avcodec_find_decoder_by_name(MPEG4_MEDIACODEC) success!");
             break;
         case AV_CODEC_ID_HEVC:
             codec = avcodec_find_decoder_by_name(HEVC_MEDIACODEC);//硬解码265
@@ -35,6 +37,7 @@ AVCodec *getCodec(AVCodecParameters *parameters) {
                 LOGE("Couldn't find Codec.HEVC_MEDIACODEC \n");
                 return NULL;
             }
+            LOGD("avcodec_find_decoder_by_name(HEVC_MEDIACODEC); success!");
             break;
         default:
             codec = avcodec_find_decoder(parameters->codec_id);//软解
@@ -62,12 +65,16 @@ int AVDecode::open(AVParameter par, int isMediaCodec) {
     if (isMediaCodec) {
         codec = getCodec(parameters);
     }
+
+    //如果没有找到硬件解码，将使用默认解码器
     if (!codec) {
-        mux.unlock();
-        close();
-        LOGE("avcodec_find_decoder %d failed!  %d", parameters->codec_id, isMediaCodec);
-        return false;
+        codec = avcodec_find_decoder(parameters->codec_id);//软解
+        if (codec == NULL) {
+            LOGE("Couldn't find Codec.\n");
+            return NULL;
+        }
     }
+
     LOGI("avcodec_find_decoder  success !  isMediacodec:%d", isMediaCodec);
     //创建解码器上下文
     this->pCodec = avcodec_alloc_context3(codec);
@@ -208,3 +215,20 @@ AVData AVDecode::getDecodeFrame() {
     mux.unlock();
     return deData;
 }
+
+/**
+ * 是否打开硬件解码器
+ * @param isOpenMediaCodec
+ */
+void AVDecode::setMediaCodec(bool isMediaCodec) {
+    this->isMediaCodec_ = isMediaCodec;
+}
+
+/**
+ * 是否要硬件解码
+ * @return
+ */
+bool AVDecode::isMediaCodec() {
+    return this->isMediaCodec_;
+}
+

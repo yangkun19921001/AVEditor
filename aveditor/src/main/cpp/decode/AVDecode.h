@@ -36,6 +36,11 @@ protected:
      */
     AVRational timebase;
 
+    /**
+     * 是否需要硬件解码
+     */
+    bool isMediaCodec_ = true;
+
 public:
     /**
  * 初始化硬件编码器
@@ -69,6 +74,19 @@ public:
      * 接收解码完成的数据
      */
     virtual AVData getDecodeFrame();
+
+    /**
+     * 是否设置硬件解码
+     * @param isMediaCodec
+     */
+    virtual void setMediaCodec(bool isMediaCodec) ;
+
+
+    /**
+     * 是否是硬件解码
+     * @param isMediaCodec
+     */
+    virtual bool isMediaCodec();
 
 };
 

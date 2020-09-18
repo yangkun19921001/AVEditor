@@ -98,6 +98,18 @@ public:
      */
     virtual void update(AVData data);
 
+    /**
+     * 是否设置硬件解码
+     * @param isMediaCodec
+     */
+    virtual void setMediaCodec(bool isMediaCodec) = 0;
+
+    /**
+     * 是否是硬件解码
+     * @param isMediaCodec
+     */
+    virtual bool isMediaCodec() = 0;
+
 
 };
 

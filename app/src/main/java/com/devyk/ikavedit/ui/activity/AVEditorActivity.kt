@@ -7,6 +7,7 @@ import com.devyk.ikavedit.R
 import com.devyk.ikavedit.base.BaseActivity
 import com.devyk.aveditor.entity.MediaEntity
 import com.devyk.aveditor.jni.JNIManager
+import com.devyk.aveditor.mediacodec.MediaCodecHelper
 import com.devyk.aveditor.stream.packer.PackerType
 import com.devyk.aveditor.utils.FileUtils
 import com.devyk.aveditor.utils.ThreadUtils
@@ -16,6 +17,8 @@ import com.devyk.ikavedit.entity.FilterEntity
 import com.devyk.ikavedit.widget.AnimTextView
 import com.devyk.ikavedit.widget.dialog.SelectFilterDialog
 import kotlinx.android.synthetic.main.activity_aveditor.*
+import kotlinx.android.synthetic.main.activity_aveditor.player_view
+import kotlinx.android.synthetic.main.activity_play.*
 import java.io.File
 
 /**
@@ -88,6 +91,10 @@ public class AVEditorActivity : BaseActivity<Int>(), AnimTextView.OnClickListene
     }
 
     private fun play() {
+        if (MediaCodecHelper.isSupportVideoDMediaCodec())
+            player_view.setMediaCodec(true)
+        else
+            player_view.setMediaCodec(false)
         player_view.start()
     }
 

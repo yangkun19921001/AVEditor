@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
+import com.devyk.aveditor.mediacodec.MediaCodecHelper
 import com.devyk.aveditor.widget.AVPlayView
 import com.devyk.aveditor.utils.LogHelper
 import com.devyk.ikavedit.R
@@ -33,8 +34,12 @@ class PlayActivity : AppCompatActivity() {
 //        player_view.setDataSource("sdcard/aveditor/456.h264");
 //        player_view.setDataSource("sdcard/1080.mp4");
 //            )
-        player_view.start()
 
+        if (MediaCodecHelper.isSupportVideoDMediaCodec())
+            player_view.setMediaCodec(true)
+        else
+            player_view.setMediaCodec(false)
+        player_view.start()
         player_view.setOnClickListener {
             isPause = !isPause
             player_view.setPause(isPause)

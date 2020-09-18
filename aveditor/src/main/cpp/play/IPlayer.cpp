@@ -441,3 +441,18 @@ void IPlayer::setPlaySpeed(double d) {
         audioPlay->setPlaySpeed(d);
 
 }
+
+void IPlayer::setMediaCodec(jboolean isMediaCodec) {
+    if (vdecode){
+        vdecode->setMediaCodec(isMediaCodec);
+    }
+
+}
+
+bool IPlayer::isMediaCodec() {
+    if (vdecode)
+    {
+        return vdecode->isMediaCodec();
+    }
+    return false;
+}

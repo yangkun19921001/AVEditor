@@ -25,6 +25,11 @@ public interface IPlayer {
     public fun setDataSource(source: String?)
 
     /**
+     * 设置硬件解码
+     */
+    public fun setMediaCodec(isMediacodec:Boolean)
+
+    /**
      * 设置多个播放源第一个播放完成之后再播放第二个
      */
     public fun setDataSource(sources: ArrayList<MediaEntity>?)

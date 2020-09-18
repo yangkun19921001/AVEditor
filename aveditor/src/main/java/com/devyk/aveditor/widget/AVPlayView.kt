@@ -122,6 +122,11 @@ class AVPlayView : GLSurfaceView, SurfaceHolder.Callback, GLSurfaceView.Renderer
     public fun seekTo(seek: Double): Int? = mIPlayer?.seekTo(seek)
 
     /**
+     * 设置硬件解码播放
+     */
+    public fun setMediaCodec(isMediaCodec: Boolean) =mIPlayer?.setMediaCodec(isMediaCodec)
+
+    /**
      * 停止
      */
     public fun stop() {

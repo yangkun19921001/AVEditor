@@ -167,6 +167,21 @@ deque<MediaEntity *> IPlayerProxy::getDataSources() {
     return mediaLists;
 }
 
+void IPlayerProxy::setMediaCodec(jboolean isMediaCodec) {
+    if (pPlayer) {
+        pPlayer->setMediaCodec(isMediaCodec);
+    }
+
+}
+
+bool IPlayerProxy::isMediaCodec() {
+
+    bool isMediaCodec = false;
+    if (pPlayer)
+        return pPlayer->isMediaCodec();
+    return isMediaCodec;
+}
+
 
 
 

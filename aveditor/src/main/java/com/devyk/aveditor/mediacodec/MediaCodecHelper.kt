@@ -2,7 +2,7 @@ package com.devyk.aveditor.mediacodec
 
 import android.media.MediaCodecList
 import android.media.MediaCodecInfo
-
+import android.media.MediaFormat
 
 
 /**
@@ -36,4 +36,9 @@ object MediaCodecHelper {
         }
         return null
     }
+
+    /**
+     * 是否支持视频硬件解码
+     */
+    fun isSupportVideoDMediaCodec(): Boolean = selectCodec(MediaFormat.MIMETYPE_VIDEO_AVC) != null
 }

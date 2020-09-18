@@ -22,8 +22,7 @@ private:
 
 
 public:
-    //是否视频硬解码
-    int isMediaCodec = false;
+
 
     //音频输出参数配置
     AVParameter outPara;
@@ -156,6 +155,10 @@ public:
     virtual void playNext();
 
 
+    void setMediaCodec(jboolean isMediaCodec);
+
+
+    bool  isMediaCodec();
 };
 
 

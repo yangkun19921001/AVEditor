@@ -7,11 +7,11 @@ NOW_DIR=$(cd `dirname $0`; pwd)
 LIBS_DIR=$NOW_DIR/libs
 echo "LIBS_DIR="$LIBS_DIR
 
-cd ffmpeg-3.4.6
+cd /root/android/library/ffmpeg/FFmpeg-n3.4.6
 
 PREFIX=$LIBS_DIR/ffmpeg-x264-fdkaac-merge/$AOSP_ABI
 TOOLCHAIN=$ANDROID_NDK_ROOT/toolchains/$TOOLCHAIN_BASE-$AOSP_TOOLCHAIN_SUFFIX/prebuilt/linux-x86_64
-SYSROOT=$ANDROID_NDK_ROOT/platforms/$AOSP_API/arch-$AOSP_ARCH
+SYSROOT=$ANDROID_NDK_ROOT/platforms/$AOSP_API/$AOSP_ARCH
 CROSS_PREFIX=$TOOLCHAIN/bin/$TOOLNAME_BASE-
 
 
@@ -41,15 +41,24 @@ echo $X264_LIB
 --extra-ldflags="-L$X264_LIB -L$FDK_LIB" \
 --enable-gpl \
 --enable-nonfree \
---disable-shared \
+--enable-shared \
 --enable-static \
 --enable-version3 \
 --enable-pthreads \
 --enable-small \
 --disable-vda \
 --disable-iconv \
---enable-libx264 \
+--enable-asm \
 --enable-neon \
+--enable-jni \
+--enable-mediacodec \
+--enable-decoder=h264_mediacodec \
+--enable-hwaccel=h264_mediacodec \
+--enable-decoder=hevc_mediacodec \
+--enable-decoder=mpeg4_mediacodec \
+--enable-decoder=vp8_mediacodec \
+--enable-decoder=vp9_mediacodec \
+--enable-libx264 \
 --enable-yasm \
 --enable-libfdk_aac \
 --enable-encoder=libx264 \
@@ -69,6 +78,7 @@ echo $X264_LIB
 --enable-decoder=mpeg4 \
 --enable-decoder=mjpeg \
 --enable-decoder=png \
+--enable-decoder=mp3 \
 --enable-demuxer=image2 \
 --enable-demuxer=h264 \
 --enable-demuxer=aac \
@@ -98,6 +108,7 @@ echo $X264_LIB
 --disable-stripping \
 --extra-cflags="$FF_EXTRA_CFLAGS  $FF_CFLAGS" \
 --extra-ldflags="  "
+
 
 make clean
 make -j4

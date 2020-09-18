@@ -15,6 +15,12 @@ import com.devyk.aveditor.entity.Speed
 public class AVPlayerEngine : IPlayer {
 
 
+    /**
+     * 设置是否硬件解码
+     */
+    public  override external fun setMediaCodec(isMediacodec: Boolean)
+
+
     public external override fun setPlayVolume(v: Int);
 
     override fun setPlaySpeed(speed: Speed) {
