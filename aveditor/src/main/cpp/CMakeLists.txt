@@ -9,14 +9,27 @@ cmake_minimum_required(VERSION 3.4.1)
 set(JNI_PATH ${CMAKE_SOURCE_DIR})
 #FFMPEG 文件路径
 set(FFMPEG_INCLUDE_PATH ${CMAKE_SOURCE_DIR}/../../../../thirdparties/ffmpeg)
-#librtmp 头文件路径
+#librtmp 文件路径
 set(LIBRTMP_INCLUDE_PATH ${CMAKE_SOURCE_DIR}/../../../../thirdparties/librtmp)
+#libfdk-aac 文件路径
+set(LIBFDKAAC_PATH ${CMAKE_SOURCE_DIR}/../../../../thirdparties/fdk_aac)
+#libx264 文件路径
+set(LIBX264_PATH ${CMAKE_SOURCE_DIR}/../../../../thirdparties/x264)
+
 #librtmp 头文件路径
 set(SOUNDTOUCH_INCLUDE_PATH ${CMAKE_SOURCE_DIR}/soundtouch)
 # 动态库 路径
 set(SHARED_PATH ${CMAKE_SOURCE_DIR}/../jniLibs/${CMAKE_ANDROID_ARCH_ABI})
 # 静态库 路径
 set(STATIC_PATH ${CMAKE_SOURCE_DIR}/../../../../thirdparties/librtmp/libs/${CMAKE_ANDROID_ARCH_ABI})
+
+#FFmpeg 静态库的路径
+set(FFMPEG_STATIC_PATH ${CMAKE_SOURCE_DIR}/../../../../thirdparties/ffmpeg/libs/${CMAKE_ANDROID_ARCH_ABI})
+#libfdk-aac 静态库的路径
+set(FDKAAC_STATIC_PATH ${CMAKE_SOURCE_DIR}/../../../../thirdparties/fdk_aac/libs/${CMAKE_ANDROID_ARCH_ABI})
+#libx264 静态库的路径
+set(X264_STATIC_PATH ${CMAKE_SOURCE_DIR}/../../../../thirdparties/x264/libs/${CMAKE_ANDROID_ARCH_ABI})
+
 #xlog header 路径
 set(XLOG_PATH ${CMAKE_SOURCE_DIR}/xlog)
 #Base
@@ -26,6 +39,11 @@ set(SOUNDTOUCH_PATH ${CMAKE_SOURCE_DIR}/soundtouch)
 #editor
 set(EDITOR_PATH ${CMAKE_SOURCE_DIR}/editor)
 
+
+
+message(FFMPEG_STATIC_PATH------>${FFMPEG_STATIC_PATH})
+message(FDKAAC_STATIC_PATH------>${FDKAAC_STATIC_PATH})
+message(X264_STATIC_PATH------>${X264_STATIC_PATH})
 
 #-------------------------------------------------找文件----------------------------------------------
 #找文件
@@ -89,6 +107,10 @@ include_directories(${SOUNDTOUCH_H_PATH})
 include_directories(${SOUNDTOUCH_SOURCE_H_PATH})
 include_directories(${FFMPEG_INCLUDE_PATH}/include)
 include_directories(${LIBRTMP_INCLUDE_PATH}/include)
+
+include_directories(${LIBFDKAAC_PATH}/include)
+include_directories(${LIBX264_PATH}/include)
+
 include_directories(${XLOG_PATH}/include)
 include_directories(${CMAKE_SOURCE_DIR})
 include_directories(${DEMUX_ALL_H})
@@ -109,20 +131,45 @@ include_directories(${SOUNDTOUCH_ROOT_H_PATH})
 
 #-------------------------------------------------加载库文件----------------------------------------------
 
-add_library(avcodec SHARED IMPORTED)
-set_target_properties(avcodec PROPERTIES IMPORTED_LOCATION ${SHARED_PATH}/libavcodec.so)
+#add_library(avcodec SHARED IMPORTED)
+#set_target_properties(avcodec PROPERTIES IMPORTED_LOCATION ${SHARED_PATH}/libavcodec.so)
+#
+#add_library(avformat SHARED IMPORTED)
+#set_target_properties(avformat PROPERTIES IMPORTED_LOCATION ${SHARED_PATH}/libavformat.so)
+#
+#add_library(avutil SHARED IMPORTED)
+#set_target_properties(avutil PROPERTIES IMPORTED_LOCATION ${SHARED_PATH}/libavutil.so)
+#
+#add_library(swscale SHARED IMPORTED)
+#set_target_properties(swscale PROPERTIES IMPORTED_LOCATION ${SHARED_PATH}/libswscale.so)
+#
+#add_library(swresample SHARED IMPORTED)
+#set_target_properties(swresample PROPERTIES IMPORTED_LOCATION ${SHARED_PATH}/libswresample.so)
+#
+#add_library(marsxlog SHARED IMPORTED)
+#set_target_properties(marsxlog PROPERTIES IMPORTED_LOCATION ${SHARED_PATH}/libmarsxlog.so)
 
-add_library(avformat SHARED IMPORTED)
-set_target_properties(avformat PROPERTIES IMPORTED_LOCATION ${SHARED_PATH}/libavformat.so)
+add_library(avcodec STATIC IMPORTED)
+set_target_properties(avcodec PROPERTIES IMPORTED_LOCATION ${FFMPEG_STATIC_PATH}/libavcodec.a)
 
-add_library(avutil SHARED IMPORTED)
-set_target_properties(avutil PROPERTIES IMPORTED_LOCATION ${SHARED_PATH}/libavutil.so)
+add_library(avformat STATIC IMPORTED)
+set_target_properties(avformat PROPERTIES IMPORTED_LOCATION ${FFMPEG_STATIC_PATH}/libavformat.a)
 
-add_library(swscale SHARED IMPORTED)
-set_target_properties(swscale PROPERTIES IMPORTED_LOCATION ${SHARED_PATH}/libswscale.so)
+add_library(avutil STATIC IMPORTED)
+set_target_properties(avutil PROPERTIES IMPORTED_LOCATION ${FFMPEG_STATIC_PATH}/libavutil.a)
 
-add_library(swresample SHARED IMPORTED)
-set_target_properties(swresample PROPERTIES IMPORTED_LOCATION ${SHARED_PATH}/libswresample.so)
+add_library(swscale STATIC IMPORTED)
+set_target_properties(swscale PROPERTIES IMPORTED_LOCATION ${FFMPEG_STATIC_PATH}/libswscale.a)
+
+add_library(swresample STATIC IMPORTED)
+set_target_properties(swresample PROPERTIES IMPORTED_LOCATION ${FFMPEG_STATIC_PATH}/libswresample.a)
+
+
+
+add_library(fdkaac STATIC IMPORTED)
+set_target_properties(fdkaac PROPERTIES IMPORTED_LOCATION ${FDKAAC_STATIC_PATH}/libfdk-aac.a)
+add_library(x264 STATIC IMPORTED)
+set_target_properties(x264 PROPERTIES IMPORTED_LOCATION ${X264_STATIC_PATH}/libx264.a)
 
 add_library(marsxlog SHARED IMPORTED)
 set_target_properties(marsxlog PROPERTIES IMPORTED_LOCATION ${SHARED_PATH}/libmarsxlog.so)
@@ -167,11 +214,20 @@ find_library(
 target_link_libraries(
         avtools
         rtmp
-        GLESv2 EGL
-        #[[EGL 是 nativeWindow 和 openGL ES 中间的桥梁]]
+        GLESv2
+        EGL   #[[EGL 是 nativeWindow 和 openGL ES 中间的桥梁]]
         OpenSLES
+
+        avformat
+        avcodec
+        swresample
+        avutil
+        fdkaac
+        x264
+        z
+
         android
-        avcodec avformat avutil swscale swresample
+#        avcodec avformat avutil swscale swresample
         #log
         marsxlog
         ${log-lib}

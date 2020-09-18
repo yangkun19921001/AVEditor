@@ -80,7 +80,7 @@ public class AVEditorActivity : BaseActivity<Int>(), AnimTextView.OnClickListene
             ThreadUtils.runChildThread {
                 LogHelper.e(TAG, "媒体文件:${mAVFiles} \n 媒体文件总长度:${mVideoDuration}")
                 JNIManager.getAVPlayEngine()?.setDataSource(listItem)
-//                JNIManager.getPlayEngine()?.setDataSource("sdcard/a_songstudio/recording.flv")
+//                JNIManager.getAVPlayEngine()?.setDataSource("sdcard/aveditor/123456.mp4")
 //                JNIManager.getPlayEngine()?.setDataSource("sdcard/aveditor/ffmpeg_muxer.mp4")
             }
             play()

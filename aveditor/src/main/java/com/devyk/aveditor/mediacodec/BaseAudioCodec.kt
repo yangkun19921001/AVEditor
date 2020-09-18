@@ -124,11 +124,12 @@ abstract class BaseAudioCodec(private var mAudioConfiguration: AudioConfiguratio
                     if (mBufferInfo.flags != MediaCodec.BUFFER_FLAG_CODEC_CONFIG) {
                         lastAudioFrameTimeUs = mBufferInfo.presentationTimeUs;
                     }
+//                    mBufferInfo.presentationTimeUs = (getPTSUs()).toLong()
                     LogHelper.e(
                         TAG,
                         "语音时间戳：${mBufferInfo!!.presentationTimeUs} ---> ${mBufferInfo!!.presentationTimeUs / 1000_000} }"
                     )
-//                    mBufferInfo.presentationTimeUs = (getPTSUs()).toLong()
+
                     onAudioData(outputBuffer, mBufferInfo)
                     mMediaCodec!!.releaseOutputBuffer(outputBufferIndex, false)
                     outputBufferIndex = mMediaCodec!!.dequeueOutputBuffer(mBufferInfo, 0)

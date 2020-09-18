@@ -160,8 +160,8 @@ AVData AVDecode::getDecodeFrame() {
         mux.unlock();
         return AVData();
     }
-    if (!pFrame)
-        pFrame = av_frame_alloc();
+//    if (!pFrame)
+    pFrame = av_frame_alloc();
 
     //拿到解码之后的数据 PCM/H264 0 is ok.
     int ret = avcodec_receive_frame(pCodec, pFrame);
@@ -170,12 +170,13 @@ AVData AVDecode::getDecodeFrame() {
         mux.unlock();
         char buf[1024] = {0};
         av_strerror(ret, buf, sizeof(buf) - 1);
-        LOGE("avcodec_receive_frame error %s %d isAudio:%d", buf,ret,isAudio);
+        LOGE("avcodec_receive_frame error %s %d isAudio:%d", buf, ret, isAudio);
         return AVData();
     }
 
     AVData deData;
-    deData.data = (unsigned char *) pFrame;
+    AVFrame *newFrame = av_frame_clone(pFrame);
+    deData.data = (unsigned char *) newFrame;
     if (pCodec->codec_type == AVMEDIA_TYPE_VIDEO) {
         deData.size = (pFrame->linesize[0] + pFrame->linesize[1] + pFrame->linesize[2]) * pFrame->height;
         deData.width = pFrame->width;
@@ -183,11 +184,11 @@ AVData AVDecode::getDecodeFrame() {
         deData.pts = pFrame->pts;
         pts = deData.pts;
         deData.isAudio = 0;
-//
+
 //        fwrite(pFrame->data[0], 1, deData.width * deData.height, file);    //Y
 //        fwrite(pFrame->data[1], 1, deData.width * deData.height / 4, file);  //U
 //        fwrite(pFrame->data[2], 1, deData.width * deData.height / 4, file);  //V
-
+//
 //        LOGE("解码成功! AVMEDIA_TYPE_VIDEO");
     } else if (pCodec->codec_type == AVMEDIA_TYPE_AUDIO) {
         deData.pts = pFrame->pts;
@@ -203,6 +204,7 @@ AVData AVDecode::getDecodeFrame() {
     }
     deData.format = pFrame->format;
     memcpy(deData.datas, pFrame->data, sizeof(deData.datas));
+    av_frame_free(&pFrame);
     mux.unlock();
     return deData;
 }

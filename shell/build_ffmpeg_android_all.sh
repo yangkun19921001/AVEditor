@@ -5,6 +5,12 @@ export NDK=/root/android/ndk/android-ndk-r20b
 TOOLCHAIN=$NDK/toolchains/llvm/prebuilt/linux-x86_64
 
 
+FDK_INCLUDE=/root/shell/libs/libfdk-aac/arm64-v8a/include
+FDK_LIB=/root/shell/libs/libfdk-aac/arm64-v8a/lib
+X264_INCLUDE=/root/shell/libs/libx264/arm64-v8a/include
+X264_LIB=/root/shell/libs/libx264/arm64-v8a/lib
+
+
 function build_android
 {
 
@@ -21,8 +27,52 @@ echo "Compiling FFmpeg for $CPU"
 --enable-jni \
 --enable-mediacodec \
 --enable-decoder=h264_mediacodec \
+--extra-cflags="-I$X264_INCLUDE -I$FDK_INCLUDE " \
+--extra-ldflags="-L$X264_LIB -L$FDK_LIB" \
+--enable-nonfree \
 --disable-static \
---disable-doc \
+--enable-version3 \
+--enable-pthreads \
+--enable-small \
+--disable-vda \
+--disable-iconv \
+--enable-libx264 \
+--enable-yasm \
+--enable-libfdk_aac \
+--enable-encoder=libx264 \
+--enable-encoder=mpeg4 \
+--enable-encoder=libfdk_aac \
+--enable-encoder=mjpeg \
+--enable-encoder=png \
+--enable-nonfree \
+--enable-muxers \
+--enable-muxer=mov \
+--enable-muxer=mp4 \
+--enable-muxer=h264 \
+--enable-muxer=avi \
+--enable-decoder=aac \
+--enable-decoder=aac_latm \
+--enable-decoder=h264 \
+--enable-decoder=mpeg4 \
+--enable-decoder=mjpeg \
+--enable-decoder=png \
+--enable-demuxer=image2 \
+--enable-demuxer=h264 \
+--enable-demuxer=aac \
+--enable-demuxer=avi \
+--enable-demuxer=mpc \
+--enable-demuxer=mpegts \
+--enable-demuxer=mov \
+--enable-parser=aac \
+--enable-parser=ac3 \
+--enable-parser=h264 \
+--enable-protocols \
+--enable-zlib \
+--enable-avfilter \
+--enable-avresample \
+--disable-outdevs \
+--disable-ffserver \
+--disable-stripping \
 --enable-ffmpeg \
 --disable-ffplay \
 --disable-ffprobe \
@@ -74,7 +124,7 @@ CROSS_PREFIX=$TOOLCHAIN/bin/arm-linux-androideabi-
 PREFIX=$(pwd)/android/$CPU
 OPTIMIZE_CFLAGS="-mfloat-abi=softfp -mfpu=vfp -marm -march=$CPU "
 
-build_android
+#build_android
 
 #x86
 

@@ -10,8 +10,8 @@ AVDemux::AVDemux() {
     static int isFirst = true;
     if (isFirst) {
         isFirst = false;
-        //注册所有解封装器,已经过时了
-//        av_register_all();
+        //注册所有解封装器,高版本已经过时了
+        av_register_all();
         //注册所有解码器,已经过时了
 //        avcodec_register_all();
         //网络环境初始化

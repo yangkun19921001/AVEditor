@@ -19,7 +19,6 @@ void IObserver::registers(IObserver *obs) {
     obss.push_back(obs);
     mux.unlock();
     LOGE(TAG, "register success !");
-
 }
 
 /**

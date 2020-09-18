@@ -9,6 +9,7 @@
 #include <callback/JNICallback.h>
 #include "../base/IObserver.h"
 
+
 /**
  * 主要是做对数据的转移封装
  */

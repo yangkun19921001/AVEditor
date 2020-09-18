@@ -107,8 +107,8 @@ class VideoConfiguration private constructor(builder: Builder) {
     }
 
     companion object {
-        val DEFAULT_HEIGHT = 720
-        val DEFAULT_WIDTH = 1280
+        val DEFAULT_HEIGHT = 1280
+        val DEFAULT_WIDTH = 720
         val DEFAULT_FPS = 25
         val DEFAULT_MAX_BPS = 1800
         val DEFAULT_MIN_BPS = 400
