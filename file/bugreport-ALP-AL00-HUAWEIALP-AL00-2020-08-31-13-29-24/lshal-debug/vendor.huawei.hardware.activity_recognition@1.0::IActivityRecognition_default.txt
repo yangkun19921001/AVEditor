@@ -1,0 +1,1 @@
+*** command 'lshal debug -E vendor.huawei.hardware.activity_recognition@1.0::IActivityRecognition/default' failed: exit code 128

@@ -34,11 +34,8 @@ Mp4Muxer::Mp4Muxer()
 
 Mp4Muxer::~Mp4Muxer() {}
 
-
 int audio_packet(AudioPacket **pAudioPacket, void *context) {
-
     return AVPacketPool::GetInstance()->getAudioPacket(pAudioPacket);
-
 }
 
 int video_packet(VideoPacket **pVideoPacket, void *context) {
@@ -141,7 +138,7 @@ int Mp4Muxer::Encode() {
 }
 
 int Mp4Muxer::Stop() {
-    LOGE("enter: %s", __func__);
+    LOGE("封装完毕，退出封装: %s", __func__);
 
     AVPacketPool::GetInstance()->getAudioPacketQueue()->abort();
     AVPacketPool::GetInstance()->getVideoPacketQueue()->abort();
@@ -169,7 +166,6 @@ int Mp4Muxer::Stop() {
         delete[] header_data_;
         header_data_ = nullptr;
     }
-
     AVPacketPool::GetInstance()->destoryRecordingVideoPacketQueue();
     AVPacketPool::GetInstance()->destoryAudioPacketQueue();
     LOGE("leave: %s", __func__);
@@ -208,9 +204,10 @@ int Mp4Muxer::WriteAudioFrame(AVFormatContext *oc, AVStream *st) {
         }
         ret = av_interleaved_write_frame(oc, pkt);
         if (ret != 0) {
-            LOGE("write audio frame error: %s", av_err2str(ret));
+            LOGE("write audio frame error: %s %d", av_err2str(ret),ret);
         }
     } while (true);
+
 
     av_packet_free(&pkt);
     delete audio_packet;
@@ -292,7 +289,7 @@ int Mp4Muxer::WriteVideoFrame(AVFormatContext *oc, AVStream *st) {
     int64_t dts = h264Packet->dts == DTS_PARAM_UN_SETTIED_FLAG ? pts : h264Packet->dts == DTS_PARAM_NOT_A_NUM_FLAG
                                                                        ? AV_NOPTS_VALUE : h264Packet->dts;
     int nalu_type = (outputData[4] & 0x1F);
-        LOGE("Final is out {%llu, %llu} nalu_type is %d size:%d", pts, dts, nalu_type,bufferSize);
+    LOGE("Final is out {%llu, %llu} nalu_type is %d size:%d", pts, dts, nalu_type, bufferSize);
     if (nalu_type == H264_NALU_TYPE_SEQUENCE_PARAMETER_SET) {
         // 我们这里要求sps和pps一块拼接起来构造成AVPacket传过来
         header_size_ = bufferSize;

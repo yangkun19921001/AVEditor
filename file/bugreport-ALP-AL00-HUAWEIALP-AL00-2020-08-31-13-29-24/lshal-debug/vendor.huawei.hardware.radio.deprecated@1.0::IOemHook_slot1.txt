@@ -1,0 +1,1 @@
+*** command 'lshal debug -E vendor.huawei.hardware.radio.deprecated@1.0::IOemHook/slot1' failed: exit code 128

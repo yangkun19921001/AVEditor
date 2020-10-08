@@ -1,0 +1,1 @@
+*** command 'lshal debug -E vendor.huawei.hardware.motion@1.0::IMotion/default' failed: exit code 128

@@ -1,0 +1,1 @@
+*** command 'lshal debug -E vendor.huawei.hardware.iawareperf@1.0::IUniPerf/uniperf' failed: exit code 128

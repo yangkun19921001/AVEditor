@@ -9,6 +9,7 @@ import com.devyk.aveditor.callback.OnSelectFilterListener
 import com.devyk.aveditor.entity.MediaEntity
 import com.devyk.aveditor.entity.Speed
 import com.devyk.aveditor.entity.Watermark
+import com.devyk.aveditor.jni.JNIManager
 import com.devyk.aveditor.stream.packer.PackerType
 import com.devyk.aveditor.utils.BitmapUtils
 import com.devyk.aveditor.utils.LogHelper
@@ -234,18 +235,18 @@ public class AVRecordActivity : BaseActivity<Int>(), TimerUtils.OnTimerUtilsList
             }
 
             override fun onUp() {
-                LogHelper.e(TAG, "当前录制完成")
+                val name = Thread.currentThread().name
+                videoView.stopRecord()
                 mTimer.stop()
                 mMedias.get(mMedias.size - 1).stopDuration = mCurrentRecordProgress.toLong()
                 line_progress_view.addProgress(mCurrentRecordProgress * 1.0F / mCurrentRecordDuration)
                 setChildViewsStatus(true, window.decorView)
-                videoView.stopRecord()
                 if (line_progress_view.isExist())
                     ic_camera_phone_album.visibility = View.GONE
                 else
                     ic_camera_phone_album.visibility = View.VISIBLE
-
             }
+
 
             override fun onClick() {
             }
@@ -289,14 +290,11 @@ public class AVRecordActivity : BaseActivity<Int>(), TimerUtils.OnTimerUtilsList
      * 录制进度更新回调
      */
     override fun update(timer: TimerUtils, currentTime: Int) {
-        LogHelper.e(TAG, "当前进度：${currentTime}")
         mCurrentRecordProgress = currentTime
         mCurrentRecordDuration = timer.duration
         line_progress_view.setLoadingProgress(currentTime * 1.0f / timer.duration)
         if (currentTime > mMinRecordDuration) {
-            ThreadUtils.runMainThread {
-                record_done.visibility = View.VISIBLE;
-            }
+            record_done.visibility = View.VISIBLE;
         }
     }
 
@@ -345,7 +343,13 @@ public class AVRecordActivity : BaseActivity<Int>(), TimerUtils.OnTimerUtilsList
                 select_music.setText(R.string.select_music)
                 select_music.setMarqueeEnable(false)
                 if (mMedias.isNotEmpty()) {
-//                    val intent = Intent(this, PlayActivity::class.java)
+
+//                    JNIManager.getAVPlayEngine()?.setDataSource(mMedias)
+//                    val outPath = "sdcard/aveditor/merge.mp4";
+//                    FileUtils.createFileByDeleteOldFile(outPath)
+//                    JNIManager.getAVEditorEngine()?.avStartMerge(mMedias,outPath, PackerType.MP4.name)
+
+
                     val intent = Intent(this, AVEditorActivity::class.java)
                     intent.putParcelableArrayListExtra(AVEditorActivity.MEDIAS, mMedias)
                     startActivity(intent)

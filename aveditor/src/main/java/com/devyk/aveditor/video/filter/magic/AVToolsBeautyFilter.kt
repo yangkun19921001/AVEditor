@@ -39,15 +39,26 @@ class AVToolsBeautyFilter(context: Context) : GPUImageFilter(context,
         configBeautyLevel(beautyLevel)
     }
 
-    public fun configBeautyLevel(level: Int) {
-        when (level) {
-            1 -> setFloat(mParamsLocation, 1.0f)
-            2 -> setFloat(mParamsLocation, 0.8f)
-            3 -> setFloat(mParamsLocation, 0.6f)
-            4 -> setFloat(mParamsLocation, 0.4f)
-            5 -> setFloat(mParamsLocation, 0.33f)
-            else -> {
-            }
-        }
+    public fun configBeautyLevel(level: Float) {
+        setFloat(mParamsLocation, level)
+//        when (level) {
+//            1 -> setFloat(mParamsLocation, 1.0f)
+//            2 -> setFloat(mParamsLocation, 0.8f)
+//            3 -> setFloat(mParamsLocation, 0.6f)
+//            4 -> setFloat(mParamsLocation, 0.4f)
+//            5 -> setFloat(mParamsLocation, 0.33f)
+//            else -> {
+//            }
+//        }
+
+//        when (level) {
+//            1 -> setFloat(mParamsLocation, 1.0f)
+//            2 -> setFloat(mParamsLocation, 0.8f)
+//            3 -> setFloat(mParamsLocation, 0.6f)
+//            4 -> setFloat(mParamsLocation, 0.4f)
+//            5 -> setFloat(mParamsLocation, 0.33f)
+//            else -> {
+//            }
+//        }
     }
 }

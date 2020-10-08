@@ -1,0 +1,1 @@
+*** command 'lshal debug -E vendor.huawei.hardware.hwhiview@1.1::IHwHiviewInterface/hwhiview_hal' failed: exit code 128

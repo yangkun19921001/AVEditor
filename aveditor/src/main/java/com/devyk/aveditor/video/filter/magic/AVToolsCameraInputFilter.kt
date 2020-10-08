@@ -184,8 +184,10 @@ class AVToolsCameraInputFilter(context: Context) : GPUImageFilter(context,
         setTexelSize(width.toFloat(), height.toFloat())
     }
 
-    fun configBeautyLevel(level: Int) {
-        when (level) {
+    fun configBeautyLevel(level: Float) {
+        setFloat(mParamsLocation, level)
+
+        /*        when (level) {
             0 -> setFloat(mParamsLocation, 0.0f)
             1 -> setFloat(mParamsLocation, 1.0f)
             2 -> setFloat(mParamsLocation, 0.8f)
@@ -194,7 +196,7 @@ class AVToolsCameraInputFilter(context: Context) : GPUImageFilter(context,
             5 -> setFloat(mParamsLocation, 0.33f)
             else -> {
             }
-        }
+        }*/
     }
 
     protected override fun onDestroy() {

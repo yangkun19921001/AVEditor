@@ -28,6 +28,9 @@ object LogHelper {
         nameprefix: String = "DevYK",
         cacheDay: Int = 3
     ) {
+
+
+
         if (!File(logPath).exists())
             File(logPath).mkdirs()
         if (!File(cachePath).exists())

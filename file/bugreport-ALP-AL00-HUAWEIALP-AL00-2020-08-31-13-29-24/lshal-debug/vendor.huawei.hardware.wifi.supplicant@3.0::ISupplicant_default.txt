@@ -1,0 +1,1 @@
+*** command 'lshal debug -E vendor.huawei.hardware.wifi.supplicant@3.0::ISupplicant/default' failed: exit code 128

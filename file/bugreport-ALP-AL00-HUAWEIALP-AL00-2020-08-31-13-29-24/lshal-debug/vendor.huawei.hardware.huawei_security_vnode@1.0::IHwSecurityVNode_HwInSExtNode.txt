@@ -1,0 +1,1 @@
+*** command 'lshal debug -E vendor.huawei.hardware.huawei_security_vnode@1.0::IHwSecurityVNode/HwInSExtNode' failed: exit code 128

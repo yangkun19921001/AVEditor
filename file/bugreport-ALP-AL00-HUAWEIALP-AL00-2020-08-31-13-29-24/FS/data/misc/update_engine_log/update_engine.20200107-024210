@@ -1,0 +1,10 @@
+[0107/024210.254363:INFO:main.cc(182)] Chrome OS Update Engine starting
+[0107/024210.258106:ERROR:boot_control_android.cc(60)] Error getting bootctrl HIDL module.
+[0107/024210.258186:WARNING:daemon_state_android.cc(32)] Unable to create BootControl instance, using stub instead. All update attempts will fail.
+[0107/024210.343682:INFO:update_attempter_android.cc(379)] StartUpdateZip Starting...
+[0107/024210.343936:INFO:update_attempter_android.cc(392)] Update pthread create successfully, tid = 0x7aad5014f0
+[0107/024210.344158:INFO:update_attempter_android.cc(417)] GetStatus = [UPDATE_STATUS_ONGOING]
+[0107/024210.344491:INFO:update_attempter_android.cc(417)] GetStatus = [UPDATE_STATUS_ONGOING]
+[0107/024210.345616:INFO:update_attempter_android.cc(314)] Update Package Thread Starting, pid = 2574, tid = 0x7aad5014f0
+[0107/024222.345558:INFO:update_attempter_android.cc(417)] GetStatus = [UPDATE_STATUS_ONGOING]
+[0107/024225.475966:INFO:update_attempter_android.cc(320)] update finish with result: 0

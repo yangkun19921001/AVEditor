@@ -1,0 +1,1 @@
+*** command 'lshal debug -E vendor.huawei.hardware.perfgenius@2.0::IPerfGenius/perfgenius' failed: exit code 128

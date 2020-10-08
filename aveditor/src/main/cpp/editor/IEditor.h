@@ -7,6 +7,7 @@
 
 
 #include <deque>
+#include <jni.h>
 #include "../base/IObserver.h"
 #include "../entity/MediaEntity.h"
 
@@ -19,7 +20,8 @@ using namespace std;
 class IEditor : public IObserver {
 
 protected:
-    deque<MediaEntity *> medialists;
+
+    char * outPath = 0;
 
 public:
     /**
@@ -43,13 +45,25 @@ public:
     /**
      * 停止编辑
      */
-    virtual int close();
+    virtual int close() = 0;
+
+    /**
+     * 设置需要合并的资源
+     * @param jniEnv
+     * @param lists
+     */
+    virtual void setMergeSource(JNIEnv *jniEnv, jobject lists) = 0;
+
+    virtual deque<MediaEntity *> getMergeSource() = 0;
+
+
 
 protected:
     /**
      * 子线程入口
      */
     virtual void main() = 0;
+
 
 };
 

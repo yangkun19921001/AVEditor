@@ -1,0 +1,1 @@
+*** command 'lshal debug -E vendor.huawei.hardware.audioremote@1.0::IAudioRemoteConnect/default' failed: exit code 128

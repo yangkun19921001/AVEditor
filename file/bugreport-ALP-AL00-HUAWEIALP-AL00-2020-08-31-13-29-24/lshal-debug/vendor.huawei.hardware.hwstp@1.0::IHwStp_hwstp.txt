@@ -1,0 +1,1 @@
+*** command 'lshal debug -E vendor.huawei.hardware.hwstp@1.0::IHwStp/hwstp' failed: exit code 128

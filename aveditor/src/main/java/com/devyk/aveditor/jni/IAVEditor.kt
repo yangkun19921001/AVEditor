@@ -46,7 +46,7 @@ public interface IAVEditor {
     /**
      * 开始输出音视频文件
      */
-    fun avStartMerge(outPath: String, mediaFormat: String)
+    fun avStartMerge(inSource: ArrayList<MediaEntity>?,outPath: String, mediaFormat: String)
 
     /**
      * 输出进度

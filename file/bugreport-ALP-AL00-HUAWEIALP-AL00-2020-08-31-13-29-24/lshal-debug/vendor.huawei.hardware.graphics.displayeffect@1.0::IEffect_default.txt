@@ -1,0 +1,1 @@
+*** command 'lshal debug -E vendor.huawei.hardware.graphics.displayeffect@1.0::IEffect/default' failed: exit code 128

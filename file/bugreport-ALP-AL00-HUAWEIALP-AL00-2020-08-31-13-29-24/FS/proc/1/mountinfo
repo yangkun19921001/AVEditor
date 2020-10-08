@@ -1,0 +1,70 @@
+38 26 253:5 / / ro,relatime shared:1 - erofs /dev/block/dm-5 ro,seclabel,user_xattr,lz4asm
+39 38 0:19 / /dev rw,nosuid,relatime shared:2 - tmpfs tmpfs rw,seclabel,size=1837832k,nr_inodes=459458,mode=755
+40 39 0:20 / /dev/pts rw,relatime shared:3 - devpts devpts rw,seclabel,mode=600,ptmxmode=000
+41 38 0:5 / /proc rw,relatime shared:4 - proc proc rw,gid=3009,hidepid=2
+42 38 0:21 / /sys rw,relatime shared:5 - sysfs sysfs rw,seclabel
+43 42 0:18 / /sys/fs/selinux rw,relatime shared:6 - selinuxfs selinuxfs rw
+44 38 0:22 / /mnt rw,nosuid,nodev,noexec,relatime shared:7 - tmpfs tmpfs rw,seclabel,size=1837832k,nr_inodes=459458,mode=755,gid=1000
+45 38 0:23 / /apex rw,nosuid,nodev,noexec,relatime - tmpfs tmpfs rw,seclabel,size=1837832k,nr_inodes=459458,mode=755
+46 38 253:6 / /cust ro,relatime shared:9 - erofs /dev/block/dm-6 ro,seclabel,user_xattr,lz4asm
+47 38 253:7 / /hw_product ro,relatime shared:10 - erofs /dev/block/dm-7 ro,seclabel,user_xattr,lz4asm
+48 38 253:8 / /odm ro,relatime shared:11 - erofs /dev/block/dm-8 ro,seclabel,user_xattr,lz4asm
+49 38 253:9 / /preas ro,relatime shared:12 - erofs /dev/block/dm-9 ro,seclabel,user_xattr,lz4asm
+50 38 253:10 / /preavs ro,relatime shared:13 - erofs /dev/block/dm-10 ro,seclabel,user_xattr,lz4asm
+51 38 253:11 / /preload ro,relatime shared:14 - erofs /dev/block/dm-11 ro,seclabel,user_xattr,lz4asm
+52 38 253:12 / /prets ro,relatime shared:15 - erofs /dev/block/dm-12 ro,seclabel,user_xattr,lz4asm
+53 38 253:13 / /pretvs ro,relatime shared:16 - erofs /dev/block/dm-13 ro,seclabel,user_xattr,lz4asm
+54 38 253:14 / /vendor ro,relatime shared:17 - erofs /dev/block/dm-14 ro,seclabel,user_xattr,lz4asm
+55 38 253:15 / /version ro,relatime shared:18 - erofs /dev/block/dm-15 ro,seclabel,user_xattr,lz4asm
+57 39 0:24 / /dev/blkio rw,nosuid,nodev,noexec,relatime shared:8 - cgroup none rw,blkio
+59 39 0:25 / /dev/cg2_bpf rw,nosuid,nodev,noexec,relatime shared:19 - cgroup2 none rw
+61 39 0:26 / /dev/cpuctl rw,nosuid,nodev,noexec,relatime shared:20 - cgroup none rw,cpu
+63 38 0:27 / /acct rw,nosuid,nodev,noexec,relatime shared:21 - cgroup none rw,cpuacct
+65 39 0:28 / /dev/cpuset rw,nosuid,nodev,noexec,relatime shared:22 - cgroup none rw,cpuset,noprefix,release_agent=/sbin/cpuset_release_agent
+67 39 0:29 / /dev/memcg rw,nosuid,nodev,noexec,relatime shared:23 - cgroup none rw,memory
+69 39 0:30 / /dev/stune rw,nosuid,nodev,noexec,relatime shared:24 - cgroup none rw,schedtune
+75 42 0:8 / /sys/kernel/debug rw,relatime shared:25 - debugfs debugfs rw,seclabel
+77 38 0:17 / /config rw,nosuid,nodev,noexec,relatime shared:26 - configfs none rw
+79 42 0:31 / /sys/fs/bpf rw,nosuid,nodev,noexec,relatime shared:27 - bpf bpf rw
+81 42 0:32 / /sys/fs/pstore rw,nosuid,nodev,noexec,relatime shared:28 - pstore pstore rw,seclabel
+83 39 0:33 / /dev/iolimit rw,relatime shared:29 - cgroup none rw,iolimit
+85 44 0:34 / /mnt/update_engine rw,nosuid,nodev,relatime shared:30 - tmpfs none rw,seclabel,size=1837832k,nr_inodes=459458,mode=700
+87 39 0:35 / /dev/workingset rw,nosuid,nodev,noexec,relatime shared:31 - cgroup none rw,workingset
+89 39 0:36 / /dev/usb-ffs/adb rw,relatime shared:32 - functionfs adb rw
+91 39 0:37 / /dev/usb-ffs/hdb rw,relatime shared:33 - functionfs hdb rw
+93 39 0:38 / /dev/frz rw,relatime shared:34 - cgroup none rw,freezer
+95 38 8:55 / /sec_storage rw,nosuid,nodev,noatime shared:35 - ext4 /dev/block/bootdevice/by-name/secure_storage rw,context=u:object_r:teecd_data_file:s0,discard,nodelalloc,data=journal
+97 75 0:12 / /sys/kernel/debug/tracing rw,relatime shared:36 - tracefs tracefs rw,seclabel
+99 38 259:1 / /splash2 rw,nosuid,nodev,noatime shared:37 - ext4 /dev/block/by-name/splash2 rw,context=u:object_r:splash2_data_file:s0,data=ordered
+101 38 259:54 / /data rw,nosuid,nodev,noatime shared:38 - f2fs /dev/block/by-name/userdata rw,seclabel,background_gc=on,discard,no_heap,user_xattr,inline_xattr,acl,inline_data,inline_dentry,extent_cache,mode=adaptive,inline_encrypt,sdp_encrypt,active_logs=6,alloc_mode=default,fsync_mode=posix
+103 38 259:49 / /cache rw,nosuid,nodev,noatime shared:39 - ext4 /dev/block/by-name/cache rw,seclabel,data=ordered
+105 44 259:11 / /mnt/hisee_fs ro,relatime shared:40 - ext4 /dev/block/by-name/hisee_fs ro,context=u:object_r:hisee_data_file:s0,data=ordered
+109 38 0:39 / /system/product/priv-app ro,relatime shared:41 - overlay overlay ro,seclabel,lowerdir=/preas/priv-app:/system/product/priv-app
+113 38 0:40 / /system/product/app ro,relatime shared:42 - overlay overlay ro,seclabel,lowerdir=/preas/app:/system/product/app
+117 38 0:41 / /system/product/etc/permissions ro,relatime shared:43 - overlay overlay ro,seclabel,lowerdir=/preas/china/permissions:/system/product/etc/permissions
+119 44 8:51 / /mnt/modem/modem_secure rw,nosuid,nodev,noatime shared:44 - ext4 /dev/block/by-name/modem_secure rw,context=u:object_r:modem_secure_file:s0,noauto_da_alloc,data=ordered
+121 38 8:56 / /modem_log rw,nosuid,nodev,noatime shared:45 - ext4 /dev/block/by-name/modem_om rw,context=u:object_r:modem_log_file:s0,noauto_da_alloc,data=ordered
+123 54 259:29 / /vendor/modem/modem_fw ro,relatime shared:46 - ext4 /dev/block/by-name/modem_fw ro,context=u:object_r:modem_fw_file:s0,data=ordered
+125 44 8:59 / /mnt/modem/mnvm2:0 rw,nosuid,nodev,noatime shared:47 - ext4 /dev/block/by-name/modemnvm_img rw,context=u:object_r:modem_nv_file:s0,noauto_da_alloc,data=ordered
+127 38 0:22 /runtime/default /storage rw,nosuid,nodev,noexec,relatime shared:7 - tmpfs tmpfs rw,seclabel,size=1837832k,nr_inodes=459458,mode=755,gid=1000
+128 45 7:2 / /apex/com.android.apex.cts.shim@1 ro,nodev,noatime - ext4 /dev/block/loop2 ro,dirsync,seclabel,block_validity,delalloc,barrier,user_xattr,acl
+129 45 7:2 / /apex/com.android.apex.cts.shim ro,nodev,noatime - ext4 /dev/block/loop2 ro,dirsync,seclabel,block_validity,delalloc,barrier,user_xattr,acl
+130 45 7:3 / /apex/com.android.conscrypt@291601510 ro,nodev,noatime - ext4 /dev/block/loop3 ro,dirsync,seclabel,block_validity,delalloc,nojournal_checksum,barrier,user_xattr,acl
+131 45 7:3 / /apex/com.android.conscrypt ro,nodev,noatime - ext4 /dev/block/loop3 ro,dirsync,seclabel,block_validity,delalloc,nojournal_checksum,barrier,user_xattr,acl
+132 45 7:4 / /apex/com.android.media@291601590 ro,nodev,noatime - ext4 /dev/block/loop4 ro,dirsync,seclabel,block_validity,delalloc,nojournal_checksum,barrier,user_xattr,acl
+133 45 7:4 / /apex/com.android.media ro,nodev,noatime - ext4 /dev/block/loop4 ro,dirsync,seclabel,block_validity,delalloc,nojournal_checksum,barrier,user_xattr,acl
+134 45 7:5 / /apex/com.android.media.swcodec@291601591 ro,nodev,noatime - ext4 /dev/block/loop5 ro,dirsync,seclabel,block_validity,delalloc,nojournal_checksum,barrier,user_xattr,acl
+135 45 7:5 / /apex/com.android.media.swcodec ro,nodev,noatime - ext4 /dev/block/loop5 ro,dirsync,seclabel,block_validity,delalloc,nojournal_checksum,barrier,user_xattr,acl
+136 45 7:6 / /apex/com.android.resolv@291601596 ro,nodev,noatime - ext4 /dev/block/loop6 ro,dirsync,seclabel,block_validity,delalloc,nojournal_checksum,barrier,user_xattr,acl
+137 45 7:6 / /apex/com.android.resolv ro,nodev,noatime - ext4 /dev/block/loop6 ro,dirsync,seclabel,block_validity,delalloc,nojournal_checksum,barrier,user_xattr,acl
+138 45 7:7 / /apex/com.android.runtime@1 ro,nodev,noatime - ext4 /dev/block/loop7 ro,dirsync,seclabel,block_validity,delalloc,nojournal_checksum,barrier,user_xattr,acl
+139 45 7:7 / /apex/com.android.runtime ro,nodev,noatime - ext4 /dev/block/loop7 ro,dirsync,seclabel,block_validity,delalloc,nojournal_checksum,barrier,user_xattr,acl
+140 45 7:8 / /apex/com.android.tzdata@291601530 ro,nodev,noatime - ext4 /dev/block/loop8 ro,dirsync,seclabel,block_validity,delalloc,nojournal_checksum,barrier,user_xattr,acl
+141 45 7:8 / /apex/com.android.tzdata ro,nodev,noatime - ext4 /dev/block/loop8 ro,dirsync,seclabel,block_validity,delalloc,nojournal_checksum,barrier,user_xattr,acl
+142 42 0:42 / /sys/fs/cgroup rw,relatime shared:48 - tmpfs none rw,seclabel,size=1837832k,nr_inodes=459458,mode=750,gid=1000
+144 142 0:43 / /sys/fs/cgroup/pids rw,relatime shared:49 - cgroup none rw,pids
+1817 44 0:44 / /mnt/runtime/default/emulated rw,nosuid,nodev,noexec,noatime shared:50 - sdcardfs /data/media rw,fsuid=1023,fsgid=1023,gid=1015,multiuser,mask=6,derive_gid,default_normal,reserved=20MB
+1816 127 0:44 / /storage/emulated rw,nosuid,nodev,noexec,noatime shared:50 - sdcardfs /data/media rw,fsuid=1023,fsgid=1023,gid=1015,multiuser,mask=6,derive_gid,default_normal,reserved=20MB
+1851 44 0:44 / /mnt/runtime/read/emulated rw,nosuid,nodev,noexec,noatime shared:50 - sdcardfs /data/media rw,fsuid=1023,fsgid=1023,gid=9997,multiuser,mask=23,derive_gid,default_normal,reserved=20MB
+1879 44 0:44 / /mnt/runtime/write/emulated rw,nosuid,nodev,noexec,noatime shared:50 - sdcardfs /data/media rw,fsuid=1023,fsgid=1023,gid=9997,multiuser,mask=7,derive_gid,default_normal,reserved=20MB
+1907 44 0:44 / /mnt/runtime/full/emulated rw,nosuid,nodev,noexec,noatime shared:50 - sdcardfs /data/media rw,fsuid=1023,fsgid=1023,gid=9997,multiuser,mask=7,derive_gid,default_normal,reserved=20MB

@@ -1,0 +1,1 @@
+*** command 'lshal debug -E vendor.huawei.hardware.modemchr@1.0::IModemchrDevice/default' failed: exit code 128

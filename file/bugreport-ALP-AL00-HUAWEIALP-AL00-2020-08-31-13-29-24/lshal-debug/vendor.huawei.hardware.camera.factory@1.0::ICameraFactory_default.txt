@@ -1,0 +1,1 @@
+*** command 'lshal debug -E vendor.huawei.hardware.camera.factory@1.0::ICameraFactory/default' failed: exit code 128

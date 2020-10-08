@@ -1,0 +1,1 @@
+*** command 'lshal debug -E vendor.huawei.hardware.hivrar@2.0::IHiVRAR/default' failed: exit code 128

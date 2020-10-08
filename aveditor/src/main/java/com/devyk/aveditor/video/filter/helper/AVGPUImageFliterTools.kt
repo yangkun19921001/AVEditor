@@ -57,6 +57,7 @@ public object AVGPUImageFliterTools {
                 is GPUImageTransformFilter -> RotateAdjuster(filter)
                 is GPUImageSolarizeFilter -> SolarizeAdjuster(filter)
                 is GPUImageVibranceFilter -> VibranceAdjuster(filter)
+                is GPUImageBeautyFilter -> BuffingAdjuster(filter)
                 is AVToolsBeautyFilter -> BeautyAdjuster(filter)
                 else -> null
             }
@@ -252,7 +253,7 @@ public object AVGPUImageFliterTools {
         private inner class GaussianBlurAdjuster(filter: GPUImageGaussianBlurFilter) :
             Adjuster<GPUImageGaussianBlurFilter>(filter) {
             override fun adjust(percentage: Int) {
-                filter.setBlurSize(range(percentage, 0.0f, 1.0f))
+                filter.setBlurSize(range(percentage, 0.0f, 5.0f))
             }
         }
 
@@ -353,7 +354,37 @@ public object AVGPUImageFliterTools {
 
         private inner class BeautyAdjuster(filter: AVToolsBeautyFilter) : Adjuster<AVToolsBeautyFilter>(filter) {
             override fun adjust(percentage: Int) {
-                filter.configBeautyLevel(range(percentage, 1f, 5f).toInt())
+                filter.configBeautyLevel(range(percentage, 0.0f, 1.0f))
+            }
+        }
+
+
+        /**
+         * 磨皮
+         */
+        private inner class BuffingAdjuster(filter: GPUImageBeautyFilter) : Adjuster<GPUImageBeautyFilter>(filter) {
+            override fun adjust(percentage: Int) {
+                filter.setBeautyLevel_(range(percentage, 0.0f, 1.0f))
+                filter.setBrightLevel(range(percentage, 0.0f, 1.0f))
+                filter.setToneLevel(range(percentage, 0.0f, 1.0f))
+            }
+        }
+
+        /**
+         * 红润
+         */
+        private inner class ToneAdjuster(filter: GPUImageBeautyFilter) : Adjuster<GPUImageBeautyFilter>(filter) {
+            override fun adjust(percentage: Int) {
+                filter.setToneLevel(range(percentage, 0.0f, 1.0f))
+            }
+        }
+
+        /**
+         * 美白
+         */
+        private inner class BrightAdjuster(filter: GPUImageBeautyFilter) : Adjuster<GPUImageBeautyFilter>(filter) {
+            override fun adjust(percentage: Int) {
+                filter.setBrightLevel(range(percentage, 0.0f, 1.0f))
             }
         }
     }

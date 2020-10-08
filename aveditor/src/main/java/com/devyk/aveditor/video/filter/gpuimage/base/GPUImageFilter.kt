@@ -47,7 +47,7 @@ open class GPUImageFilter @JvmOverloads constructor(
     protected var mOutputWidth: Int = 0
     protected var mOutputHeight: Int = 0
 
-    var beautyLevel = 3
+    var beautyLevel = 0.3f
 
     private var mContext: Context? = null
 
@@ -246,7 +246,7 @@ open class GPUImageFilter @JvmOverloads constructor(
     }
 
     companion object {
-        val NO_FILTER_VERTEX_SHADER = "" +
+       public val NO_FILTER_VERTEX_SHADER = "" +
                 "attribute vec4 position;\n" +
                 "attribute vec4 inputTextureCoordinate;\n" +
                 " \n" +
@@ -257,7 +257,7 @@ open class GPUImageFilter @JvmOverloads constructor(
                 "    gl_Position = position;\n" +
                 "    textureCoordinate = inputTextureCoordinate.xy;\n" +
                 "}"
-        val NO_FILTER_FRAGMENT_SHADER = "" +
+        public   val NO_FILTER_FRAGMENT_SHADER = "" +
                 "varying highp vec2 textureCoordinate;\n" +
                 " \n" +
                 "uniform sampler2D inputImageTexture;\n" +

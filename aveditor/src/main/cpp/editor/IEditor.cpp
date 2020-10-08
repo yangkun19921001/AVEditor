@@ -6,7 +6,8 @@
 
 
 int IEditor::open(const char*url,deque<MediaEntity *> lists) {
-    this->medialists = lists;
+    this->outPath = new char[strlen(url) + 1];
+    strcpy(this->outPath, url);
     return 1;
 }
 
@@ -15,19 +16,7 @@ int IEditor::start() {
     return IThread::start();
 }
 
-int IEditor::close() {
-    if (medialists.size() > 0) {
-        while (!medialists.empty()){
-            MediaEntity *media =   medialists.front();
-            LOGD("clear path:%s \n",media->path);
-            delete[] media->path;
-            delete media;
-            medialists.pop_front();
-            media->path = NULL;
 
-        }
-    }
-    return 0;
-}
+
 
 

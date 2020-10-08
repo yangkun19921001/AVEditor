@@ -1,0 +1,1 @@
+*** command 'lshal debug -E vendor.huawei.hardware.camera.cfgsvr@1.0::IHwCamCfgSvr/huawei.camera.cfgsvr' failed: exit code 128

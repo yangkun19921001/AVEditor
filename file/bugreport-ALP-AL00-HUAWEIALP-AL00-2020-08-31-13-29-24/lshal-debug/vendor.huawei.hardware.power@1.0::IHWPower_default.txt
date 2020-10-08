@@ -1,0 +1,1 @@
+*** command 'lshal debug -E vendor.huawei.hardware.power@1.0::IHWPower/default' failed: exit code 128

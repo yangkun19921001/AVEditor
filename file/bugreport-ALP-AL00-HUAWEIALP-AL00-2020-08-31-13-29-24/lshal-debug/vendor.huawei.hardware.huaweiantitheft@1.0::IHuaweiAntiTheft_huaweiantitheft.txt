@@ -1,0 +1,1 @@
+*** command 'lshal debug -E vendor.huawei.hardware.huaweiantitheft@1.0::IHuaweiAntiTheft/huaweiantitheft' failed: exit code 128

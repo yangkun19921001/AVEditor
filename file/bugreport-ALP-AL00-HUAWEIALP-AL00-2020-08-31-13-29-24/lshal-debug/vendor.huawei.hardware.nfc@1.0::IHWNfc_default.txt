@@ -1,0 +1,1 @@
+*** command 'lshal debug -E vendor.huawei.hardware.nfc@1.0::IHWNfc/default' failed: exit code 128

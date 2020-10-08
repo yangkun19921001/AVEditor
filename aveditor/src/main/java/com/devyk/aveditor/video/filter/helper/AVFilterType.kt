@@ -18,6 +18,7 @@ public enum class AVFilterType(name: String = "test") {
     WHITECAT("白猫"),
     BLACKCAT("黑猫"),
     SKINWHITEN("美白"),
+    BUFFING("磨皮"),
     BEAUTY("美颜"),
     HEALTHY("健康"),
     SWEETS("甜品"),
@@ -62,11 +63,11 @@ public enum class AVFilterType(name: String = "test") {
     EXPOSURE("曝光"),
     HUE("色调"),
     SATURATION("饱和度"),
-    SHARPEN("SHARPEN"),
-    LEVELS("Levels"),
+    SHARPEN("锐化"),
+    LEVELS("等级"),
     FILTER_GROUP("FILTER_GROUP"),
 
-    GAMMA("GAMMA"),
+    GAMMA("伽玛"),
 
     INVERT("反转"),
 
@@ -74,7 +75,7 @@ public enum class AVFilterType(name: String = "test") {
 
     SEPIA("棕黑色"),
 
-    SOBEL_EDGE_DETECTION("边缘"),
+    SOBEL_EDGE_DETECTION("Sobel边缘检测算法"),
 
     THRESHOLD_EDGE_DETECTION("THRESHOLD_EDGE_DETECTION"),
 
@@ -84,75 +85,76 @@ public enum class AVFilterType(name: String = "test") {
 
     POSTERIZE("多色"),
 
-    HIGHLIGHT_SHADOW("HIGHLIGHT_SHADOW"),
+    HIGHLIGHT_SHADOW("高光和阴影"),
 
     MONOCHROME("单色"),
 
-    OPACITY("OPACITY"),
+    OPACITY("不透明度"),
 
     RGB("RGB"),
 
-    WHITE_BALANCE("WHITE_BALANCE"),
+    WHITE_BALANCE("白平衡"),
 
     VIGNETTE("VIGNETTE"),
 
-    TONE_CURVE("TONE_CURVE"),
+    TONE_CURVE("色调曲线"),
 
-    LUMINANCE("LUMINANCE"),
+    LUMINANCE("亮度"),
 
-    LUMINANCE_THRESHSOLD("LUMINANCE_THRESHSOLD"),
+    LUMINANCE_THRESHSOLD("亮度阈值"),
 
-    GAUSSIAN_BLUR("GAUSSIAN_BLUR"),
+    GAUSSIAN_BLUR("高斯模糊"),
 
-    CROSSHATCH("CROSSHATCH"),
+    CROSSHATCH("交叉影线"),
 
-    BOX_BLUR("BOX_BLUR"),
+    BOX_BLUR("盒状模糊"),
 
-    CGA_COLORSPACE("CGA_COLORSPACE"),
+    CGA_COLORSPACE("色彩空间滤镜"),
 
-    DILATION("DILATION"),
+    DILATION("扩展边缘模糊，变黑白"),
 
-    KUWAHARA("KUWAHARA"),
+    KUWAHARA("叠加"),
 
-    RGB_DILATION("RGB_DILATION"),
+    RGB_DILATION("RGB扩展边缘模糊，有色彩"),
 
-    TOON("TOON"),
+    TOON("香椿"),
 
     SMOOTH_TOON("SMOOTH_TOON"),
 
-    BULGE_DISTORTION("BULGE_DISTORTION"),
+    BULGE_DISTORTION("凸起变形"),
 
-    GLASS_SPHERE("GLASS_SPHERE"),
+    GLASS_SPHERE("玻璃球折射"),
 
-    HAZE("HAZE"),
+    HAZE("阴霾"),
 
-    LAPLACIAN("LAPLACIAN"),
+    LAPLACIAN("拉普拉斯式"),
 
-    NON_MAXIMUM_SUPPRESSION("NON_MAXIMUM_SUPPRESSION"),
+    NON_MAXIMUM_SUPPRESSION("只显示亮度最高的像素"),
 
-    SPHERE_REFRACTION("SPHERE_REFRACTION"),
+    SPHERE_REFRACTION("球面折射"),
 
-    SWIRL("SWIRL"),
+    SWIRL("漩涡"),
 
-    WEAK_PIXEL_INCLUSION("WEAK_PIXEL_INCLUSION"),
+    WEAK_PIXEL_INCLUSION("弱像素"),
 
-    FALSE_COLOR("FALSE_COLOR"),
+    FALSE_COLOR("假色"),
 
-    COLOR_BALANCE("COLOR_BALANCE"),
+    COLOR_BALANCE("颜色平衡"),
 
     LEVELS_FILTER_MIN("LEVELS_FILTER_MIN"),
 
-    HALFTONE("HALFTONE"),
+    HALFTONE("半色调"),
 
-    BILATERAL_BLUR("v"),
+    BILATERAL_BLUR("双边模糊"),
 
-    ZOOM_BLUR("ZOOM_BLUR"),
+    ZOOM_BLUR("变焦模糊"),
 
-    TRANSFORM2D("TRANSFORM2D"),
+    TRANSFORM2D("形状变化"),
 
-    SOLARIZE("SOLARIZE"),
+    SOLARIZE("日晒"),
 
-    VIBRANCE("VIBRANCE");
+    VIBRANCE("活力");
+
 
 
     //TODO 会导致 Crash

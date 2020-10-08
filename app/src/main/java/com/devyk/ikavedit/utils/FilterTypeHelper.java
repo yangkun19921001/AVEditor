@@ -65,6 +65,7 @@ public class FilterTypeHelper {
             case SKINWHITEN:
                 return R.drawable.filter_thumb_beauty;
             case BEAUTY:
+            case BUFFING:
                 return R.drawable.filter_thumb_beauty;
             case CALM:
                 return R.drawable.filter_thumb_calm;
@@ -110,6 +111,7 @@ public class FilterTypeHelper {
             AVFilterType.BLACKCAT,
             AVFilterType.SKINWHITEN,
             AVFilterType.BEAUTY,
+            AVFilterType.BUFFING,
             AVFilterType.HEALTHY,
             AVFilterType.SWEETS,
             AVFilterType.ROMANCE,

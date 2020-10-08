@@ -8,6 +8,7 @@ import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.Nullable
+import com.devyk.aveditor.utils.LogHelper
 import com.devyk.ikavedit.R
 import java.util.ArrayList
 
@@ -88,7 +89,6 @@ class LineProgressView : View {
             mRadius, mRadius, mPaint!!
         )
 
-
         if (width < mRadius) {
             return
         }
@@ -113,6 +113,7 @@ class LineProgressView : View {
     }
 
     fun setLoadingProgress(loadingProgress: Float) {
+        LogHelper.e("TimerUtils setLoadingProgress","$loadingProgress");
         mLoadingProgress = loadingProgress
         invalidate()
     }

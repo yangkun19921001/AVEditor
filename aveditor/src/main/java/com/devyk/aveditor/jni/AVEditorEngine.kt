@@ -19,7 +19,7 @@ public class AVEditorEngine : IAVEditor {
      * @param outPath 输出的音视频文件
      * @param mediaFormat 输出的媒体格式类型
      */
-    override external fun avStartMerge(outPath: String, mediaFormat: String)
+    override external fun avStartMerge(inSource: ArrayList<MediaEntity>?, outPath: String, mediaFormat: String)
 
     /**
      * 合并的进度

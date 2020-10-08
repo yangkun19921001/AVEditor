@@ -1,0 +1,1 @@
+*** command 'lshal debug -E android.hardware.thermal@1.0::IThermal/default' failed: exit code 128

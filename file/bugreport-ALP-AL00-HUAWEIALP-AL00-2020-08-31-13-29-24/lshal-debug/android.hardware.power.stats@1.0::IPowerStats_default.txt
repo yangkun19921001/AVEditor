@@ -1,0 +1,1 @@
+*** command 'lshal debug -E android.hardware.power.stats@1.0::IPowerStats/default' failed: exit code 128

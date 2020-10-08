@@ -1,0 +1,1 @@
+*** command 'lshal debug -E vendor.huawei.hardware.sensors@1.0::ISensors/default' failed: exit code 128

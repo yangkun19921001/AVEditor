@@ -156,6 +156,7 @@ public class AVFilterFactory{
                 AVFilterType.TRANSFORM2D -> return GPUImageTransformFilter(context)
                 AVFilterType.SOLARIZE -> return GPUImageSolarizeFilter(context)
                 AVFilterType.VIBRANCE -> return GPUImageVibranceFilter(context)
+                AVFilterType.BUFFING -> return GPUImageBeautyFilter(context)
                 else -> return getExFilter()
                 //TODO 会导致崩溃
 //            AVFilterType.IMAGE_ADJUST -> return AVToolsImageAdjustFilter(context)

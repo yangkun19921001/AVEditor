@@ -1,0 +1,1 @@
+*** command 'lshal debug -E vendor.huawei.hardware.iawareperfpolicy@1.0::IPerfPolicy/perfpolicy' failed: exit code 128

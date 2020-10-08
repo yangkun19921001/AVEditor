@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.4.1)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
 
 #设置输出的 so 目录
 #set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/jniLibs/${ANDROID_ABI})
@@ -38,6 +39,8 @@ set(BASE_PATH ${CMAKE_SOURCE_DIR}/base)
 set(SOUNDTOUCH_PATH ${CMAKE_SOURCE_DIR}/soundtouch)
 #editor
 set(EDITOR_PATH ${CMAKE_SOURCE_DIR}/editor)
+#FFmpeg CMD 命令集成
+set(CMD_PATH ${CMAKE_SOURCE_DIR}/cmd)
 
 
 
@@ -100,6 +103,10 @@ FILE(GLOB SOUNDTOUCH_ROOT_CPP_PATH ${SOUNDTOUCH_PATH}/*.cpp)
 FILE(GLOB EDITOR_H_PATH ${EDITOR_PATH}/*.h)
 FILE(GLOB EDITOR_CPP_PATH ${EDITOR_PATH}/*.cpp)
 
+#CMD .c 文件
+FILE(GLOB CMD_ALL_C_PATH ${CMD_PATH}/*.c)
+FILE(GLOB CMD_ALL_CPP_PATH ${CMD_PATH}/*.cpp)
+
 
 #-------------------------------------------------加载头文件----------------------------------------------
 #加载头文件
@@ -127,6 +134,7 @@ include_directories(${ENTITY_PATH_ALL_H})
 include_directories(${MUXER_PATH_ALL_H})
 include_directories(${EDITOR_H_PATH})
 include_directories(${SOUNDTOUCH_ROOT_H_PATH})
+include_directories(${CMD_PATH}/include)
 
 
 #-------------------------------------------------加载库文件----------------------------------------------
@@ -201,6 +209,8 @@ add_library(
         ${SOUNDTOUCH_SOURCE_CPP_PATH}
         ${EDITOR_CPP_PATH}
         ${SOUNDTOUCH_ROOT_CPP_PATH}
+        ${CMD_ALL_C_PATH}
+        ${CMD_ALL_CPP_PATH}
 )
 
 

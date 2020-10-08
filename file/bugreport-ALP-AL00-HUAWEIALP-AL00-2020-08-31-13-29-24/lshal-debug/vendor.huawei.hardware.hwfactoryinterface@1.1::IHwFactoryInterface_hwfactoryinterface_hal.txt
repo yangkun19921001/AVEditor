@@ -1,0 +1,1 @@
+*** command 'lshal debug -E vendor.huawei.hardware.hwfactoryinterface@1.1::IHwFactoryInterface/hwfactoryinterface_hal' failed: exit code 128

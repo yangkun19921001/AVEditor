@@ -312,13 +312,13 @@ static void Android_JNI_SPEED_setRecordSpeed(JNIEnv *jniEnv, jobject jobject1,
 
 
 //------------------------------------------------ 音视频编辑 ----------------------------------------------------------------------//
-static void Android_JNI_EDITOR_avStartMerge(JNIEnv *jniEnv, jobject jobject1, jstring outPath, jstring mediaFormat) {
-    deque<MediaEntity *> mediaLists = AVToolsBuilder::getInstance()->getPlayEngine()->getDataSources();
+static void Android_JNI_EDITOR_avStartMerge(JNIEnv *jniEnv, jobject jobject1, jobject lists,jstring outPath, jstring mediaFormat) {
+    AVToolsBuilder::getInstance()->getEditorEngine()->setMergeSource(jniEnv, lists);
+    deque<MediaEntity *> mediaLists = AVToolsBuilder::getInstance()->getEditorEngine()->getMergeSource();
     const char *outUrl = jniEnv->GetStringUTFChars(outPath, 0);
     if (mediaLists.size() > 0 && AVToolsBuilder::getInstance()->getEditorEngine()->open(outUrl, mediaLists) == 1) { ;
         AVToolsBuilder::getInstance()->getEditorEngine()->start();
     }
-
     jniEnv->ReleaseStringUTFChars(outPath, outUrl);
 }
 
@@ -374,7 +374,7 @@ static JNINativeMethod mNativePlayMethods[] = {
  * 音视频编辑
  */
 static JNINativeMethod mNativeEditorMethods[] = {
-        {"avStartMerge",    "(Ljava/lang/String;Ljava/lang/String;)V",     (void **) Android_JNI_EDITOR_avStartMerge},
+        {"avStartMerge",    "(Ljava/util/ArrayList;Ljava/lang/String;Ljava/lang/String;)V",     (void **) Android_JNI_EDITOR_avStartMerge},
         {"avMergeProgress", "()I",                                         (void **) Android_JNI_EDITOR_avMergeProgress},
         {"addAVFile",       "(Lcom/devyk/aveditor/entity/MediaEntity;)V",  (void **) Android_JNI_EDITOR_addAVFile},
         {"insertAVFile",    "(ILcom/devyk/aveditor/entity/MediaEntity;)V", (void **) Android_EDITOR_JNI_insertAVFile},

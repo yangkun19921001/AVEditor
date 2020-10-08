@@ -1,0 +1,1 @@
+*** command 'lshal debug -E vendor.huawei.hardware.hwvibrator@1.0::IHWVibrator/default' failed: exit code 128

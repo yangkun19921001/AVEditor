@@ -22,7 +22,7 @@ void IThread::stop() {
     isExit = true;
     LOGE("thread stop--->begin ！");
     int i = 200;
-    while (i--) {//等待 100ms
+    while (i--) {//等待 一会儿
         if (!isRuning)
             break;
         sleep(2);

@@ -1,9 +1,8 @@
 package com.devyk.aveditor.utils
 
-import android.os.Handler
-import android.os.HandlerThread
-import android.os.Process
-import android.os.SystemClock
+import android.annotation.SuppressLint
+import android.os.*
+import java.util.concurrent.locks.ReentrantLock
 
 /**
  * <pre>
@@ -16,37 +15,12 @@ import android.os.SystemClock
  */
 public class TimerUtils(private val mListener: OnTimerUtilsListener, private var mUpdateInterval: Int) {
 
-    private var mHandlerThread: HandlerThread? = null
     private var mHandler: Handler? = null
     private var mStartTime: Long = 0
     var duration: Int = 0
-    var mLock = java.lang.Object()
+    private var TAG = "TimerUtils"
 
-    private val mRunnable = object : Runnable {
-        override fun run() {
-            synchronized(mLock) {
-                Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND)
-                if (mStartTime == 0L) {
-                    mStartTime = SystemClock.elapsedRealtime()
-                }
-                val time = SystemClock.elapsedRealtime() - mStartTime
-                if (time >= duration) {
-                    ThreadUtils.runChildThread {
-                        mListener.update(this@TimerUtils, duration)
-                        mListener.end(this@TimerUtils)
-                    }
-                    return
-                } else {
-                    ThreadUtils.runChildThread {
-                        mListener.update(this@TimerUtils, time.toInt())
-                    }
-                }
 
-                mHandler?.postDelayed(this, mUpdateInterval.toLong())
-            }
-
-        }
-    }
 
     interface OnTimerUtilsListener {
         // called for interval update
@@ -57,39 +31,53 @@ public class TimerUtils(private val mListener: OnTimerUtilsListener, private var
     }
 
     init {
-        mHandlerThread = HandlerThread("time")
-        mHandlerThread?.start()
-        mHandler = Handler(mHandlerThread!!.looper)
+        mHandler = @SuppressLint("HandlerLeak")
+        object : Handler() {
+            override fun handleMessage(msg: Message) {
+                if (mStartTime == 0L) {
+                    mStartTime = SystemClock.elapsedRealtime()
+                }
+                val time = SystemClock.elapsedRealtime() - mStartTime
+                if (time >= duration) {
+                    mListener.update(this@TimerUtils, duration)
+                    mListener.end(this@TimerUtils)
+                    return
+                } else {
+                    mListener.update(this@TimerUtils, time.toInt())
+
+                }
+                mHandler?.sendEmptyMessageDelayed(0, mUpdateInterval.toLong())
+            }
+        }
+
     }
 
     fun setUpdateInterval(updateInterval: Int) {
         mUpdateInterval = updateInterval
+
     }
 
     fun start(duration: Int) {
-        synchronized(mLock) {
+        synchronized(this) {
+            stop()
             this.duration = duration
             mStartTime = 0
-            stop()
-            mHandler?.postDelayed(mRunnable, 0)
-        }
+            mHandler?.sendEmptyMessageDelayed(0, 0)
 
+        }
     }
 
     fun stop() {
-        synchronized(mLock) {
+        synchronized(this) {
             mStartTime = 0
-            mHandler?.removeCallbacks(mRunnable)
+            LogHelper.e(TAG, "stop")
+            mHandler?.removeMessages(0)
         }
-
     }
 
     fun release() {
-        synchronized(mLock){
-            mHandlerThread?.looper?.quit()
-            mHandlerThread?.quit()
-            mHandlerThread = null
-            mHandler?.removeCallbacks(mRunnable)
+        synchronized(this) {
+            mHandler?.removeMessages(0)
             mHandler = null
         }
     }

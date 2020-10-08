@@ -1,0 +1,1 @@
+*** command 'lshal debug -E vendor.huawei.hardware.ai@2.1::IAIService_hidl/hiaiserver_v2' failed: exit code 128

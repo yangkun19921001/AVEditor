@@ -1,0 +1,1 @@
+*** command 'lshal debug -E vendor.huawei.hardware.jpegdec@1.0::IJpegDecode/default' failed: exit code 128

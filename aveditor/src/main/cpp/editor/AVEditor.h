@@ -19,6 +19,7 @@ class AVEditor : public IEditor {
 
 protected:
 
+
     /**
      * Mp4 打包器
      */
@@ -28,6 +29,7 @@ protected:
      * 将数据解封装
      */
     IDemux *demux = 0;
+
 
     /**
      * 互斥锁
@@ -53,8 +55,8 @@ protected:
     /**
      * 是否是 第一段数据
      */
-     int isAFirst = false;
-     int isVFirst = false;
+    int isAFirst = false;
+    int isVFirst = false;
 
     int curAPts = 0;
     int curVPts = 0;
@@ -123,6 +125,41 @@ public:
      */
     virtual int64_t getVPTSUs();
 
+    /**
+     * init 音频过滤器
+     */
+    int initAudioFilter(char *filterName);
+
+    /**
+    * init 视频过滤器
+    */
+    int initVideoFilter(char *filterName);
+
+    /**
+    * close 音频过滤器
+    */
+    int closeAudioFilter();
+
+    /**
+    * close 视频过滤器
+    */
+    int closeVideoFilter();
+
+    /**
+     * 设置需要合并的资源文件
+     * @param jniEnv
+     * @param lists
+     */
+    virtual void setMergeSource(JNIEnv *jniEnv, jobject lists);
+
+
+    virtual deque<MediaEntity *> getMergeSource() ;
+
+public:
+    /**
+* 用于装多个片段 Media 源
+*/
+    std::deque<MediaEntity *> mediaLists;
 
 protected:
     /**

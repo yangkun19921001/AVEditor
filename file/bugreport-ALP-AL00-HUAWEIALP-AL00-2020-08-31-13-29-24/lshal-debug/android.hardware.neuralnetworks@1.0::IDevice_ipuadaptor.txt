@@ -1,0 +1,1 @@
+*** command 'lshal debug -E android.hardware.neuralnetworks@1.0::IDevice/ipuadaptor' failed: exit code 128
