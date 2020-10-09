@@ -238,6 +238,7 @@ implementation 'com.devyk.avtools:AVTools:0.0.1'
 - [android-gpuimage](https://github.com/cats-oss/android-gpuimage)
 - [magic-camera](https://github.com/wuhaoyu1990/MagicCamera)
 - [欢迎来到OpenGL的世界](https://learnopengl-cn.github.io/)
+- [音视频视频学习资料](https://space.bilibili.com/38154792/channel/index)
 
 
 

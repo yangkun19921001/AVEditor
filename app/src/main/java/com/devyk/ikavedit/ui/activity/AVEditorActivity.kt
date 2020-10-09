@@ -14,10 +14,17 @@ import com.devyk.aveditor.utils.FileUtils
 import com.devyk.aveditor.utils.MediaMergeUtils
 import com.devyk.aveditor.utils.ThreadUtils
 import com.devyk.aveditor.widget.AVPlayView
+import com.devyk.ffmpeglib.AVEditor
+import com.devyk.ffmpeglib.callback.ExecuteCallback
+import com.devyk.ffmpeglib.entity.AVVideo
+import com.devyk.ffmpeglib.entity.LogMessage
+import com.devyk.ffmpeglib.entity.OutputOption
+import com.devyk.ffmpeglib.util.VideoUitls
 import com.devyk.ikavedit.callback.OnFilterItemClickListener
 import com.devyk.ikavedit.entity.FilterEntity
 import com.devyk.ikavedit.widget.AnimTextView
 import com.devyk.ikavedit.widget.dialog.SelectFilterDialog
+import com.tencent.mars.xlog.Log
 import kotlinx.android.synthetic.main.activity_aveditor.*
 import kotlinx.android.synthetic.main.activity_aveditor.player_view
 import kotlinx.android.synthetic.main.activity_play.*
@@ -48,7 +55,10 @@ public class AVEditorActivity : BaseActivity<Int>(), AnimTextView.OnClickListene
 
     companion object {
         //传递过来的媒体文件
+        //多个文件
         public val MEDIAS = "medias"
+        //单个文件
+        public val MEDIA = "media"
     }
 
 
@@ -58,6 +68,8 @@ public class AVEditorActivity : BaseActivity<Int>(), AnimTextView.OnClickListene
      * 拿到媒体文件集合
      */
     fun getAVEditPaths(): ArrayList<MediaEntity>? = intent.getParcelableArrayListExtra(MEDIAS)
+
+    fun getAVEditPath(): String? = intent.getStringExtra(MEDIA)
 
     /**
      * 拿到媒体文件时长
@@ -81,38 +93,21 @@ public class AVEditorActivity : BaseActivity<Int>(), AnimTextView.OnClickListene
     override fun init() {
         mAVFiles = getAVEditPaths()
         mVideoDuration = getAVDuration()
-        mAVFiles?.let { listItem ->
 
-            //TODO --- FFmpeg MP4 文件合并
-            ThreadUtils.runChildThread {
-                LogHelper.e(TAG, "媒体文件:${mAVFiles} \n 媒体文件总长度:${mVideoDuration}")
-                //设置需要合并的文件
-                JNIManager.getAVPlayEngine()?.setDataSource(listItem)
-//                JNIManager.getAVPlayEngine()?.setDataSource("sdcard/aveditor/123456.mp4")
-//                JNIManager.getPlayEngine()?.setDataSource("sdcard/aveditor/ffmpeg_muxer.mp4")
-//                val outPath = createMergeFilePath();
-//                FileUtils.createFileByDeleteOldFile(outPath)
-//                JNIManager.getAVEditorEngine()?.avStartMerge(outPath, PackerType.MP4.name)
-//                ThreadUtils.runMainThread {
-////                    JNIManager.getAVPlayEngine()?.setDataSource(outPath)
-                    play()
-//                }
+
+        var mVideoEntity = java.util.ArrayList<AVVideo>(10)
+
+        mAVFiles?.forEach { mediaEntity ->
+            mediaEntity.path?.let { path ->
+                mVideoEntity.add(AVVideo(path))
             }
+        }
 
-
-            //TODO Java 端文件合并
-//            ThreadUtils.runChildThread {
-//                LogHelper.e(TAG, "媒体文件:${mAVFiles} \n 媒体文件总长度:${mVideoDuration}")
-//              var outPath =  createMergeFilePath()
-//                var preTime = System.currentTimeMillis()
-//                MediaMergeUtils.combineVideoSegments(listItem,outPath)
-//                val haoshi = System.currentTimeMillis() - preTime
-//                LogHelper.e(TAG, "视频合成耗时:${haoshi}")
-//                JNIManager.getAVPlayEngine()?.setDataSource(outPath)
-//                ThreadUtils.runMainThread {
-//                    play()
-//                }
-//            }
+        if (mAVFiles == null || mAVFiles?.size == 0) {
+            getAVEditPath()?.let { path ->
+                JNIManager.getAVPlayEngine()?.setDataSource(path)
+                play()
+            }
         }
     }
 

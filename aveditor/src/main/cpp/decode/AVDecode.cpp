@@ -197,10 +197,6 @@ AVData AVDecode::getDecodeFrame() {
 //            LOGE("AVFrame data linesize[%d]=%d \n",i,pFrame->linesize[i]);
 //        }
 
-        deData.datas[0];
-        deData.datas[1];
-        deData.datas[2];
-
         deData.datas[0] = static_cast<unsigned char *>(malloc(deData.width * deData.height));
         deData.datas[1] = static_cast<unsigned char *>(malloc(deData.width / 2 * deData.height / 2));
         deData.datas[2] = static_cast<unsigned char *>(malloc(deData.width / 2 * deData.height / 2));

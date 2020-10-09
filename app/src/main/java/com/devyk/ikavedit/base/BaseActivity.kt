@@ -1,6 +1,7 @@
 package com.devyk.ikavedit.base
 
 import android.annotation.SuppressLint
+import android.app.ProgressDialog
 import android.graphics.Color
 import android.os.Bundle
 import android.os.SystemClock
@@ -37,6 +38,7 @@ import com.devyk.ikavedit.utils.QMUIStatusBarHelper
 
 abstract class BaseActivity<T> : AppCompatActivity() {
     public var TAG = javaClass.simpleName;
+    private var mProgressDialog: ProgressDialog? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         onContentViewBefore()
@@ -128,5 +130,37 @@ abstract class BaseActivity<T> : AppCompatActivity() {
         timer?.stop()
     }
 
+
+
+
+    public fun initProgressDialog() {
+        mProgressDialog = ProgressDialog(this)
+        mProgressDialog!!.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL)
+        mProgressDialog!!.max = 100
+        mProgressDialog!!.setCancelable(false)
+        mProgressDialog!!.setCanceledOnTouchOutside(false)
+        mProgressDialog!!.setTitle("正在处理")
+    }
+
+    fun showProgressDialog() {
+        mProgressDialog!!.progress = 0
+        mProgressDialog!!.show()
+    }
+
+    fun hideProgressDialog() {
+        mProgressDialog!!.hide()
+    }
+
+    fun dismissProgressDialog() {
+        mProgressDialog!!.dismiss()
+    }
+
+    fun updateProgress(percent: Float) {
+        mProgressDialog!!.progress = percent.toInt()
+    }
+
+    public fun showMessage(message: String?) {
+        Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show()
+    }
 
 }

@@ -62,7 +62,8 @@ int AVDemux::open(const char *source) {
 
         return false;
     }
-    av_log_set_callback(ffmpeg_log_callback);
+
+//    av_log_set_callback(ffmpeg_log_callback);
 
     //打印 AV meta info
     av_dump_format(pFormatCtx, 0, source, 0);

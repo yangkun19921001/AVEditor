@@ -190,25 +190,31 @@ int Mp4Muxer::WriteAudioFrame(AVFormatContext *oc, AVStream *st) {
     pkt->dts = pkt->pts = (int64_t) (last_audio_packet_presentation_time_mills_ / 1000.0f / av_q2d(st->time_base));
     pkt->duration = 1024;
     pkt->stream_index = st->index;
-    ret = av_bsf_send_packet(bsf_context_, pkt);
-    if (ret < 0) {
-        LOGE("av_bsf_send_packet error: %s", av_err2str(ret));
-        av_packet_free(&pkt);
-        delete audio_packet;
-        return -2;
+
+
+//    ret = av_bsf_send_packet(bsf_context_, pkt);
+//    if (ret < 0) {
+//        LOGE("av_bsf_send_packet error: %s", av_err2str(ret));
+//        av_packet_free(&pkt);
+//        delete audio_packet;
+//        return -2;
+//    }
+//    do {
+//        ret = av_bsf_receive_packet(bsf_context_, pkt);
+//        if (ret < 0) {
+//            break;
+//        }
+//        ret = av_interleaved_write_frame(oc, pkt);
+//        if (ret != 0) {
+//            LOGE("write audio frame error: %s %d", av_err2str(ret),ret);
+//        }
+//    } while (true);
+
+
+    ret = av_interleaved_write_frame(oc, pkt);
+    if (ret != 0) {
+        LOGE("write audio frame error: %s %d", av_err2str(ret),ret);
     }
-    do {
-        ret = av_bsf_receive_packet(bsf_context_, pkt);
-        if (ret < 0) {
-            break;
-        }
-        ret = av_interleaved_write_frame(oc, pkt);
-        if (ret != 0) {
-            LOGE("write audio frame error: %s %d", av_err2str(ret),ret);
-        }
-    } while (true);
-
-
     av_packet_free(&pkt);
     delete audio_packet;
     return 0;

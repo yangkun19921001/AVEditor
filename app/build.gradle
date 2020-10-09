@@ -78,5 +78,6 @@ dependencies {
     //音视频编辑 SDK
 //    implementation rootProject.ext.dependencies["aveditor"]
     implementation project(path: ':aveditor')
+
 }
 

@@ -25,6 +25,11 @@ import com.devyk.aveditor.utils.FileUtils
 import com.devyk.aveditor.utils.intent.OnResultListener
 import com.devyk.aveditor.utils.intent.OpenFileUtil
 import com.devyk.aveditor.utils.intent.StartActivityForResultManager
+import com.devyk.ffmpeglib.AVEditor
+import com.devyk.ffmpeglib.callback.ExecuteCallback
+import com.devyk.ffmpeglib.entity.AVVideo
+import com.devyk.ffmpeglib.entity.LogMessage
+import com.devyk.ffmpeglib.entity.OutputOption
 import com.devyk.ikavedit.widget.AnimImageView
 import com.devyk.ikavedit.widget.AnimTextView
 import com.devyk.ikavedit.widget.CommonTabLayout
@@ -33,6 +38,7 @@ import com.devyk.ikavedit.widget.dialog.CommonDialog
 import com.devyk.ikavedit.widget.dialog.SelectFilterDialog
 import com.flyco.tablayout.listener.CustomTabEntity
 import com.flyco.tablayout.listener.OnTabSelectListener
+import com.tencent.mars.xlog.Log
 import kotlinx.android.synthetic.main.activity_av_handle.*
 import java.io.File
 import java.util.*
@@ -83,6 +89,8 @@ public class AVRecordActivity : BaseActivity<Int>(), TimerUtils.OnTimerUtilsList
     private var mSpeed = Speed.NORMAL
     //录制的计时器
     private var mTimer = TimerUtils(this, 20)
+    //合并输出的视频
+    private var mMergetOutPath = ""
 
 
     /**
@@ -343,16 +351,7 @@ public class AVRecordActivity : BaseActivity<Int>(), TimerUtils.OnTimerUtilsList
                 select_music.setText(R.string.select_music)
                 select_music.setMarqueeEnable(false)
                 if (mMedias.isNotEmpty()) {
-
-//                    JNIManager.getAVPlayEngine()?.setDataSource(mMedias)
-//                    val outPath = "sdcard/aveditor/merge.mp4";
-//                    FileUtils.createFileByDeleteOldFile(outPath)
-//                    JNIManager.getAVEditorEngine()?.avStartMerge(mMedias,outPath, PackerType.MP4.name)
-
-
-                    val intent = Intent(this, AVEditorActivity::class.java)
-                    intent.putParcelableArrayListExtra(AVEditorActivity.MEDIAS, mMedias)
-                    startActivity(intent)
+                    mergeVideo()
                 }
             }
             record_delete -> {
@@ -373,6 +372,79 @@ public class AVRecordActivity : BaseActivity<Int>(), TimerUtils.OnTimerUtilsList
 
             }
         }
+    }
+
+    private fun mergeVideo() {
+        if (mMedias.size == 1) {
+            mMedias.get(0).path?.let { toPlayUI(it) }
+            return
+        }
+
+
+        var mVideoEntity = java.util.ArrayList<AVVideo>()
+        mMedias.forEach { mediaEntity ->
+            mediaEntity.path?.let { path ->
+                mVideoEntity.add(AVVideo(path))
+            }
+        }
+
+        if (mVideoEntity.size > 0) {
+            //如果已经存在该文件那么不处理
+            if (!mMergetOutPath.isEmpty()) {
+                if (File(mMergetOutPath).exists()) {
+                    toPlayUI(mMergetOutPath)
+                    return
+                }
+            }
+            //判断这个 dir 是否存在，不存在 mkdir
+            var filePath = File("sdcard/aveditor")
+            if (!filePath.exists())
+                filePath.mkdirs()
+
+            //统一输出 720*1280
+            mMergetOutPath = "${filePath.absolutePath}/outmerge_${System.currentTimeMillis()}.mp4"
+            val outputOption = OutputOption(mMergetOutPath);
+            outputOption.setWidth(720)
+            outputOption.setHeight(1280)
+
+            //开始合并
+            AVEditor.merge(mVideoEntity, outputOption, object : ExecuteCallback {
+                override fun onSuccess(executionId: Long) {
+                    dismissProgressDialog()
+                    toPlayUI(mMergetOutPath)
+
+                }
+
+                override fun onFailure(executionId: Long, error: String?) {
+                    dismissProgressDialog()
+                    showMessage(error)
+
+                }
+
+                override fun onCancel(executionId: Long) {
+                    dismissProgressDialog()
+                }
+
+                override fun onProgress(v: Float) {
+                    updateProgress(v)
+                }
+
+                override fun onStart(executionId: Long?) {
+                    initProgressDialog()
+                    showProgressDialog()
+                }
+
+                override fun onFFmpegExecutionMessage(logMessage: LogMessage?) {
+                    Log.d(TAG, "onFFmpegExecutionMessage:${logMessage?.text}")
+                }
+            })
+        }
+    }
+
+    private fun toPlayUI(outPath: String) {
+        val intent = Intent(this, AVEditorActivity::class.java)
+        intent.putExtra(AVEditorActivity.MEDIA, outPath)
+        startActivity(intent)
     }
 
     /**

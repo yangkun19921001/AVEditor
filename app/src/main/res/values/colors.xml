@@ -2,8 +2,8 @@
 <resources>
     <color name="colorPrimary">@color/button_bg</color>
     <color name="colorPrimaryDark">@color/button_bg</color>
-    <color name="colorAccent">@color/button_bg</color>
-
+    <!--<color name="colorAccent">@color/button_bg</color>-->
+    <color name="colorAccent">#ea445a</color>
 
     <color name="dy_seekbar_bg">#6B696A</color>
     <color name="dy_seekbar_progress_color">#FFFFFF</color>
