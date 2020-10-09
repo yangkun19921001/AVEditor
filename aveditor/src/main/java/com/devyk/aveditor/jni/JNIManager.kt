@@ -39,6 +39,13 @@ object JNIManager {
 
 
     init {
+        System.loadLibrary("avcodec")
+        System.loadLibrary("avutil")
+        System.loadLibrary("swscale")
+        System.loadLibrary("swresample")
+        System.loadLibrary("avformat")
+        System.loadLibrary("avfilter")
+        System.loadLibrary("avdevice")
         System.loadLibrary("avtools")
         mPlayerEngine = AVPlayerEngine()
         mAVFileDecodeEngine = AVAudioDecodeEngine()

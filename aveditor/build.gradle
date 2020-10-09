@@ -47,6 +47,14 @@ android {
     }
 
 
+//    sourceSets {
+//        main {
+//            jniLibs.srcDirs = ["../thirdparties/ffmpeg/libs"]
+//            jniLibs.srcDirs = ["../thirdparties/marslog/libs"]
+//        }
+//    }
+
+
     sourceSets { main { assets.srcDirs = ['src/main/assets', 'src/main/assets/'] } }
 }
 

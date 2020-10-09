@@ -1,1 +1,0 @@
-*** command 'lshal debug -E vendor.huawei.hardware.tp@1.0::ITouchscreen/default' failed: exit code 128

@@ -11,7 +11,7 @@ AVDemux::AVDemux() {
     if (isFirst) {
         isFirst = false;
         //注册所有解封装器,高版本已经过时了
-        av_register_all();
+//        av_register_all();
         //注册所有解码器,已经过时了
 //        avcodec_register_all();
         //网络环境初始化
@@ -27,7 +27,7 @@ static void ffmpeg_log_callback(void *ptr, int level, const char *fmt, va_list v
     va_copy(vl2, vl);
     av_log_format_line(ptr, level, fmt, vl2, line, sizeof(line), &print_prefix);
     va_end(vl2);
-    LOGE("%s \n", line);
+    LOGE("ffmpeg_log_callback %s \n", line);
 }
 
 /**
@@ -62,7 +62,7 @@ int AVDemux::open(const char *source) {
 
         return false;
     }
-//    av_log_set_callback(ffmpeg_log_callback);
+    av_log_set_callback(ffmpeg_log_callback);
 
     //打印 AV meta info
     av_dump_format(pFormatCtx, 0, source, 0);
@@ -179,6 +179,8 @@ AVData AVDemux::read() {
     //读取一帧音视频流 0 is success!
     int ret = av_read_frame(pFormatCtx, packet);
 
+
+
     if (ret == AVERROR_EOF && !read_stream_complete) {//代表读取完成了
         mux.unlock();
         av_packet_free(&packet);
@@ -203,6 +205,8 @@ AVData AVDemux::read() {
         avData.data = (unsigned char *) (packet);
 //        LOGE("读取到音频数据");
     } else if (packet->stream_index == video_stream_index) {
+        int nalu_type = (packet->data[4] & 0x1F);
+        LOGE("nalu_type-->%d",nalu_type);
         avData.isAudio = false;
         avData.data = (unsigned char *) (packet);
 //        LOGE("读取到视频数据");

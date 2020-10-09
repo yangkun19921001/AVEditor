@@ -1,1 +1,0 @@
-*** command 'lshal debug -E vendor.huawei.hardware.graphics.mediacomm@2.1::IMediaComm/default' failed: exit code 128

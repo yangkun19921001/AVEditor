@@ -1,1 +1,0 @@
-*** command 'lshal debug -E vendor.huawei.hardware.hwdisplay@1.0::IDisplay/default' failed: exit code 128

@@ -1,1 +1,0 @@
-*** command 'lshal debug -E vendor.huawei.hardware.wifi@1.1::IHwWifiExt/default' failed: exit code 128

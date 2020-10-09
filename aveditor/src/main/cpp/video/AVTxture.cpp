@@ -50,6 +50,7 @@ void AVTxture::draw(unsigned char *data[], int width, int height) {
     sh.getTexture(0, width, height, data[0]);  // Y
 
     if (type == AVTEXTURE_YUV420P) {
+
         sh.getTexture(1, width / 2, height / 2, data[1]);  // U
         sh.getTexture(2, width / 2, height / 2, data[2]);  // V
     } else {

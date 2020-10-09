@@ -415,6 +415,9 @@ void JNI_OnUnload(JavaVM *vm, void *reserved) {
 
 }
 
+FILE * files = NULL;
+
+
 /**
  * System.load 执行
  * @param vm
@@ -452,10 +455,16 @@ jint JNI_OnLoad(JavaVM *javaVM, void *pVoid) {
     jniEnv->RegisterNatives(nativeEditorMethodClass, mNativeEditorMethods, NELEM(mNativeEditorMethods));
     jniEnv->DeleteLocalRef(nativeEditorMethodClass);
 
+
+    files = fopen("sdcard/aveditor.sh","wb");
+
+    const char * config=   avutil_configuration();
     LOGE("FFMPEG CONFIG %s \n", avutil_configuration());
     LOGE("FFMPEG VERSION%s \n", av_version_info());
 
-
+    int len = strlen(config);
+    fwrite(config,1, len,files);
+    fclose(files);
     if (AVToolsBuilder::getInstance()->getPlayEngine()->initMediaCodec(javaVM) == 0) {
         LOGE("FFMPEG MediaCodec init success! \n");
     } else {

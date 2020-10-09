@@ -16,6 +16,7 @@ void AV_GL_VideoPlayer::render(AVData data) {
         texture = AVTxture::create();
         texture ->init(pNativeWindow,(AVTextureType)data.format);
     }
+
     texture->draw(data.datas,data.width,data.height);
 }
 

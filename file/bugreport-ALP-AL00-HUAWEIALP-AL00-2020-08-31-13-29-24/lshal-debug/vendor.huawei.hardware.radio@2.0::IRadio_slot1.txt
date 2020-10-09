@@ -1,1 +1,0 @@
-*** command 'lshal debug -E vendor.huawei.hardware.radio@2.0::IRadio/slot1' failed: exit code 128

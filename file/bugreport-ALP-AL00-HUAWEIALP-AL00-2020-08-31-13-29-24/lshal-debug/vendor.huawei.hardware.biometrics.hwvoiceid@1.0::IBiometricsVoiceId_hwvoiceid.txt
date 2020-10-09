@@ -1,1 +1,0 @@
-*** command 'lshal debug -E vendor.huawei.hardware.biometrics.hwvoiceid@1.0::IBiometricsVoiceId/hwvoiceid' failed: exit code 128

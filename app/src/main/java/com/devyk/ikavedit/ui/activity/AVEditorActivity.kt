@@ -118,9 +118,9 @@ public class AVEditorActivity : BaseActivity<Int>(), AnimTextView.OnClickListene
 
     private fun play() {
         //TODO -- 开启硬件解码目前会导致播放第二段视频会产生花屏
-        if (MediaCodecHelper.isSupportVideoDMediaCodec())
-            player_view.setMediaCodec(true)
-        else
+//        if (MediaCodecHelper.isSupportVideoDMediaCodec())
+//            player_view.setMediaCodec(true)
+//        else
             player_view.setMediaCodec(false)
         player_view.start()
     }

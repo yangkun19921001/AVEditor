@@ -1,3 +1,0 @@
-[0829/020209.605198:INFO:main.cc(182)] Chrome OS Update Engine starting
-[0829/020209.608787:ERROR:boot_control_android.cc(60)] Error getting bootctrl HIDL module.
-[0829/020209.608880:WARNING:daemon_state_android.cc(32)] Unable to create BootControl instance, using stub instead. All update attempts will fail.

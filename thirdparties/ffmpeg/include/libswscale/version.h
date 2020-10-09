@@ -26,7 +26,7 @@
 
 #include "libavutil/version.h"
 
-#define LIBSWSCALE_VERSION_MAJOR   4
+#define LIBSWSCALE_VERSION_MAJOR   5
 #define LIBSWSCALE_VERSION_MINOR   8
 #define LIBSWSCALE_VERSION_MICRO 100
 

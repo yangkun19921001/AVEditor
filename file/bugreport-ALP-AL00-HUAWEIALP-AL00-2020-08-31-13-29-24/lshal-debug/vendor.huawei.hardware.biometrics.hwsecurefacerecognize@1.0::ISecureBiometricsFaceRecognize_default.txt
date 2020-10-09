@@ -1,1 +1,0 @@
-*** command 'lshal debug -E vendor.huawei.hardware.biometrics.hwsecurefacerecognize@1.0::ISecureBiometricsFaceRecognize/default' failed: exit code 128
