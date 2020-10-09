@@ -380,7 +380,6 @@ public class AVRecordActivity : BaseActivity<Int>(), TimerUtils.OnTimerUtilsList
             return
         }
 
-
         var mVideoEntity = java.util.ArrayList<AVVideo>()
         mMedias.forEach { mediaEntity ->
             mediaEntity.path?.let { path ->

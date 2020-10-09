@@ -1,34 +1,26 @@
 package com.devyk.ikavedit.ui.activity
 
+import android.animation.ObjectAnimator
+import android.animation.PropertyValuesHolder
 import android.os.Environment
-import android.os.SystemClock
 import android.view.View
+import androidx.core.view.isVisible
 import com.devyk.aveditor.utils.LogHelper
 import com.devyk.ikavedit.R
 import com.devyk.ikavedit.base.BaseActivity
 import com.devyk.aveditor.entity.MediaEntity
 import com.devyk.aveditor.jni.JNIManager
-import com.devyk.aveditor.mediacodec.MediaCodecHelper
-import com.devyk.aveditor.stream.packer.PackerType
 import com.devyk.aveditor.utils.FileUtils
-import com.devyk.aveditor.utils.MediaMergeUtils
-import com.devyk.aveditor.utils.ThreadUtils
 import com.devyk.aveditor.widget.AVPlayView
-import com.devyk.ffmpeglib.AVEditor
-import com.devyk.ffmpeglib.callback.ExecuteCallback
 import com.devyk.ffmpeglib.entity.AVVideo
-import com.devyk.ffmpeglib.entity.LogMessage
-import com.devyk.ffmpeglib.entity.OutputOption
-import com.devyk.ffmpeglib.util.VideoUitls
 import com.devyk.ikavedit.callback.OnFilterItemClickListener
 import com.devyk.ikavedit.entity.FilterEntity
 import com.devyk.ikavedit.widget.AnimTextView
 import com.devyk.ikavedit.widget.dialog.SelectFilterDialog
-import com.tencent.mars.xlog.Log
 import kotlinx.android.synthetic.main.activity_aveditor.*
 import kotlinx.android.synthetic.main.activity_aveditor.player_view
-import kotlinx.android.synthetic.main.activity_play.*
 import java.io.File
+
 
 /**
  * <pre>
@@ -116,7 +108,7 @@ public class AVEditorActivity : BaseActivity<Int>(), AnimTextView.OnClickListene
 //        if (MediaCodecHelper.isSupportVideoDMediaCodec())
 //            player_view.setMediaCodec(true)
 //        else
-            player_view.setMediaCodec(false)
+        player_view.setMediaCodec(false)
         player_view.start()
     }
 
@@ -150,10 +142,17 @@ public class AVEditorActivity : BaseActivity<Int>(), AnimTextView.OnClickListene
             }
             //返回
             back -> {
+                if (fl_edit.isVisible) {
+                    setChildViewsStatus(true)
+                    fl_edit.visibility = View.GONE
+                    return
+                }
                 finish()
             }
             //剪辑
             clip -> {
+                setChildViewsStatus(false)
+                editAnima()
             }
             //选择配乐
             select_bg_music -> {
@@ -173,6 +172,38 @@ public class AVEditorActivity : BaseActivity<Int>(), AnimTextView.OnClickListene
                 FileUtils.createFileByDeleteOldFile(outPath)
 //                JNIManager.getAVEditorEngine()?.avStartMerge(outPath, PackerType.MP4.name)
             }
+        }
+    }
+
+    /**
+     * 设置录制过程中 UI 画面上需要隐藏或显示的 View
+     */
+    private fun setChildViewsStatus(isVisibility: Boolean) {
+        var isVisible = View.VISIBLE
+        if (isVisibility)
+            isVisible = View.VISIBLE
+        else
+            isVisible = View.GONE
+
+
+        camera_filter.visibility = isVisible
+        clip.visibility = isVisible
+        change_sound.visibility = isVisible
+        select_bg_music.visibility = isVisible
+        effect.visibility = isVisible
+        txt.visibility = isVisible
+        sticker.visibility = isVisible
+        next.visibility = isVisible
+    }
+
+    /**
+     * 改变 View 显示状态
+     */
+    private fun changeViewStatus(isVisibility: Boolean, viewchild: View) {
+        if (isVisibility) {
+            viewchild.visibility = View.VISIBLE
+        } else {
+            viewchild.visibility = View.INVISIBLE
         }
     }
 
@@ -196,4 +227,21 @@ public class AVEditorActivity : BaseActivity<Int>(), AnimTextView.OnClickListene
         super.onDestroy()
         player_view.stop()
     }
+
+    public fun editAnima() {
+        fl_edit.visibility = View.VISIBLE
+        val propertyValuesHolder1 = PropertyValuesHolder.ofFloat("translationY", 150f, 0f)
+        val propertyValuesHolder2 = PropertyValuesHolder.ofFloat("alpha", 0f, 0.2f, 0.5f, 0.75f, 1.0f)
+        val propertyValuesHolder3 = PropertyValuesHolder.ofFloat("scaleX", 0f, 0.2f, 0.5f, 0.75f, 1.0f)
+        ObjectAnimator.ofPropertyValuesHolder(
+            fl_edit,
+            propertyValuesHolder1,
+            propertyValuesHolder2,
+            propertyValuesHolder3
+        )
+            .setDuration(500).start()
+
+    }
+
+
 }

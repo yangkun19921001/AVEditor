@@ -10,7 +10,8 @@
     <com.devyk.aveditor.widget.AVPlayView
             android:id="@+id/player_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent" tools:layout_editor_absoluteY="37dp"
+            tools:layout_editor_absoluteX="0dp"/>
 
 
     <com.devyk.ikavedit.widget.AnimTextView
@@ -164,6 +165,43 @@
             android:layout_marginBottom="@dimen/dimen_20dp"
             android:layout_marginRight="@dimen/dimen_20dp"
             tools:ignore="MissingConstraints"/>
+
+
+
+    <FrameLayout
+            android:visibility="gone"
+            android:id="@+id/fl_edit"
+            android:layout_marginBottom="@dimen/dimen_30dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginLeft="@dimen/dimen_50dp"
+            android:layout_marginRight="@dimen/dimen_50dp"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen_60dp"
+            tools:ignore="MissingConstraints">
+
+        <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/video_thumbnails"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/dimen_10dp"
+                android:layout_marginRight="@dimen/dimen_10dp"
+        />
+
+        <com.devyk.ikavedit.widget.RangeSlider
+                android:id="@+id/range_seek_bar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:leftThumbDrawable="@drawable/handle_left_right"
+                app:leftThumbIndex="0"
+                app:rightThumbDrawable="@drawable/handle_left_right"
+                app:lineColor="@android:color/white"
+                app:lineHeight="@dimen/dimen_2dp"
+                app:thumbWidth="@dimen/dimen_10dp"
+                app:tickCount="100"
+                app:maskColor="#A0000000"
+        />
+
+    </FrameLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
