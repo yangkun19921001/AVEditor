@@ -413,7 +413,7 @@ public class AVRecordActivity : BaseActivity<Int>(), TimerUtils.OnTimerUtilsList
             outputOption.setWidth(720)
             outputOption.setHeight(1280)
 
-            //这部分直接分辨率，码率都一样所以直接在 Java 端进行he'bin合并
+            //这部分分辨率，码率都一样所以直接在 Java 端进行合并
             JNIManager.getAVJavaMuxer()?.javaMergeVieo(mVidePath,mMergetOutPath)
 
             toPlayUI(mMergetOutPath)

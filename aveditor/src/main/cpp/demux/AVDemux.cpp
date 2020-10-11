@@ -207,7 +207,7 @@ AVData AVDemux::read() {
 //        LOGE("读取到音频数据");
     } else if (packet->stream_index == video_stream_index) {
         int nalu_type = (packet->data[4] & 0x1F);
-        LOGE("nalu_type-->%d",nalu_type);
+//        LOGE("nalu_type-->%d",nalu_type);
         avData.isAudio = false;
         avData.data = (unsigned char *) (packet);
 //        LOGE("读取到视频数据");

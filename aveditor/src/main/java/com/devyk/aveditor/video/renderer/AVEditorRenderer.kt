@@ -79,16 +79,9 @@ public class AVEditorRenderer(context: Context) : GLSurfaceView.Renderer {
      * 是否绘制 GPUImage
      */
     var isGpuimageDraw = false
-//    private var mFileOutputOption: FileOutputStream
 
     init {
         mContext = context;
-//        val file = File("sdcard/yuv_test_11.yuv")
-//        if (file.exists()) {
-//            file.delete()
-//        }
-//        file.createNewFile()
-//        mFileOutputOption = FileOutputStream(file, true)
     }
 
 
@@ -269,7 +262,6 @@ public class AVEditorRenderer(context: Context) : GLSurfaceView.Renderer {
         mGPUImageFilter?.let {
             return mGPUImageFilter as GPUImageFilter
         }
-
         return null
     }
 
@@ -311,9 +303,6 @@ public class AVEditorRenderer(context: Context) : GLSurfaceView.Renderer {
             mLinkedList.offer(data)
         }
 
-//        mFileOutputOption.write(data.y)
-//        mFileOutputOption.write(data.u)
-//        mFileOutputOption.write(data.v)
     }
 
     /**

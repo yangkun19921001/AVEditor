@@ -3,11 +3,13 @@ package com.devyk.aveditor.widget
 import android.content.Context
 import android.opengl.GLSurfaceView
 import android.util.AttributeSet
+import android.util.Log
 import com.devyk.aveditor.callback.IYUVDataListener
 import com.devyk.aveditor.callback.OnSelectFilterListener
 import com.devyk.aveditor.entity.Watermark
 import com.devyk.aveditor.jni.IPlayer
 import com.devyk.aveditor.jni.JNIManager
+import com.devyk.aveditor.utils.LogHelper
 import com.devyk.aveditor.video.filter.gpuimage.base.GPUImageFilter
 import com.devyk.aveditor.video.filter.helper.AVFilterType
 import com.devyk.aveditor.video.renderer.AVEditorRenderer
@@ -24,12 +26,19 @@ import com.devyk.aveditor.video.renderer.AVRecordRenderer
  *                转为 Java 端处理渲染，加滤镜编辑等工作
  * </pre>
  */
-class AVEditorView : GLSurfaceView, IYUVDataListener{
+class AVEditorView : GLSurfaceView, IYUVDataListener {
     private var mEditorRenderer: AVEditorRenderer? = null
     /**
      * 播放器
      */
     private var mIPlayer: IPlayer? = null
+
+
+    private var TAG = this.javaClass.simpleName
+
+    private var mPlayComplete = false
+
+    private var mDataSource: String? = null
 
     constructor(context: Context?) : this(context, null)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {
@@ -46,7 +55,10 @@ class AVEditorView : GLSurfaceView, IYUVDataListener{
     /**
      * 设置编辑源
      */
-    public fun setEditSource(source: String?) = mIPlayer?.setDataSource(source)
+    public fun setEditSource(source: String?) {
+        mDataSource = source
+        mIPlayer?.setDataSource(source)
+    }
 
 
     /**
@@ -58,6 +70,7 @@ class AVEditorView : GLSurfaceView, IYUVDataListener{
      * 播放
      */
     public fun start() {
+
         mIPlayer?.setNativeRender(false)
         mIPlayer?.start()
     }
@@ -85,6 +98,14 @@ class AVEditorView : GLSurfaceView, IYUVDataListener{
     public fun seekTo(seek: Double): Int? = mIPlayer?.seekTo(seek)
 
     override fun onYUV420pData(width: Int, height: Int, y: ByteArray, u: ByteArray, v: ByteArray) {
+        val progress = progress()
+        if (progress == 100.0 && !mPlayComplete) {
+            seekTo(0.0)
+            mPlayComplete = true
+            LogHelper.d(TAG,"progress:$progress")
+            return
+        }
+        mPlayComplete = false
         mEditorRenderer?.setYUVData(width, height, y, u, v)
         requestRender()
     }
@@ -98,7 +119,6 @@ class AVEditorView : GLSurfaceView, IYUVDataListener{
             val gpuImageFilter = mEditorRenderer?.setGPUImageFilter(type)
             listener?.onSelectFilter(gpuImageFilter)
         }
-//        requestRender()
     }
 
     /**
@@ -109,7 +129,6 @@ class AVEditorView : GLSurfaceView, IYUVDataListener{
         queueEvent {
             mEditorRenderer?.setGPUImageFilter(filter)
         }
-//        requestRender()
     }
 
     /**

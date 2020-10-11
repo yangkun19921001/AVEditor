@@ -11,6 +11,7 @@
 #include "ITexture.h"
 #include "AVTxture.h"
 #include <jni.h>
+
 /**
  * 具体视频模块播放
  */
@@ -38,6 +39,13 @@ protected:
     JavaVM *jvm = 0;
     jobject obj = 0;
     jmethodID mYuvToJavaMethodId;
+
+    /**
+     * 是否需要 loop 播放
+     */
+    int loopPlay = 0;
+
+
 public:
     /**
      * 设置渲染的 window
@@ -48,14 +56,14 @@ public:
     /**
      * 渲染数据
      */
-     virtual void render(AVData data);
+    virtual void render(AVData data);
 
-     /**
-      * 关闭
-      */
-      virtual void close();
+    /**
+     * 关闭
+     */
+    virtual void close();
 
-    virtual void setNativeRender(JavaVM*javaVM,JNIEnv *env,jobject obj,int isRender=1) ;
+    virtual void setNativeRender(JavaVM *javaVM, JNIEnv *env, jobject obj, int isRender = 1);
 
     void toJava(AVData data);
 

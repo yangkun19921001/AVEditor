@@ -32,21 +32,9 @@ import com.devyk.ikavedit.ui.adapter.ThumbnailAdapter
 import com.devyk.ikavedit.widget.AnimTextView
 import com.devyk.ikavedit.widget.RangeSlider
 import com.devyk.ikavedit.widget.dialog.SelectFilterDialog
-import kotlinx.android.synthetic.main.activity_av_handle.*
 import kotlinx.android.synthetic.main.activity_aveditor.*
 import kotlinx.android.synthetic.main.activity_aveditor.camera_filter
 import java.io.File
-import android.util.DisplayMetrics
-import android.content.Context.WINDOW_SERVICE
-import androidx.core.content.ContextCompat.getSystemService
-import android.view.WindowManager
-import androidx.core.app.ComponentActivity.ExtraData
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-import android.content.Context
-import android.graphics.Rect
-import android.view.Display
-import android.graphics.Point
-
 
 /**
  * <pre>
