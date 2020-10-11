@@ -75,6 +75,10 @@ dependencies {
     //adapter
     implementation rootProject.ext.dependencies["adapter"]
 
+    //显示图片控件
+    implementation 'com.github.bumptech.glide:glide:4.10.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.10.0'
+
     //音视频编辑 SDK
 //    implementation rootProject.ext.dependencies["aveditor"]
     implementation project(path: ':aveditor')

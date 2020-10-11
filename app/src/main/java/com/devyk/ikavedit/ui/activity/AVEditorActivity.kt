@@ -3,22 +3,37 @@ package com.devyk.ikavedit.ui.activity
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
 import android.os.Environment
+import android.util.Log
 import android.view.View
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.devyk.aveditor.callback.OnSelectFilterListener
 import com.devyk.aveditor.utils.LogHelper
 import com.devyk.ikavedit.R
 import com.devyk.ikavedit.base.BaseActivity
 import com.devyk.aveditor.entity.MediaEntity
+import com.devyk.aveditor.entity.Watermark
 import com.devyk.aveditor.jni.JNIManager
+import com.devyk.aveditor.utils.BitmapUtils
 import com.devyk.aveditor.utils.FileUtils
+import com.devyk.aveditor.utils.TimeUtil
+import com.devyk.aveditor.video.filter.gpuimage.base.GPUImageFilter
 import com.devyk.aveditor.widget.AVPlayView
+import com.devyk.ffmpeglib.AVEditor
+import com.devyk.ffmpeglib.callback.ExecuteCallback
 import com.devyk.ffmpeglib.entity.AVVideo
+import com.devyk.ffmpeglib.entity.LogMessage
+import com.devyk.ffmpeglib.entity.VideoInfo
+import com.devyk.ffmpeglib.util.VideoUitls
 import com.devyk.ikavedit.callback.OnFilterItemClickListener
 import com.devyk.ikavedit.entity.FilterEntity
+import com.devyk.ikavedit.ui.adapter.ThumbnailAdapter
 import com.devyk.ikavedit.widget.AnimTextView
+import com.devyk.ikavedit.widget.RangeSlider
 import com.devyk.ikavedit.widget.dialog.SelectFilterDialog
+import kotlinx.android.synthetic.main.activity_av_handle.*
 import kotlinx.android.synthetic.main.activity_aveditor.*
-import kotlinx.android.synthetic.main.activity_aveditor.player_view
+import kotlinx.android.synthetic.main.activity_aveditor.camera_filter
 import java.io.File
 
 
@@ -41,7 +56,10 @@ public class AVEditorActivity : BaseActivity<Int>(), AnimTextView.OnClickListene
     private var mAVFiles: ArrayList<MediaEntity>? = null
     //选择滤镜的弹窗
     private var mSelectFilterDialog: SelectFilterDialog? = null
-
+    //视频缩略图集合
+    private var mThumbnail: MutableList<File> = mutableListOf<File>()
+    //视频信息
+    private var mVideoInfo: VideoInfo? = null
 
     private var index = 0;
 
@@ -52,7 +70,6 @@ public class AVEditorActivity : BaseActivity<Int>(), AnimTextView.OnClickListene
         //单个文件
         public val MEDIA = "media"
     }
-
 
     override fun getLayoutId(): Int = R.layout.activity_aveditor
 
@@ -97,10 +114,131 @@ public class AVEditorActivity : BaseActivity<Int>(), AnimTextView.OnClickListene
 
         if (mAVFiles == null || mAVFiles?.size == 0) {
             getAVEditPath()?.let { path ->
-                JNIManager.getAVPlayEngine()?.setDataSource(path)
+                editor_view.setEditSource(path)
                 play()
             }
         }
+        //初始化裁剪的缩略图
+        initThumbnail()
+        initWatermark()
+
+
+    }
+
+    /**
+     * 初始化水印
+     */
+    private fun initWatermark() {
+        editor_view.addWatermark(Watermark(BitmapUtils.messageToBitmap("我是视频编辑页面的水印", applicationContext),1f,1f))
+    }
+
+    private fun initThumbnail() {
+        //缩略图适配器
+        mThumbnail.clear()
+
+        //水平布局
+        video_thumbnails.setLayoutManager(
+            LinearLayoutManager(
+                applicationContext,
+                LinearLayoutManager.HORIZONTAL,
+                false
+            )
+        )
+
+        var mThumbnailAdapter = ThumbnailAdapter(mThumbnail)
+        video_thumbnails.setAdapter(mThumbnailAdapter)
+
+        //1s 获取一次缩略图
+        setThumbnailData(mThumbnailAdapter)
+
+
+        var startTime = 0L
+        var endTime = 0L
+        //获取视频元数据
+        mVideoInfo = VideoUitls.getVideoInfo(getAVEditPath())
+        var totalTime = 1L;
+        mVideoInfo?.duration?.let { duration ->
+            totalTime = duration.toLong()
+        }
+
+        //总时长
+        val format = TimeUtil.format(totalTime)
+        tv_duration.setText(format)
+        tv_end_time.setText(format)
+        //滑动截取时间控件改变的回调
+        range_seek_bar.setRangeChangeListener(object : RangeSlider.OnRangeChangeListener {
+            override fun onRangeChange(view: RangeSlider, type: Int, lThumbIndex: Int, rThumbIndex: Int) {
+                startTime = (lThumbIndex.toFloat() / 100 * totalTime).toLong()
+                endTime = (rThumbIndex.toFloat() / 100 * totalTime).toLong()
+                val duration = endTime - startTime
+                runOnUiThread {
+                    when (type) {
+                        RangeSlider.TYPE_LEFT -> {
+                            tv_start_time.setText(TimeUtil.format(startTime))
+                            JNIManager.getAVPlayEngine()?.seekTo(startTime.toDouble() / 1000)
+                        }
+                        RangeSlider.TYPE_RIGHT -> {
+                            tv_end_time.setText(TimeUtil.format(endTime))
+                            JNIManager.getAVPlayEngine()?.seekTo(endTime.toDouble() / 1000)
+                        }
+                    }
+                    tv_duration.setText(TimeUtil.format(duration))
+                }
+            }
+        })
+    }
+
+    private fun setThumbnailData(mThumbnailAdapter: ThumbnailAdapter) {
+        var mFile = File("sdcard/aveditor/thumbnail/")
+        FileUtils.deleteDirectory(mFile)
+        mFile.mkdirs()
+
+        var videoPath = ""
+        getAVEditPath()?.let { path ->
+            videoPath = path
+        }
+
+        if (!FileUtils.isExists(videoPath)) return
+        AVEditor.video2pic(
+            videoPath,
+            "${mFile.absolutePath}/${System.currentTimeMillis()}_%3d.jpg",
+            60,
+            60,
+            1.0f,
+            object : ExecuteCallback {
+                override fun onStart(executionId: Long?) {
+                    initProgressDialog()
+                    showProgressDialog()
+                }
+
+                override fun onSuccess(executionId: Long) {
+                    val e = Log.e(TAG, "video2pic ok")
+                    var files = mFile?.listFiles()
+                    files.forEach { file ->
+                        mThumbnail.add(file)
+                    }
+                    mThumbnailAdapter.notifyDataSetChanged()
+                    dismissProgressDialog()
+                }
+
+                override fun onFailure(executionId: Long, error: String?) {
+                    Log.e(TAG, "video2pic error:${error}")
+                    showMessage(error)
+                    dismissProgressDialog()
+                }
+
+                override fun onCancel(executionId: Long) {
+                }
+
+                override fun onFFmpegExecutionMessage(logMessage: LogMessage?) {
+                    Log.d(TAG, logMessage?.text)
+                }
+
+                override fun onProgress(progress: Float) {
+                    Log.e(TAG, "video2pic onProgress:$progress")
+                    updateProgress(progress)
+                }
+            })
     }
 
     private fun play() {
@@ -108,8 +246,8 @@ public class AVEditorActivity : BaseActivity<Int>(), AnimTextView.OnClickListene
 //        if (MediaCodecHelper.isSupportVideoDMediaCodec())
 //            player_view.setMediaCodec(true)
 //        else
-        player_view.setMediaCodec(false)
-        player_view.start()
+        editor_view.setNativeRender(false)
+        editor_view.start()
     }
 
     override fun initData() {
@@ -125,10 +263,6 @@ public class AVEditorActivity : BaseActivity<Int>(), AnimTextView.OnClickListene
         txt.addOnClickListener(500, this)
         sticker.addOnClickListener(500, this)
         next.addOnClickListener(500, this)
-
-
-        //播放进度
-        player_view.addProgressListener(this)
     }
 
 
@@ -209,6 +343,11 @@ public class AVEditorActivity : BaseActivity<Int>(), AnimTextView.OnClickListene
 
     override fun onFilterItemClick(position: Int, item: FilterEntity) {
         LogHelper.d(TAG, "position:${position} ${item}")
+        editor_view?.setGPUImageFilter(item.avFilterType, object : OnSelectFilterListener {
+            override fun onSelectFilter(gpuImageFilter: GPUImageFilter?) {
+                gpuImageFilter?.let { mSelectFilterDialog?.setSelectFilter(it) }
+            }
+        })
     }
 
 
@@ -225,7 +364,7 @@ public class AVEditorActivity : BaseActivity<Int>(), AnimTextView.OnClickListene
 
     override fun onDestroy() {
         super.onDestroy()
-        player_view.stop()
+        editor_view.stop()
     }
 
     public fun editAnima() {

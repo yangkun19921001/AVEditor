@@ -362,6 +362,11 @@ public class AVRecordActivity : BaseActivity<Int>(), TimerUtils.OnTimerUtilsList
                     }
                     line_progress_view.deleteProgress()
                 }
+
+                if (File(mMergetOutPath).exists()){
+                    File(mMergetOutPath).delete()
+                }
+
                 if (!line_progress_view.isExist()) {
                     record_done.visibility = View.GONE
                     record_delete.visibility = View.GONE
@@ -381,9 +386,11 @@ public class AVRecordActivity : BaseActivity<Int>(), TimerUtils.OnTimerUtilsList
         }
 
         var mVideoEntity = java.util.ArrayList<AVVideo>()
+        var mVidePath = java.util.ArrayList<String>()
         mMedias.forEach { mediaEntity ->
             mediaEntity.path?.let { path ->
                 mVideoEntity.add(AVVideo(path))
+                mVidePath.add(path)
             }
         }
 
@@ -406,37 +413,41 @@ public class AVRecordActivity : BaseActivity<Int>(), TimerUtils.OnTimerUtilsList
             outputOption.setWidth(720)
             outputOption.setHeight(1280)
 
+            //这部分直接分辨率，码率都一样所以直接在 Java 端进行he'bin合并
+            JNIManager.getAVJavaMuxer()?.javaMergeVieo(mVidePath,mMergetOutPath)
+
+            toPlayUI(mMergetOutPath)
             //开始合并
-            AVEditor.merge(mVideoEntity, outputOption, object : ExecuteCallback {
-                override fun onSuccess(executionId: Long) {
-                    dismissProgressDialog()
-                    toPlayUI(mMergetOutPath)
-
-                }
-
-                override fun onFailure(executionId: Long, error: String?) {
-                    dismissProgressDialog()
-                    showMessage(error)
-
-                }
-
-                override fun onCancel(executionId: Long) {
-                    dismissProgressDialog()
-                }
-
-                override fun onProgress(v: Float) {
-                    updateProgress(v)
-                }
-
-                override fun onStart(executionId: Long?) {
-                    initProgressDialog()
-                    showProgressDialog()
-                }
-
-                override fun onFFmpegExecutionMessage(logMessage: LogMessage?) {
-                    Log.d(TAG, "onFFmpegExecutionMessage:${logMessage?.text}")
-                }
-            })
+//            AVEditor.merge(mVideoEntity, outputOption, object : ExecuteCallback {
+//                override fun onSuccess(executionId: Long) {
+//                    dismissProgressDialog()
+//                    toPlayUI(mMergetOutPath)
+//
+//                }
+//
+//                override fun onFailure(executionId: Long, error: String?) {
+//                    dismissProgressDialog()
+//                    showMessage(error)
+//
+//                }
+//
+//                override fun onCancel(executionId: Long) {
+//                    dismissProgressDialog()
+//                }
+//
+//                override fun onProgress(v: Float) {
+//                    updateProgress(v)
+//                }
+//
+//                override fun onStart(executionId: Long?) {
+//                    initProgressDialog()
+//                    showProgressDialog()
+//                }
+//
+//                override fun onFFmpegExecutionMessage(logMessage: LogMessage?) {
+//                    Log.d(TAG, "onFFmpegExecutionMessage:${logMessage?.text}")
+//                }
+//            })
         }
     }
 

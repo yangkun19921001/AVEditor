@@ -9,9 +9,8 @@ import android.view.SurfaceHolder
 import com.devyk.aveditor.callback.ICameraOpenListener
 import com.devyk.aveditor.callback.OnSelectFilterListener
 import com.devyk.aveditor.config.CameraConfiguration
-import com.devyk.aveditor.video.AVEditorRenderer
+import com.devyk.aveditor.video.AVRecordRenderer
 import com.devyk.aveditor.video.camera.CameraHolder
-import com.devyk.aveditor.video.filter.IFilter
 import javax.microedition.khronos.opengles.GL10
 
 import com.devyk.aveditor.entity.Speed
@@ -30,7 +29,7 @@ import com.devyk.aveditor.video.filter.helper.AVFilterType
  * </pre>
  */
 public open class AVCameraView : GLSurfaceView,
-    AVEditorRenderer.OnRendererListener,
+    AVRecordRenderer.OnRendererListener,
     SurfaceTexture.OnFrameAvailableListener {
 
     private var mFps = 20
@@ -47,7 +46,7 @@ public open class AVCameraView : GLSurfaceView,
      */
     private var mCameraConfiguration = CameraConfiguration.createDefault()
 
-    protected lateinit var mRenderer: AVEditorRenderer
+    protected lateinit var mRenderer: AVRecordRenderer
 
 
     /**
@@ -77,7 +76,7 @@ public open class AVCameraView : GLSurfaceView,
         setEGLContextClientVersion(2)
 
         //2、设置渲染器
-        mRenderer = AVEditorRenderer(context)
+        mRenderer = AVRecordRenderer(context)
         setRenderer(mRenderer)
 
         //3、设置渲染模式，有手动和自动模式，这里我们选择手动调用 requestRender 渲染
@@ -101,7 +100,7 @@ public open class AVCameraView : GLSurfaceView,
 
     /**
      * 渲染器创建
-     * @see AVEditorRenderer.OnRendererListener
+     * @see AVRecordRenderer.OnRendererListener
      *
      */
     override open fun onSurfaceCreated(textureId: Int, eglContext: EGLContext) {
@@ -118,7 +117,7 @@ public open class AVCameraView : GLSurfaceView,
 
     /**
      * 渲染器改变了,需要重启预览
-     * @see AVEditorRenderer.OnRendererListener
+     * @see AVRecordRenderer.OnRendererListener
      */
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
         startPreview()

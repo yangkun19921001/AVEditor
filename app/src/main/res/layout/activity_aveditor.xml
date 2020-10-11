@@ -7,8 +7,15 @@
         android:layout_height="match_parent">
 
 
-    <com.devyk.aveditor.widget.AVPlayView
-            android:id="@+id/player_view"
+    <!--<com.devyk.aveditor.widget.AVPlayView-->
+            <!--android:id="@+id/player_view"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent" tools:layout_editor_absoluteY="37dp"-->
+            <!--tools:layout_editor_absoluteX="0dp"/>   -->
+
+
+    <com.devyk.aveditor.widget.AVEditorView
+            android:id="@+id/editor_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent" tools:layout_editor_absoluteY="37dp"
             tools:layout_editor_absoluteX="0dp"/>
@@ -16,7 +23,7 @@
 
     <com.devyk.ikavedit.widget.AnimTextView
             android:id="@+id/camera_filter"
-            android:layout_marginTop="@dimen/dimen_20dp"
+            android:layout_marginTop="@dimen/dimen_30dp"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginRight="@dimen/dimen_20dp"
             android:layout_width="wrap_content"
@@ -32,7 +39,7 @@
 
     <com.devyk.ikavedit.widget.AnimTextView
             android:id="@+id/back"
-            android:layout_marginTop="@dimen/dimen_20dp"
+            android:layout_marginTop="@dimen/dimen_30dp"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginLeft="@dimen/dimen_10dp"
             android:layout_width="wrap_content"
@@ -168,40 +175,89 @@
 
 
 
-    <FrameLayout
-            android:visibility="gone"
+
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:id="@+id/fl_edit"
-            android:layout_marginBottom="@dimen/dimen_30dp"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginLeft="@dimen/dimen_50dp"
             android:layout_marginRight="@dimen/dimen_50dp"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/dimen_60dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dimen_30dp"
             tools:ignore="MissingConstraints">
 
-        <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/video_thumbnails"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="@dimen/dimen_10dp"
-                android:layout_marginRight="@dimen/dimen_10dp"
-        />
 
-        <com.devyk.ikavedit.widget.RangeSlider
-                android:id="@+id/range_seek_bar"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:leftThumbDrawable="@drawable/handle_left_right"
-                app:leftThumbIndex="0"
-                app:rightThumbDrawable="@drawable/handle_left_right"
-                app:lineColor="@android:color/white"
-                app:lineHeight="@dimen/dimen_2dp"
-                app:thumbWidth="@dimen/dimen_10dp"
-                app:tickCount="100"
-                app:maskColor="#A0000000"
-        />
 
-    </FrameLayout>
+
+        <TextView
+                android:id="@+id/tv_start_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:text="00:00"
+                android:layout_marginTop="20dp"/>
+
+        <TextView
+                android:layout_marginTop="20dp"
+                android:id="@+id/tv_duration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintLeft_toRightOf="parent"
+                app:layout_constraintRight_toLeftOf="parent"
+                android:textColor="@color/colorAccent"
+                android:textSize="16sp"
+                android:text="00:00"/>
+
+        <TextView
+                android:layout_marginTop="20dp"
+                android:id="@+id/tv_end_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintRight_toRightOf="parent"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:text="00:00"/>
+
+        <FrameLayout
+                android:layout_marginTop="@dimen/dp_10"
+                app:layout_constraintTop_toBottomOf="@+id/tv_duration"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dimen_60dp"
+                tools:ignore="MissingConstraints">
+
+            <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/video_thumbnails"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+
+                    android:layout_marginLeft="@dimen/dimen_10dp"
+                    android:layout_marginRight="@dimen/dimen_10dp"
+            />
+
+            <com.devyk.ikavedit.widget.RangeSlider
+                    android:id="@+id/range_seek_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:leftThumbDrawable="@drawable/handle_left_right"
+                    app:leftThumbIndex="0"
+                    app:rightThumbDrawable="@drawable/handle_left_right"
+                    app:lineColor="@android:color/white"
+                    app:lineHeight="@dimen/dimen_2dp"
+                    app:thumbWidth="@dimen/dimen_10dp"
+                    app:tickCount="100"
+                    app:maskColor="#A0000000"
+            />
+
+        </FrameLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
