@@ -5,13 +5,18 @@
 #include "IDecode.h"
 
 
+/**
+ * 子线程
+ * @param data
+ */
 void IDecode::update(AVData data) {
     if (data.isAudio != isAudio || data.size <= 0) {
         return;
     }
+
     while (!isExit) {
-        packsMutex.lock();
         if (packs.size() < maxCache) {
+            packsMutex.lock();
             packs.push_back(data);
             packsMutex.unlock();
             break;
@@ -20,25 +25,30 @@ void IDecode::update(AVData data) {
         sleep(1);
     }
 
+
 }
 
+/**
+ * 主线程调用
+ * @return
+ */
 int IDecode::clear() {
     int ret = 0;
     //TODO ---- 音频模块这里会导致死锁,先暂时释放
-    packsMutex.unlock();
+//    packsMutex.unlock();
+//    packsMutex.lock();
     while (!packs.empty()) {
         ret = 1;
-        packsMutex.lock();
+//        packsMutex.lock();
         AVData data = packs.front();
+        packs.pop_front();
+//        packsMutex.unlock();
         if (data.data)
             data.drop();
-        packs.pop_front();
-        packsMutex.unlock();
     }
+//
     pts = 0;
     synPts = 0;
-
-
     return ret;
 }
 
@@ -72,8 +82,8 @@ void IDecode::main() {
         }
 
         //取出待解码的数据
-        AVData data = packs.front();
-        packs.pop_front();
+        AVData data = packs.front();//取出第一个元素
+        packs.pop_front();//删除第一个元素
         /**
          * 发送到  ffmpeg 解码线程
          */
@@ -91,6 +101,7 @@ void IDecode::main() {
             }
         }
         data.drop();
+
         packsMutex.unlock();
     }
 

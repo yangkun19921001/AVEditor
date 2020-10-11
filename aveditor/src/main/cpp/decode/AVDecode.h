@@ -25,7 +25,7 @@ protected:
     /**
      * 解码之后的裸流数据 PCM/YUV
      */
-    AVFrame *pFrame = 0;
+//    AVFrame *pFrame = 0;
     /**
      * 互斥锁
      */

@@ -127,11 +127,12 @@ int AVDecode::close() {
     IDecode::clear();
     mux.lock();
     pts = 0;
-    if (pFrame)
-        av_frame_free(&pFrame);
+//    if (pFrame)
+//        av_frame_free(&pFrame);
     if (pCodec) {
         avcodec_close(pCodec);
         avcodec_free_context(&pCodec);
+        pCodec = 0;
     }
     mux.unlock();
     return 1;
@@ -168,7 +169,7 @@ AVData AVDecode::getDecodeFrame() {
         return AVData();
     }
 //    if (!pFrame)
-    pFrame = av_frame_alloc();
+    AVFrame *pFrame = av_frame_alloc();
 
     //拿到解码之后的数据 PCM/H264 0 is ok.
     int ret = avcodec_receive_frame(pCodec, pFrame);
@@ -177,7 +178,7 @@ AVData AVDecode::getDecodeFrame() {
         mux.unlock();
         char buf[1024] = {0};
         av_strerror(ret, buf, sizeof(buf) - 1);
-        LOGE("avcodec_receive_frame error %s %d isAudio:%d", buf, ret, isAudio);
+//        LOGE("avcodec_receive_frame error %s %d isAudio:%d", buf, ret, isAudio);
         return AVData();
     }
 
@@ -272,6 +273,7 @@ AVData AVDecode::getDecodeFrame() {
     deData.format = pFrame->format;
 //    memcpy(deData.datas, pFrame->data, sizeof(deData.datas));
     av_frame_free(&pFrame);
+    pFrame = 0;
     mux.unlock();
     return deData;
 }

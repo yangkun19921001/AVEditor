@@ -100,6 +100,10 @@ class AVEditorView : GLSurfaceView, IYUVDataListener {
     override fun onYUV420pData(width: Int, height: Int, y: ByteArray, u: ByteArray, v: ByteArray) {
         val progress = progress()
         if (progress == 100.0 && !mPlayComplete) {
+//            stop()
+//            setNativeRender(false)
+//            setEditSource(mDataSource)
+//            start()
             seekTo(0.0)
             mPlayComplete = true
             LogHelper.d(TAG,"progress:$progress")
