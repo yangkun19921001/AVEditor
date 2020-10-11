@@ -70,28 +70,28 @@ void AV_GL_VideoPlayer::toJava(AVData data) {
         if (this->jvm->AttachCurrentThread(&jniEnv1, 0) == JNI_OK) {
 
 
-            AVFrame *pFrame = reinterpret_cast<AVFrame *>(data.data);
-
-            data.datas[0] = static_cast<unsigned char *>(malloc(data.width * data.height));
-            data.datas[1] = static_cast<unsigned char *>(malloc(data.width / 2 * data.height / 2));
-            data.datas[2] = static_cast<unsigned char *>(malloc(data.width / 2 * data.height / 2));
-
-
-            for (int i = 0; i < data.height; i++) {
-                memcpy(data.datas[0] + data.width * i,
-                       pFrame->data[0] + pFrame->linesize[0] * i,
-                       data.width);
-            }
-            for (int j = 0; j < data.height / 2; j++) {
-                memcpy(data.datas[1] + data.width / 2 * j,
-                       pFrame->data[1] + pFrame->linesize[1] * j,
-                       data.width / 2);
-            }
-            for (int k = 0; k < data.height / 2; k++) {
-                memcpy(data.datas[2] + data.width / 2 * k,
-                       pFrame->data[2] + pFrame->linesize[2] * k,
-                       data.width / 2);
-            }
+//            AVFrame *pFrame = reinterpret_cast<AVFrame *>(data.data);
+//
+//            data.datas[0] = static_cast<unsigned char *>(malloc(data.width * data.height));
+//            data.datas[1] = static_cast<unsigned char *>(malloc(data.width / 2 * data.height / 2));
+//            data.datas[2] = static_cast<unsigned char *>(malloc(data.width / 2 * data.height / 2));
+//
+//
+//            for (int i = 0; i < data.height; i++) {
+//                memcpy(data.datas[0] + data.width * i,
+//                       pFrame->data[0] + pFrame->linesize[0] * i,
+//                       data.width);
+//            }
+//            for (int j = 0; j < data.height / 2; j++) {
+//                memcpy(data.datas[1] + data.width / 2 * j,
+//                       pFrame->data[1] + pFrame->linesize[1] * j,
+//                       data.width / 2);
+//            }
+//            for (int k = 0; k < data.height / 2; k++) {
+//                memcpy(data.datas[2] + data.width / 2 * k,
+//                       pFrame->data[2] + pFrame->linesize[2] * k,
+//                       data.width / 2);
+//            }
 
 //            fwrite(data.datas[0], 1, data.width * data.height, file_);    //Y
 //            fwrite(data.datas[1], 1, data.width * data.height / 4, file_);  //U
@@ -120,7 +120,7 @@ void AV_GL_VideoPlayer::toJava(AVData data) {
             free(data.datas[1]);
             free(data.datas[2]);
 
-            av_frame_free(&pFrame);
+//            av_frame_free(&pFrame);
         }
     }
 

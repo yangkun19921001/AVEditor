@@ -2,6 +2,7 @@ package com.devyk.ikavedit.ui.activity
 
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
+import android.graphics.Paint
 import android.os.Environment
 import android.util.Log
 import android.view.View
@@ -35,6 +36,16 @@ import kotlinx.android.synthetic.main.activity_av_handle.*
 import kotlinx.android.synthetic.main.activity_aveditor.*
 import kotlinx.android.synthetic.main.activity_aveditor.camera_filter
 import java.io.File
+import android.util.DisplayMetrics
+import android.content.Context.WINDOW_SERVICE
+import androidx.core.content.ContextCompat.getSystemService
+import android.view.WindowManager
+import androidx.core.app.ComponentActivity.ExtraData
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import android.content.Context
+import android.graphics.Rect
+import android.view.Display
+import android.graphics.Point
 
 
 /**
@@ -129,7 +140,9 @@ public class AVEditorActivity : BaseActivity<Int>(), AnimTextView.OnClickListene
      * 初始化水印
      */
     private fun initWatermark() {
-        editor_view.addWatermark(Watermark(BitmapUtils.messageToBitmap("我是视频编辑页面的水印", applicationContext),1f,1f))
+        editor_view.addWatermark(Watermark(BitmapUtils.messageToBitmap("我是视频编辑页面的水印", applicationContext),
+            100f  ,
+            500f))
     }
 
     private fun initThumbnail() {
@@ -381,6 +394,5 @@ public class AVEditorActivity : BaseActivity<Int>(), AnimTextView.OnClickListene
             .setDuration(500).start()
 
     }
-
 
 }
