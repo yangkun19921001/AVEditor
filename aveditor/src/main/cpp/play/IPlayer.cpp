@@ -456,3 +456,10 @@ bool IPlayer::isMediaCodec() {
     }
     return false;
 }
+
+void IPlayer::setNativeRender(JavaVM*javaVM,JNIEnv *env,jobject obj,jboolean isRender) {
+    if (videoView)
+        videoView->setNativeRender(javaVM,env,obj,isRender);
+
+
+}

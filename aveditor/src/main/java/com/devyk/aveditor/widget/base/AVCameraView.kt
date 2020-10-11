@@ -1,4 +1,4 @@
-package com.devyk.aveditor.widget
+package com.devyk.aveditor.widget.base
 
 import android.content.Context
 import android.graphics.SurfaceTexture
@@ -9,7 +9,7 @@ import android.view.SurfaceHolder
 import com.devyk.aveditor.callback.ICameraOpenListener
 import com.devyk.aveditor.callback.OnSelectFilterListener
 import com.devyk.aveditor.config.CameraConfiguration
-import com.devyk.aveditor.video.AVRecordRenderer
+import com.devyk.aveditor.video.renderer.AVRecordRenderer
 import com.devyk.aveditor.video.camera.CameraHolder
 import javax.microedition.khronos.opengles.GL10
 

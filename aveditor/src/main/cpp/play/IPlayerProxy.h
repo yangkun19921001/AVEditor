@@ -137,6 +137,8 @@ public:
     void setMediaCodec(jboolean isMediaCodec);
 
     bool isMediaCodec();
+
+    void setNativeRender(JavaVM*javaVM,JNIEnv *env,jobject obj,jboolean isNativeRender);
 };
 
 

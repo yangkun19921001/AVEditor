@@ -118,7 +118,7 @@ int AVDecode::open(AVParameter par, int isMediaCodec) {
     //时间基
     timebase = par.timebase;
     LOGI("avcodec_open2 open success! 是否是音频解码器: %d", this->isAudio);
-    file = fopen("sdcard/aveditor/test_yuv.yuv", "wb");
+//    file = fopen("sdcard/test_yuv_11_decode.yuv", "wb");
     mux.unlock();
     return true;
 }
@@ -197,29 +197,29 @@ AVData AVDecode::getDecodeFrame() {
 //            LOGE("AVFrame data linesize[%d]=%d \n",i,pFrame->linesize[i]);
 //        }
 
-        deData.datas[0] = static_cast<unsigned char *>(malloc(deData.width * deData.height));
-        deData.datas[1] = static_cast<unsigned char *>(malloc(deData.width / 2 * deData.height / 2));
-        deData.datas[2] = static_cast<unsigned char *>(malloc(deData.width / 2 * deData.height / 2));
-
-        unsigned char *y = deData.datas[0];
-        unsigned char *u = deData.datas[1];
-        unsigned char *v = deData.datas[2];
-
-        for (int i = 0; i < deData.height; i++) {
-            memcpy(y + deData.width * i,
-                   pFrame->data[0] + pFrame->linesize[0] * i,
-                   deData.width);
-        }
-        for (int j = 0; j < deData.height / 2; j++) {
-            memcpy(u + deData.width / 2 * j,
-                   pFrame->data[1] + pFrame->linesize[1] * j,
-                   deData.width / 2);
-        }
-        for (int k = 0; k < deData.height / 2; k++) {
-            memcpy(v + deData.width / 2 * k,
-                   pFrame->data[2] + pFrame->linesize[2] * k,
-                   deData.width / 2);
-        }
+//        deData.datas[0] = static_cast<unsigned char *>(malloc(deData.width * deData.height));
+//        deData.datas[1] = static_cast<unsigned char *>(malloc(deData.width / 2 * deData.height / 2));
+//        deData.datas[2] = static_cast<unsigned char *>(malloc(deData.width / 2 * deData.height / 2));
+//
+//        unsigned char *y = deData.datas[0];
+//        unsigned char *u = deData.datas[1];
+//        unsigned char *v = deData.datas[2];
+//
+//        for (int i = 0; i < deData.height; i++) {
+//            memcpy(y + deData.width * i,
+//                   pFrame->data[0] + pFrame->linesize[0] * i,
+//                   deData.width);
+//        }
+//        for (int j = 0; j < deData.height / 2; j++) {
+//            memcpy(u + deData.width / 2 * j,
+//                   pFrame->data[1] + pFrame->linesize[1] * j,
+//                   deData.width / 2);
+//        }
+//        for (int k = 0; k < deData.height / 2; k++) {
+//            memcpy(v + deData.width / 2 * k,
+//                   pFrame->data[2] + pFrame->linesize[2] * k,
+//                   deData.width / 2);
+//        }
 
 
 //        memcpy(deData.datas, pFrame->data, sizeof(deData.datas));
@@ -245,13 +245,14 @@ AVData AVDecode::getDecodeFrame() {
                    pFrame->data[2] + pFrame->linesize[2] * k,
                    deData.width / 2);
         }
+*/
+//        fwrite(deData.datas[0], 1, deData.width * deData.height, file);    //Y
+//        fwrite(deData.datas[1], 1, deData.width * deData.height / 4, file);  //U
+//        fwrite(deData.datas[2], 1, deData.width * deData.height / 4, file);  //V
 
-        fwrite(y, 1, deData.width * deData.height, file);    //Y
-        fwrite(u, 1, deData.width * deData.height / 4, file);  //U
-        fwrite(v, 1, deData.width * deData.height / 4, file);  //V
-        free(y);
-        free(u);
-        free(v);*/
+//        free(y);
+//        free(u);
+//        free(v);
 
 //
 //        LOGE("解码成功! AVMEDIA_TYPE_VIDEO");
@@ -269,7 +270,7 @@ AVData AVDecode::getDecodeFrame() {
         return AVData();
     }
     deData.format = pFrame->format;
-
+//    memcpy(deData.datas, pFrame->data, sizeof(deData.datas));
     av_frame_free(&pFrame);
     mux.unlock();
     return deData;

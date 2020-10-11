@@ -9,3 +9,12 @@ package com.devyk.aveditor.callback
  *     desc    : This is IYUVDataListener
  * </pre>
  */
+public interface IYUVDataListener {
+    fun onYUV420pData(
+        width: Int,
+        height: Int,
+        y: ByteArray,
+        u: ByteArray,
+        v: ByteArray
+    )
+}

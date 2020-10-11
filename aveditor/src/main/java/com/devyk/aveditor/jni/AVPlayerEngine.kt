@@ -1,7 +1,9 @@
 package com.devyk.aveditor.jni
 
+import com.devyk.aveditor.callback.IYUVDataListener
 import com.devyk.aveditor.entity.MediaEntity
 import com.devyk.aveditor.entity.Speed
+import com.devyk.aveditor.utils.LogHelper
 
 /**
  * <pre>
@@ -14,11 +16,12 @@ import com.devyk.aveditor.entity.Speed
  */
 public class AVPlayerEngine : IPlayer {
 
+    private var mIYUVDataListener: IYUVDataListener? = null
 
     /**
      * 设置是否硬件解码
      */
-    public  override external fun setMediaCodec(isMediacodec: Boolean)
+    public override external fun setMediaCodec(isMediacodec: Boolean)
 
 
     public external override fun setPlayVolume(v: Int);
@@ -68,4 +71,22 @@ public class AVPlayerEngine : IPlayer {
      * 停止
      */
     public external override fun stop()
+
+    /**
+     * 设置是否在 native 端进行渲染
+     */
+    override external fun setNativeRender(b: Boolean);
+
+
+    /**
+     * 接收来自 Native 发送过来的 YUV 数据
+     */
+    fun onRecevierFromNativeYUVData(width: Int, height: Int, y: ByteArray, u: ByteArray, v: ByteArray) {
+        LogHelper.d("onRecevierFromNativeYUVData", "width:$width height:$height")
+        mIYUVDataListener?.onYUV420pData(width, height, y, u, v)
+    }
+
+    override fun setYUVDataCallback(listener: IYUVDataListener) {
+        this.mIYUVDataListener = listener
+    }
 }

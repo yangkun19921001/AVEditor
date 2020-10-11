@@ -3,11 +3,15 @@ package com.devyk.aveditor.widget
 import android.content.Context
 import android.opengl.GLSurfaceView
 import android.util.AttributeSet
-import android.view.SurfaceHolder
+import com.devyk.aveditor.callback.IYUVDataListener
+import com.devyk.aveditor.callback.OnSelectFilterListener
+import com.devyk.aveditor.entity.Watermark
 import com.devyk.aveditor.jni.IPlayer
 import com.devyk.aveditor.jni.JNIManager
-import javax.microedition.khronos.egl.EGLConfig
-import javax.microedition.khronos.opengles.GL10
+import com.devyk.aveditor.video.filter.gpuimage.base.GPUImageFilter
+import com.devyk.aveditor.video.filter.helper.AVFilterType
+import com.devyk.aveditor.video.renderer.AVEditorRenderer
+import com.devyk.aveditor.video.renderer.AVRecordRenderer
 
 
 /**
@@ -16,94 +20,53 @@ import javax.microedition.khronos.opengles.GL10
  *     blog    : https://juejin.im/user/578259398ac2470061f3a3fb/posts
  *     github  : https://github.com/yangkun19921001
  *     mailbox : yang1001yk@gmail.com
- *     desc    : This is AVPlayView
+ *     desc    : This is AVEditorView 负责视频编辑的控件,在 Native 端进行软解码，没有传入 Surface 所以没有在 Native 渲染，
+ *                转为 Java 端处理渲染，加滤镜编辑等工作
  * </pre>
  */
-
-class AVEditorView : GLSurfaceView, SurfaceHolder.Callback, GLSurfaceView.Renderer, Runnable {
-
-
-    private var isQueryPos = true;
-
-    private var lister: OnProgressListener? = null;
-
+class AVEditorView : GLSurfaceView, IYUVDataListener{
+    private var mEditorRenderer: AVEditorRenderer? = null
+    /**
+     * 播放器
+     */
     private var mIPlayer: IPlayer? = null
 
-    private var isExit = false
-
-    private var mLock = java.lang.Object()
-
-    /**
-     * 上一次获取的进度
-     */
-    var preTime = -1
-
-
-    constructor(context: Context?) : this(context, null) {
-    }
-
+    constructor(context: Context?) : this(context, null)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {
-        setRenderer(this)
-        isExit = false
+        setEGLContextClientVersion(2)
+        mEditorRenderer = AVEditorRenderer(getContext())
+        setRenderer(mEditorRenderer)
+        //主动刷新模式
+//        renderMode = RENDERMODE_CONTINUOUSLY
+        renderMode = RENDERMODE_WHEN_DIRTY
         mIPlayer = JNIManager.getAVPlayEngine()
-        Thread(this).start()
-    }
-
-
-    override fun surfaceCreated(holder: SurfaceHolder?) {
-        initSurface(holder!!.surface)
-    }
-
-    override fun surfaceChanged(holder: SurfaceHolder?, format: Int, w: Int, h: Int) {
-    }
-
-    override fun surfaceDestroyed(holder: SurfaceHolder?) {
-        isExit = true
-    }
-
-    override fun onDrawFrame(gl: GL10?) {
-    }
-
-    override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
-    }
-
-    override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
-    }
-//    override fun onClick(v: View?) {
-//        isPause = !isPause
-//        setPause(isPause)
-//
-//    }
-
-    override fun run() {
-        while (true) {
-            if (isExit) {
-                return
-            }
-            var progress = progress().toInt()
-            if (progress != preTime)
-                lister?.onProgressChanged(progress)
-            Thread.sleep(40)
-            preTime = progress;
-        }
+        mIPlayer?.setYUVDataCallback(this)
     }
 
     /**
-     * init 初始化
+     * 设置编辑源
      */
-    private fun initSurface(surface: Any) = mIPlayer?.initSurface(surface)
+    public fun setEditSource(source: String?) = mIPlayer?.setDataSource(source)
+
 
     /**
-     * 设置播放源
+     * 设置是否在 native 端渲染
      */
-    public fun setDataSource(source: String?) = mIPlayer?.setDataSource(source)
+    public fun setNativeRender(isNativeRender: Boolean) = mIPlayer?.setNativeRender(isNativeRender)
 
     /**
      * 播放
      */
     public fun start() {
-        preTime - 1
+        mIPlayer?.setNativeRender(false)
         mIPlayer?.start()
+    }
+
+    /**
+     * 停止
+     */
+    public fun stop() {
+        mIPlayer?.stop()
     }
 
     /**
@@ -121,27 +84,40 @@ class AVEditorView : GLSurfaceView, SurfaceHolder.Callback, GLSurfaceView.Render
      */
     public fun seekTo(seek: Double): Int? = mIPlayer?.seekTo(seek)
 
-    /**
-     * 设置硬件解码播放
-     */
-    public fun setMediaCodec(isMediaCodec: Boolean) =mIPlayer?.setMediaCodec(isMediaCodec)
+    override fun onYUV420pData(width: Int, height: Int, y: ByteArray, u: ByteArray, v: ByteArray) {
+        mEditorRenderer?.setYUVData(width, height, y, u, v)
+        requestRender()
+    }
+
 
     /**
-     * 停止
+     * 内部包含已有的滤镜
      */
-    public fun stop() {
-        mIPlayer?.stop()
+    fun setGPUImageFilter(type: AVFilterType?, listener: OnSelectFilterListener) {
+        queueEvent {
+            val gpuImageFilter = mEditorRenderer?.setGPUImageFilter(type)
+            listener?.onSelectFilter(gpuImageFilter)
+        }
+//        requestRender()
     }
 
     /**
-     * 播放进度监听
+     * 添加 GPUImage 滤镜
      */
-    public fun addProgressListener(progress: OnProgressListener) {
-        lister = progress;
+    @Synchronized
+    fun <gpuImageFilter : GPUImageFilter> setGPUImageFilter(filter: gpuImageFilter) {
+        queueEvent {
+            mEditorRenderer?.setGPUImageFilter(filter)
+        }
+//        requestRender()
     }
 
-    public interface OnProgressListener {
-        fun onProgressChanged(progress: Int)
+    /**
+     * 添加水印
+     */
+    public fun addWatermark(watermark: Watermark?) {
+        mEditorRenderer?.addWatermark(watermark)
     }
+
 
 }

@@ -182,6 +182,11 @@ bool IPlayerProxy::isMediaCodec() {
     return isMediaCodec;
 }
 
+void IPlayerProxy::setNativeRender(JavaVM*javaVM,JNIEnv *env,jobject obj,jboolean isNativeRender) {
+    if (pPlayer)
+        return pPlayer->setNativeRender(javaVM,env,obj,isNativeRender);
+}
+
 
 
 

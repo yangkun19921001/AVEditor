@@ -1,5 +1,6 @@
 package com.devyk.aveditor.jni
 
+import com.devyk.aveditor.callback.IYUVDataListener
 import com.devyk.aveditor.entity.MediaEntity
 import com.devyk.aveditor.entity.Speed
 import java.util.ArrayList
@@ -70,5 +71,11 @@ public interface IPlayer {
      */
     public fun stop()
 
+    /**
+     * 是否在native 端渲染
+     */
+    fun setNativeRender(b: Boolean = true){}
 
+
+    fun setYUVDataCallback(listener: IYUVDataListener){}
 }

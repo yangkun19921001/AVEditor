@@ -68,7 +68,8 @@ open class GPUImageFilter @JvmOverloads constructor(
         mGLTextureBuffer = ByteBuffer.allocateDirect(TextureRotationUtil.TEXTURE_NO_ROTATION.size * 4)
             .order(ByteOrder.nativeOrder())
             .asFloatBuffer()
-        mGLTextureBuffer.put(TextureRotationUtil.getRotation(Rotation.ROTATION_180, false, true)).position(0)
+//        mGLTextureBuffer.put(TextureRotationUtil.getRotation(Rotation.ROTATION_180, false, true)).position(0)
+        mGLTextureBuffer.put(TextureRotationUtil.getRotation(Rotation.NORMAL, false, true)).position(0)
     }
 
     open fun init() {
@@ -92,7 +93,7 @@ open class GPUImageFilter @JvmOverloads constructor(
 
     }
 
-    public fun isNeedInit(){
+    public fun isNeedInit() {
         if (!isInitialized)
             init()
     }
@@ -119,16 +120,17 @@ open class GPUImageFilter @JvmOverloads constructor(
         textureBuffer: FloatBuffer
     ): Int? {
         super.onDraw()
+
         GLES20.glUseProgram(program)
         runPendingOnDrawTasks()
         if (!isInitialized) {
             return textureId
         }
 
-        cubeBuffer.position(0)
+        cubeBuffer?.position(0)
         GLES20.glVertexAttribPointer(attribPosition, 2, GLES20.GL_FLOAT, false, 0, cubeBuffer)
         GLES20.glEnableVertexAttribArray(attribPosition)
-        textureBuffer.position(0)
+        textureBuffer?.position(0)
         GLES20.glVertexAttribPointer(
             attribTextureCoordinate, 2, GLES20.GL_FLOAT, false, 0,
             textureBuffer
@@ -151,36 +153,43 @@ open class GPUImageFilter @JvmOverloads constructor(
 
     open fun onDrawFrame(textureId: Int): Int? {
         super.onDraw()
+
+        return onDrawFrame(textureId,mGLCubeBuffer,mGLTextureBuffer)
 //        mFrameBuffers?.get(0)?.let { GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, it) }
 
-        GLES20.glUseProgram(program)
-        runPendingOnDrawTasks()
-        if (!isInitialized)
-            return OpenGLUtils.NOT_INIT
-
-        mGLCubeBuffer.position(0)
-        GLES20.glVertexAttribPointer(attribPosition, 2, GLES20.GL_FLOAT, false, 0, mGLCubeBuffer)
-        GLES20.glEnableVertexAttribArray(attribPosition)
-        mGLTextureBuffer.position(0)
-        GLES20.glVertexAttribPointer(
-            attribTextureCoordinate, 2, GLES20.GL_FLOAT, false, 0,
-            mGLTextureBuffer
-        )
-        GLES20.glEnableVertexAttribArray(attribTextureCoordinate)
-
-        if (textureId != OpenGLUtils.NO_TEXTURE) {
-            GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId)
-            GLES20.glUniform1i(uniformTexture, 0)
-        }
-        onDrawArraysPre()
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4)
-        GLES20.glDisableVertexAttribArray(attribPosition)
-        GLES20.glDisableVertexAttribArray(attribTextureCoordinate)
-        onDrawArraysAfter()
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0)
+//        GLES20.glUseProgram(program)
+//        runPendingOnDrawTasks()
+//        if (!isInitialized) {
+//            return textureId
+//        }
+//        GLES20.glUseProgram(program)
+//        runPendingOnDrawTasks()
+//        if (!isInitialized)
+//            return OpenGLUtils.NOT_INIT
+//
+////        mGLCubeBuffer.position(0)
+//        GLES20.glVertexAttribPointer(attribPosition, 2, GLES20.GL_FLOAT, false, 0, mGLCubeBuffer)
+//        GLES20.glEnableVertexAttribArray(attribPosition)
+//        mGLTextureBuffer.position(0)
+//        GLES20.glVertexAttribPointer(
+//            attribTextureCoordinate, 2, GLES20.GL_FLOAT, false, 0,
+//            mGLTextureBuffer
+//        )
+//        GLES20.glEnableVertexAttribArray(attribTextureCoordinate)
+//
+//        if (textureId != OpenGLUtils.NO_TEXTURE) {
+//            GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
+//            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId)
+//            GLES20.glUniform1i(uniformTexture, 0)
+//        }
+//        onDrawArraysPre()
+//        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4)
+//        GLES20.glDisableVertexAttribArray(attribPosition)
+//        GLES20.glDisableVertexAttribArray(attribTextureCoordinate)
+//        onDrawArraysAfter()
+//        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0)
         //返回fbo的纹理id
-        return getFBOTextureId()
+//        return getFBOTextureId()
     }
 
     protected open fun onDrawArraysPre() {}
@@ -246,7 +255,7 @@ open class GPUImageFilter @JvmOverloads constructor(
     }
 
     companion object {
-       public val NO_FILTER_VERTEX_SHADER = "" +
+        public val NO_FILTER_VERTEX_SHADER = "" +
                 "attribute vec4 position;\n" +
                 "attribute vec4 inputTextureCoordinate;\n" +
                 " \n" +
@@ -257,7 +266,7 @@ open class GPUImageFilter @JvmOverloads constructor(
                 "    gl_Position = position;\n" +
                 "    textureCoordinate = inputTextureCoordinate.xy;\n" +
                 "}"
-        public   val NO_FILTER_FRAGMENT_SHADER = "" +
+        public val NO_FILTER_FRAGMENT_SHADER = "" +
                 "varying highp vec2 textureCoordinate;\n" +
                 " \n" +
                 "uniform sampler2D inputImageTexture;\n" +

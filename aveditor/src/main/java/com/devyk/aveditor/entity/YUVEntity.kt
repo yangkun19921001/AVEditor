@@ -9,3 +9,4 @@ package com.devyk.aveditor.entity
  *     desc    : This is YUVEntity
  * </pre>
  */
+data class YUVEntity(val width:Int,val height :Int,val y:ByteArray,val u:ByteArray,val v:ByteArray)

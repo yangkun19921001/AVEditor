@@ -154,4 +154,27 @@ object FileUtils {
         return "com.google.android.apps.photos.content" == uri.authority
     }
 
+
+    //删除文件夹
+    public fun deleteDirectory(folder: File) {
+        if (folder.exists()) {
+            val files = folder.listFiles() ?: return
+            for (i in files.indices) {
+                if (files[i].isDirectory) {
+                    deleteDirectory(files[i])
+                } else {
+                    files[i].delete()
+                }
+            }
+        }
+        folder.delete()
+    }
+
+    /**
+     * 判断文件是否存在
+     */
+    public fun isExists(path: String):Boolean {
+        return File(path).exists()
+    }
+
 }

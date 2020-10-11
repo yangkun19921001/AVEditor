@@ -33,6 +33,11 @@ object JNIManager {
     private var mAVMuxer: INativeMuxer? = null
 
     /**
+     * Java 打包
+     */
+    private var mAVJavaMuxer: IJavaMuxer? = null
+
+    /**
      * 录制速率控制
      */
     private var mSpeedController: ISpeedController? = null
@@ -51,6 +56,7 @@ object JNIManager {
         mAVFileDecodeEngine = AVAudioDecodeEngine()
         mAVEditor = AVEditorEngine()
         mAVMuxer = AVMuxerEngine()
+        mAVJavaMuxer = AVJavaMuxerEngine()
         mSpeedController = AVSpeedEngine();
     }
 
@@ -104,6 +110,11 @@ object JNIManager {
      * 拿到媒体编辑模块
      */
     public fun getAVMuxerEngine(): INativeMuxer? = mAVMuxer
+
+    /**
+     * 拿到媒体编辑模块
+     */
+    public fun getAVJavaMuxer(): IJavaMuxer? = mAVJavaMuxer
 
     /**
      * 拿到速率控制

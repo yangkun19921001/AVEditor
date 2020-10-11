@@ -19,7 +19,6 @@ public open class GPUImageFBOFilter {
     //fbo 纹理id
     protected var mFrameBufferTextures: IntArray? = null
 
-
     fun onReady(intputWidth: Int, intputHeight: Int) {
         if (mFrameBuffers != null) {
             destroyFrameBuffers()
@@ -74,6 +73,9 @@ public open class GPUImageFBOFilter {
     }
 
 
-    fun getFBOTextureId():Int? = mFrameBufferTextures?.get(0)
+    fun getFBOTextureId():Int? {
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0)
+        return mFrameBufferTextures?.get(0)
+    }
 
 }

@@ -10,3 +10,4 @@ void IVideoPlayer::update(AVData data) {
     //渲染数据
     this->render(data);
 }
+

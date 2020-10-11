@@ -1,9 +1,8 @@
-package com.devyk.aveditor.video.renderer
+package com.devyk.aveditor.video.filter
 
 import android.content.Context
 import android.opengl.GLES20
 import com.devyk.aveditor.R
-import com.devyk.aveditor.video.filter.BaseFBOFilter
 import com.tencent.mars.xlog.Log
 import java.nio.ByteBuffer
 
@@ -13,11 +12,11 @@ import java.nio.ByteBuffer
  *     blog    : https://juejin.im/user/578259398ac2470061f3a3fb/posts
  *     github  : https://github.com/yangkun19921001
  *     mailbox : yang1001yk@gmail.com
- *     desc    : This is YUVRenderer
+ *     desc    : This is YUVFilter
  * </pre>
  */
 
-class YUVRenderer(context: Context) : BaseFBOFilter(context, R.raw.yuv_vertex_shader, R.raw.yuv_fragment_shader) {
+class YUVFilter(context: Context?) : BaseFBOFilter(context, R.raw.yuv_vertex_shader, R.raw.yuv_fragment_shader) {
 
     //顶点位置
     private val avPosition: Int
@@ -127,8 +126,7 @@ class YUVRenderer(context: Context) : BaseFBOFilter(context, R.raw.yuv_vertex_sh
         super.onReady(width, height)
     }
 
-
-    fun onDrawFrame(width: Int, height: Int, y: ByteArray, u: ByteArray, v: ByteArray){
+    fun onDrawFrame(width: Int, height: Int, y: ByteArray, u: ByteArray, v: ByteArray):Int {
         this.width_yuv = width
         this.height_yuv = height
         try {
@@ -138,9 +136,7 @@ class YUVRenderer(context: Context) : BaseFBOFilter(context, R.raw.yuv_vertex_sh
         } catch (e: Exception) {
             Log.e("setYuv420p", e.message)
         }
-
-
-        onDrawFrame(DEFAULT_TEXTURE_ID);
+        return onDrawFrame(DEFAULT_TEXTURE_ID);
     }
 
     override fun onDrawFrame(textureId: Int): Int {

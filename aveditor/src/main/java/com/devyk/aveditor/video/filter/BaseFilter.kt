@@ -3,9 +3,12 @@ package com.devyk.aveditor.video.filter
 import android.content.Context
 import android.opengl.GLES20
 import com.devyk.aveditor.utils.OpenGLUtils
+import com.devyk.aveditor.utils.Rotation
+import com.devyk.aveditor.utils.TextureRotationUtil
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
+import java.util.*
 
 /**
  * <pre>
@@ -22,11 +25,11 @@ public open class BaseFilter(context: Context?, vertexShaderID: Int, fragmentSha
     /**
      * 顶点 Buffer
      */
-    protected var mGLVertexBuffer: FloatBuffer? = null
+    protected var mGLVertexBuffer: FloatBuffer
     /**
      * 物体纹理 Buffer
      */
-    protected var mGLTextureBuffer: FloatBuffer? = null
+    protected var mGLTextureBuffer: FloatBuffer
 
     //顶点着色
     protected var mVertexShaderId: Int = 0

@@ -159,6 +159,8 @@ public:
 
 
     bool  isMediaCodec();
+
+    void setNativeRender(JavaVM*javaVM,JNIEnv *env,jobject obj,jboolean isRender);
 };
 
 

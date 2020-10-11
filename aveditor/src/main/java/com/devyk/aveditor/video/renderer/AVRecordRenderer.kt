@@ -1,4 +1,4 @@
-package com.devyk.aveditor.video
+package com.devyk.aveditor.video.renderer
 
 import android.content.Context
 import android.opengl.EGL14
@@ -118,7 +118,6 @@ public class AVRecordRenderer(context: Context?) :
         //渲染线程的EGL上下文
         val eglContext = EGL14.eglGetCurrentContext()
 
-
         //2、创建好的纹理 ID 暴露出去,将生成的纹理ID 交于 SurfaceTexture
         mListener?.onSurfaceCreated(mTextureId[0], eglContext)
 
@@ -133,8 +132,6 @@ public class AVRecordRenderer(context: Context?) :
         mListener?.onSurfaceChanged(gl, width, height)
         //2、准备过滤器，用于视频美化或者其它处理
         onReadyFilter()
-
-
     }
 
     private fun onReadyGPUImageFilter(gpuimage: GPUImageFilter?) {
@@ -220,15 +217,13 @@ public class AVRecordRenderer(context: Context?) :
 
         //适配 GPUImageFilter,在水印之后
         if (filter is WatermarkFilter && mGPUImageFilter != null)
-            gpuTextID = mGPUImageFilter?.onDrawFrame(gpuTextID, filter.getVData()!!, filter.getFData()!!)!!
+            gpuTextID = mGPUImageFilter?.onDrawFrame(gpuTextID)!!
 
         return onDrawFrameFilter(filter?.onDrawFrame(gpuTextID))
 
     }
 
-    /**
-     *
-     */
+
 
     /**
      * 当 surface销毁的时候回调

@@ -10,7 +10,7 @@
 #include "IVideoPlayer.h"
 #include "ITexture.h"
 #include "AVTxture.h"
-
+#include <jni.h>
 /**
  * 具体视频模块播放
  */
@@ -28,6 +28,16 @@ protected:
      * 互斥锁
      */
     mutex mux;
+
+    /**
+     * 是否在 native 端进行渲染
+     */
+    int isNativeRender = 1;
+
+    JNIEnv *env = 0;
+    JavaVM *jvm = 0;
+    jobject obj = 0;
+    jmethodID mYuvToJavaMethodId;
 public:
     /**
      * 设置渲染的 window
@@ -44,6 +54,11 @@ public:
       * 关闭
       */
       virtual void close();
+
+    virtual void setNativeRender(JavaVM*javaVM,JNIEnv *env,jobject obj,int isRender=1) ;
+
+    void toJava(AVData data);
+
 
 };
 

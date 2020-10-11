@@ -1,5 +1,7 @@
 package com.devyk.aveditor.jni
 
+import com.devyk.aveditor.muxer.JavaMp4Muxer
+
 /**
  * <pre>
  *     author  : devyk on 2020-08-20 17:32
@@ -56,4 +58,10 @@ public class AVMuxerEngine : INativeMuxer {
         audioChannels: Int,
         audioBitRate: Int
     )
+
+
+    public fun javaMergeVieo(inPath:ArrayList<String>,outPath:String){
+        val javaMp4Muxer = JavaMp4Muxer(inPath, outPath)
+        javaMp4Muxer.merge()
+    }
 }

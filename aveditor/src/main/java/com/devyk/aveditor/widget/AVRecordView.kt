@@ -7,10 +7,9 @@ import com.devyk.aveditor.config.AudioConfiguration
 import com.devyk.aveditor.config.VideoConfiguration
 import com.devyk.aveditor.controller.StreamController
 import com.devyk.aveditor.entity.Speed
-import com.devyk.aveditor.stream.packer.Packer
 import com.devyk.aveditor.stream.packer.PackerType
-import com.devyk.aveditor.stream.packer.mp4.MP4Packer
 import com.devyk.aveditor.utils.LogHelper
+import com.devyk.aveditor.widget.base.AVCameraView
 import javax.microedition.khronos.opengles.GL10
 
 

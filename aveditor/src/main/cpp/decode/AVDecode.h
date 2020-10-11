@@ -39,7 +39,7 @@ protected:
     /**
      * 是否需要硬件解码
      */
-    bool isMediaCodec_ = true;
+    bool isMediaCodec_ = false;
 
 public:
     /**

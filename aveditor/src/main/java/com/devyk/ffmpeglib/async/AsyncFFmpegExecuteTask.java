@@ -93,7 +93,6 @@ public class AsyncFFmpegExecuteTask extends AsyncTask<Void, Integer, Integer> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        String name = Looper.myLooper().getThread().getName();
         if (sExecuteCallback != null) {
             sExecuteCallback.onStart(executionId);
         }
@@ -130,6 +129,7 @@ public class AsyncFFmpegExecuteTask extends AsyncTask<Void, Integer, Integer> {
                 else if (rc == 255)
                     sExecuteCallback.onCancel(executionId);
             }
+            enableLogCallback(null);
         }
     }
 
