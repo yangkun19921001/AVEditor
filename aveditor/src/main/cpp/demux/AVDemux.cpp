@@ -250,7 +250,7 @@ int AVDemux::seekTo(double pos) {
     avformat_flush(pFormatCtx);
     long long seekPts = 0;
     seekPts = pFormatCtx->streams[video_stream_index]->duration * pos;
-
+//    seekPts = pFormatCtx->streams[audio_stream_index]->duration * pos;
 //    //往后跳转到关键帧
     re = av_seek_frame(pFormatCtx, video_stream_index, seekPts, AVSEEK_FLAG_FRAME/*关键帧*/ |
                                                                 AVSEEK_FLAG_BACKWARD/*往视频后面找关键帧*/);//音频不存在 B 帧的概念移动到哪里就播放到哪里。如果视频移动播放的时候没有关键帧那么就会导致解码失败，必须移动到关键帧处
@@ -260,7 +260,7 @@ int AVDemux::seekTo(double pos) {
     //往后跳转到关键帧
 //    re = av_seek_frame(pFormatCtx, -1, seekPts,
 //                                                                AVSEEK_FLAG_BACKWARD/*往视频后面找关键帧*/);//音频不存在 B 帧的概念移动到哪里就播放到哪里。如果视频移动播放的时候没有关键帧那么就会导致解码失败，必须移动到关键帧处
-
+//
 
     mux.unlock();
     return re >= 0;

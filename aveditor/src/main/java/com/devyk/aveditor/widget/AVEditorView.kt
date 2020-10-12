@@ -26,7 +26,7 @@ import com.devyk.aveditor.video.renderer.AVRecordRenderer
  *                转为 Java 端处理渲染，加滤镜编辑等工作
  * </pre>
  */
-class AVEditorView : GLSurfaceView, IYUVDataListener {
+class AVEditorView : GLSurfaceView, IYUVDataListener, Runnable {
     private var mEditorRenderer: AVEditorRenderer? = null
     /**
      * 播放器
@@ -40,8 +40,17 @@ class AVEditorView : GLSurfaceView, IYUVDataListener {
 
     private var mDataSource: String? = null
 
+    private var isExit = false
+
+
+    /**
+     * 上一次获取的进度
+     */
+    var preTime = -1
+
     constructor(context: Context?) : this(context, null)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {
+        isExit = false
         setEGLContextClientVersion(2)
         mEditorRenderer = AVEditorRenderer(getContext())
         setRenderer(mEditorRenderer)
@@ -50,6 +59,8 @@ class AVEditorView : GLSurfaceView, IYUVDataListener {
         renderMode = RENDERMODE_WHEN_DIRTY
         mIPlayer = JNIManager.getAVPlayEngine()
         mIPlayer?.setYUVDataCallback(this)
+
+        Thread(this).start()
     }
 
     /**
@@ -70,7 +81,6 @@ class AVEditorView : GLSurfaceView, IYUVDataListener {
      * 播放
      */
     public fun start() {
-
         mIPlayer?.setNativeRender(false)
         mIPlayer?.start()
     }
@@ -80,6 +90,7 @@ class AVEditorView : GLSurfaceView, IYUVDataListener {
      */
     public fun stop() {
         mIPlayer?.stop()
+        isExit = true
     }
 
     /**
@@ -98,20 +109,18 @@ class AVEditorView : GLSurfaceView, IYUVDataListener {
     public fun seekTo(seek: Double): Int? = mIPlayer?.seekTo(seek)
 
     override fun onYUV420pData(width: Int, height: Int, y: ByteArray, u: ByteArray, v: ByteArray) {
-        val progress = progress()
-        if (progress == 100.0 && !mPlayComplete) {
-//            stop()
-//            setNativeRender(false)
-//            setEditSource(mDataSource)
-//            start()
-            seekTo(0.0)
-            mPlayComplete = true
-            LogHelper.d(TAG,"progress:$progress")
-            return
-        }
         mPlayComplete = false
         mEditorRenderer?.setYUVData(width, height, y, u, v)
         requestRender()
+        //TODO----这里会导致后面有 2 s 数据没有刷新就seekTo 了
+        val progress = progress()
+        if (progress >= 100.0 && !mPlayComplete) {
+            seekTo(0.0)
+            mPlayComplete = true
+            LogHelper.d(TAG, "progress:$progress")
+            return
+        }
+
     }
 
 
@@ -142,5 +151,26 @@ class AVEditorView : GLSurfaceView, IYUVDataListener {
         mEditorRenderer?.addWatermark(watermark)
     }
 
+
+    override fun run() {
+//        while (true) {
+//            if (isExit) {
+//                return
+//            }
+//            var progress = progress().toInt()
+//            if (preTime >= 100 && mEditorRenderer?.cache() == 0) {
+//                LogHelper.d(TAG, "progress:$progress")
+//                seekTo(0.0)
+//            }
+//
+//            if (progress != preTime) {
+//                LogHelper.d(TAG, "progress:$progress")
+//                if (progress == 100)
+//                    seekTo(0.0)
+//            }
+//            Thread.sleep(40)
+//            preTime = progress;
+//        }
+    }
 
 }

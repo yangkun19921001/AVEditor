@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.view.SurfaceHolder
 import com.devyk.aveditor.jni.IPlayer
 import com.devyk.aveditor.jni.JNIManager
+import com.devyk.aveditor.utils.ThreadUtils
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
@@ -46,6 +47,7 @@ class AVPlayView : GLSurfaceView, SurfaceHolder.Callback, GLSurfaceView.Renderer
         setRenderer(this)
         isExit = false
         mIPlayer = JNIManager.getAVPlayEngine()
+        mIPlayer?.setNativeRender(true)
         Thread(this).start()
     }
 
@@ -119,7 +121,12 @@ class AVPlayView : GLSurfaceView, SurfaceHolder.Callback, GLSurfaceView.Renderer
     /**
      * 指定跳转到某个时间点播放
      */
-    public fun seekTo(seek: Double): Int? = mIPlayer?.seekTo(seek)
+    public fun seekTo(seek: Double): Int? {
+        ThreadUtils.runChildThread {
+            mIPlayer?.seekTo(seek)
+        }
+        return 0;
+    }
 
     /**
      * 设置硬件解码播放

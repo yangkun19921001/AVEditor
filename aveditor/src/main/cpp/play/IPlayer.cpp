@@ -154,33 +154,41 @@ int IPlayer::seekTo(double pos) {
         setPause(false);
         return re;
     }
-    //3. 解码到实际需要显示的帧
-    long long seekPts = static_cast<long long int>(pos * demux->totalDuration);
-    while (!isExit) {//这里会导致 卡顿
-        AVData pkt = demux->read();
-        if (pkt.size <= 0)break;
-        if (pkt.isAudio) {
-            if (pkt.pts < seekPts) {
-                pkt.drop();
-                continue;
-            }
-            //写入缓冲队列
-            demux->send(pkt);
-            continue;
-        }
 
-        //解码需要显示的帧之前的数据
-        vdecode->sendPacket(pkt);
-        pkt.drop();
-        AVData data = vdecode->getDecodeFrame();
-        if (data.size <= 0) {
-            continue;
-        }
-        if (data.pts >= seekPts) {
-            LOGE("seek success！");
-            break;
-        }
-    }
+
+
+//3. 解码到实际需要显示的帧
+//    long long seekPts = static_cast<long long int>(pos * demux->totalDuration);
+
+    //这里不需要再加判断了，内部做了清理
+//    while (!isExit) {//这里会导致 卡顿
+//        AVData pkt = demux->read();
+//        if (pkt.size <= 0)break;
+//        if (pkt.isAudio) {
+//            if (pkt.pts < seekPts) {
+//                pkt.drop();
+//                continue;
+//            }
+//            //写入缓冲队列
+//            demux->send(pkt);
+//            continue;
+//        }
+//        //解码需要显示的帧之前的数据
+//        vdecode->sendPacket(pkt);
+//        pkt.drop();
+//        AVData data = vdecode->getDecodeFrame();
+//
+//        if (data.pts >= seekPts) {
+//            LOGE("seek success！");
+//            break;
+//        }
+//
+//        if (data.size <= 0) {
+//            continue;
+//        }
+//
+//    }
+
     mux.unlock();
     setPause(false);
     return re;
@@ -261,6 +269,7 @@ double IPlayer::playPos() {
     int total = 0;
     if (demux)
         total = demux->totalDuration / 1000;
+
     if (total > 0) {
         if (vdecode) {
             if (demux && demux->mAudioPacketExist)
@@ -270,11 +279,11 @@ double IPlayer::playPos() {
             }
 
 //            LOGE("播放进度：%f  时长：%d",pos,total);
+//            LOGE("播放进度：%llf  时长：%llf",adecode->pts,demux->totalDuration);
             if (pos >= 100) {
                 mux.unlock();
                 return 100;
             }
-
         }
     }
     mux.unlock();

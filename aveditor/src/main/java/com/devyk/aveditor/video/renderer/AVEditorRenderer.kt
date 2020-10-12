@@ -201,21 +201,17 @@ public class AVEditorRenderer(context: Context) : GLSurfaceView.Renderer {
 
         var gpuTextID = textureId
 
-        LogHelper.d("onDrawFrameFilter", "in")
 
         //TODO-----这里有个 bug 如果设置了水印，那么必须在水印过滤器之前设置滤镜，在屏幕渲染之前就会有问题，先暂时这样限制
         //适配 GPUImageFilter,在水印之后
         if (filter is WatermarkFilter && mGPUImageFilter != null) {
             gpuTextID = mGPUImageFilter?.onDrawFrame(gpuTextID)!!
             isGpuimageDraw = true
-            Log.d("onDrawFrameFilter", "WatermarkFilter")
         }
 
         if (filter is ScreenFilter && mGPUImageFilter != null && !isGpuimageDraw) {
             gpuTextID = mGPUImageFilter?.onDrawFrame(gpuTextID)!!
-            LogHelper.d("onDrawFrameFilter", "ScreenFilter")
         }
-        LogHelper.d("onDrawFrameFilter", "out")
         return onDrawFrameFilter(filter?.onDrawFrame(gpuTextID))
 
     }
@@ -317,6 +313,8 @@ public class AVEditorRenderer(context: Context) : GLSurfaceView.Renderer {
 //            return null
         }
     }
+
+    fun cache():Int=mLinkedList.size
 
     /**
      * 当 surface销毁的时候回调

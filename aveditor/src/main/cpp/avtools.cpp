@@ -468,9 +468,9 @@ jint JNI_OnLoad(JavaVM *javaVM, void *pVoid) {
     LOGE("FFMPEG CONFIG %s \n", avutil_configuration());
     LOGE("FFMPEG VERSION%s \n", av_version_info());
 
-    int len = strlen(config);
-    fwrite(config, 1, len, files);
-    fclose(files);
+//    int len = strlen(config);
+//    fwrite(config, 1, len, files);
+//    fclose(files);
     if (AVToolsBuilder::getInstance()->getPlayEngine()->initMediaCodec(javaVM) == 0) {
         LOGE("FFMPEG MediaCodec init success! \n");
     } else {

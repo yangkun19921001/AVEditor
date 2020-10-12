@@ -2,6 +2,7 @@ package com.devyk.ikavedit.ui.activity
 
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
+import android.content.Intent
 import android.graphics.Paint
 import android.os.Environment
 import android.util.Log
@@ -114,14 +115,13 @@ public class AVEditorActivity : BaseActivity<Int>(), AnimTextView.OnClickListene
         if (mAVFiles == null || mAVFiles?.size == 0) {
             getAVEditPath()?.let { path ->
                 editor_view.setEditSource(path)
+//                editor_view.setEditSource("sdcard/aveditor/test.mp4")
                 play()
             }
         }
         //初始化裁剪的缩略图
         initThumbnail()
         initWatermark()
-
-
     }
 
     /**
@@ -176,11 +176,11 @@ public class AVEditorActivity : BaseActivity<Int>(), AnimTextView.OnClickListene
                     when (type) {
                         RangeSlider.TYPE_LEFT -> {
                             tv_start_time.setText(TimeUtil.format(startTime))
-                            JNIManager.getAVPlayEngine()?.seekTo(startTime.toDouble() / 1000)
+                            JNIManager.getAVPlayEngine()?.seekTo(lThumbIndex.toDouble())
                         }
                         RangeSlider.TYPE_RIGHT -> {
                             tv_end_time.setText(TimeUtil.format(endTime))
-                            JNIManager.getAVPlayEngine()?.seekTo(endTime.toDouble() / 1000)
+                            JNIManager.getAVPlayEngine()?.seekTo(rThumbIndex.toDouble())
                         }
                     }
                     tv_duration.setText(TimeUtil.format(duration))
@@ -283,6 +283,7 @@ public class AVEditorActivity : BaseActivity<Int>(), AnimTextView.OnClickListene
                     return
                 }
                 finish()
+                showMessage("退出编辑!")
             }
             //剪辑
             clip -> {
@@ -303,9 +304,10 @@ public class AVEditorActivity : BaseActivity<Int>(), AnimTextView.OnClickListene
             }
             //下一步
             next -> {
-                val outPath = createMergeFilePath();
-                FileUtils.createFileByDeleteOldFile(outPath)
+//                val outPath = createMergeFilePath();
+//                FileUtils.createFileByDeleteOldFile(outPath)
 //                JNIManager.getAVEditorEngine()?.avStartMerge(outPath, PackerType.MP4.name)
+                startActivity(Intent(this, PlayActivity::class.java))
             }
         }
     }

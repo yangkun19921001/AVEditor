@@ -28,8 +28,9 @@ void IObserver::registers(IObserver *obs) {
 void IObserver::send(AVData data) {
     mux.lock();
     for (int i = 0; i < obss.size(); ++i) {
-        if (obss[i])
+        if (obss[i]) {
             obss[i]->update(data);//子类实现，由子类接收
+        }
     }
     mux.unlock();
 }
